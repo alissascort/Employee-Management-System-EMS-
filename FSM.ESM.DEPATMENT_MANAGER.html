@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Manager Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --warning: #f72585;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            max-width: 250px;
+            transition: width 0.3s;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+            min-width: 70px;
+            max-width: 70px;
+        }
+        .sidebar.collapsed .sidebar-header h1 span,
+        .sidebar.collapsed .sidebar-header p,
+        .sidebar.collapsed .menu-item span,
+        .sidebar.collapsed .menu-item .badge {
+            display: none;
+        }
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+        }
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: background 0.2s, color 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .menu-item.active, .menu-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border-left: 4px solid var(--accent);
+        }
+        .menu-item i {
+            font-size: 1.2rem;
+        }
+        .menu-item .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Profile image */
+        .user-info img, #profileImage, #headerProfileImage {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            background: #fff;
+        }
+
+        /* Card styles */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 24px 20px 18px 20px;
+            min-width: 180px;
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 6px 18px rgba(67,97,238,0.10);
+            transform: translateY(-2px) scale(1.01);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .card-icon {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+        .card-value.updating {
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+        .card-subtext {
+            font-size: 0.95rem;
+            color: #888;
+            margin-top: 2px;
+        }
+        .card-change {
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .card-change.positive { color: #4ade80; }
+        .card-change.negative { color: #f87171; }
+        
+
+        /* Hide all content sections except active */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            transition: margin-left 0.3s;
+            margin-left: 0;
+        }
+        .main-content.expanded {
+            margin-left: -170px;
+        }
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 70px;
+        }
+
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header h1 i {
+            margin-right: 10px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Enhanced toggle button styling */
+        #sidebarCollapse {
+            position: relative;
+            z-index: 50;
+            min-width: 140px;
+            height: 45px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            margin-left: 0;
+        }
+        
+        #sidebarCollapse:hover {
+            transform: translateY(-2px);
+        }
+        
+        #sidebarCollapse:active {
+            transform: translateY(0);
+        }
+        
+        /* Visual indicator when sidebar is collapsed */
+        .sidebar.collapsed ~ .main-content #sidebarCollapse {
+            background-color: var(--warning) !important;
+            animation: pulse 2s infinite;
+        }
+        
+        .sidebar.collapsed ~ .main-content #sidebarCollapse:hover {
+            background-color: #e91e63 !important;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
+        }
+        
+        .toggle-sidebar {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .toggle-sidebar:hover {
+            transform: rotate(180deg);
+            background: var(--secondary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        
+        /* Content sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Home Section */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .card-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-change.positive {
+            color: #4ade80;
+        }
+        
+        .card-change.negative {
+            color: #f87171;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.3);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 10px;
+            animation: slideIn 0.4s ease;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: transparent;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th, 
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Password form - vertical layout */
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .password-form .form-group {
+            width: 100%;
+        }
+        
+        .password-form .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+        }
+        
+        .password-form .btn {
+            align-self: flex-start;
+            margin-top: 10px;
+        }
+        
+        /* Password eye icon styling */
+        .password-eye {
+            transition: color 0.3s ease;
+        }
+        
+        .password-eye:hover {
+            color: var(--primary) !important;
+        }
+        
+        /* Password input container */
+        .password-form .form-group {
+            position: relative;
+        }
+        
+        .password-form .form-group input {
+            padding-right: 40px;
+        }
+        
+        /* Recent activities styling */
+        .activities-list {
+            margin-top: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .activity-icon {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-message {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .activity-time {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-info {
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        .btn-info:hover {
+            background-color: var(--secondary);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        
+        .btn-info i {
+            font-size: 16px;
+        }
+        
+        .btn-info span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-approved {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        /* Profile section - New Layout */
+        .profile-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .profile-container {
+            display: flex;
+            flex-direction: row;
+            gap: 60px;
+            align-items: flex-start;
+        }
+        
+        .profile-photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 25px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0;
+        }
+        
+        .profile-image-large {
+            width: 300px !important;
+            height: 300px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 6px solid var(--primary) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+            max-width: none !important;
+            max-height: none !important;
+        }
+        
+        .photo-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .photo-actions .btn {
+            min-width: 280px;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .profile-details-section {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .employee-info {
+            padding: 0;
+        }
+        
+        .employee-info h3 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-item label {
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+        
+        .info-item span {
+            color: #333;
+            font-size: 1rem;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .password-section {
+            padding: 0;
+        }
+        
+        .password-section h3 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .profile-info p {
+            margin-bottom: 5px;
+        }
+        
+        .profile-info strong {
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        /* Notification styles */
+        .notification-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+        
+        .notification-bell {
+            background: transparent;
+            border: none;
+            position: relative;
+            font-size: 1.6rem;
+            color: var(--primary);
+            cursor: pointer;
+            outline: none;
+            transition: color 0.2s;
+            padding: 8px;
+            border-radius: 50%;
+        }
+        
+        .notification-bell:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .notification-bell:active {
+            animation: bell-pop 0.3s;
+        }
+        
+        @keyframes bell-pop {
+            0% { transform: scale(1);}
+            50% { transform: scale(1.2);}
+            100% { transform: scale(1);}
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 12px;
+            height: 12px;
+            background: #e53935;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: none;
+            z-index: 2;
+            animation: pulse-dot 1.5s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(229, 57, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+        }
+        
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+            border: 1px solid #eee;
+        }
+        
+        .dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .dropdown-header h3 {
+            font-size: 16px;
+            color: var(--dark);
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .dropdown-header button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .dropdown-header button:hover {
+            text-decoration: underline;
+        }
+        
+        .dropdown-list {
+            padding: 0;
+        }
+        
+        .dropdown-item {
+            padding: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item .notification-message {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .dropdown-item .notification-time {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .dropdown-empty {
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .dropdown-footer {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .dropdown-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .blur-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        /* Payroll Table Styles */
+#payrollTable th:nth-child(2),
+#payrollTable th:nth-child(3),
+#payrollTable th:nth-child(4),
+#payrollTable th:nth-child(5),
+#payrollTable td:nth-child(2),
+#payrollTable td:nth-child(3),
+#payrollTable td:nth-child(4),
+#payrollTable td:nth-child(5) {
+    text-align: right;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.view-payslip {
+    background-color: var(--accent);
+    color: white;
+}
+
+.view-payslip:hover {
+    background-color: var(--secondary);
+}
+
+#payrollSummary {
+    background: rgba(67, 97, 238, 0.05);
+    border-left: 4px solid var(--primary);
+}
+
+        #payrollSummary h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+.dashboard.sidebar-collapsed .sidebar {
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
+}
+.dashboard.sidebar-collapsed .sidebar .sidebar-header h1 span,
+.dashboard.sidebar-collapsed .sidebar .sidebar-header p,
+.dashboard.sidebar-collapsed .sidebar .menu-item span,
+.dashboard.sidebar-collapsed .sidebar .menu-item .badge {
+    display: none;
+}
+.dashboard.sidebar-collapsed .sidebar .menu-item {
+    justify-content: center;
+}
+.dashboard.sidebar-collapsed .sidebar .menu-item i {
+    margin-right: 0;
+}
+.dashboard.sidebar-collapsed .main-content {
+    margin-left: 70px;
+}
+
+        /* Enhanced responsive design for all screen sizes */
+        @media (min-width: 1600px) {
+            .cards-container {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 25px;
+            }
+            .card {
+                min-width: 200px;
+                padding: 28px 24px 22px 24px;
+            }
+        }
+        
+        @media (max-width: 1599px) and (min-width: 1400px) {
+            .cards-container {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 20px;
+            }
+            .card {
+                min-width: 180px;
+                padding: 24px 20px 18px 20px;
+            }
+        }
+        
+        @media (max-width: 1399px) and (min-width: 1200px) {
+            .cards-container {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            .card {
+                min-width: 200px;
+                padding: 24px 20px 18px 20px;
+            }
+        }
+        
+        @media (max-width: 1199px) and (min-width: 1000px) {
+            .cards-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+            }
+            .card {
+                min-width: 220px;
+                padding: 22px 18px 16px 18px;
+            }
+        }
+        
+        @media (max-width: 999px) and (min-width: 768px) {
+            .cards-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            .card {
+                min-width: 200px;
+                padding: 20px 16px 14px 16px;
+            }
+            .card-title {
+                font-size: 0.9rem;
+            }
+            .card-value {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 767px) and (min-width: 600px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .card {
+                min-width: 180px;
+                padding: 18px 14px 12px 14px;
+            }
+            .card-title {
+                font-size: 0.85rem;
+            }
+            .card-value {
+                font-size: 1.6rem;
+            }
+            .card-subtext {
+                font-size: 0.85rem;
+            }
+            .card-change {
+                font-size: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 599px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .card {
+                min-width: auto;
+                padding: 16px 12px 10px 12px;
+            }
+            .card-title {
+                font-size: 0.8rem;
+            }
+            .card-value {
+                font-size: 1.5rem;
+            }
+            .card-subtext {
+                font-size: 0.8rem;
+            }
+            .card-change {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Sidebar responsive behavior */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                top: 0;
+                height: 100vh;
+                z-index: 100;
+                transition: left 0.3s ease;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+        
+        /* Smooth transitions for all responsive changes */
+        .cards-container {
+            transition: all 0.3s ease;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+ /* Enhanced Pagination Styles - Clean Layout */
+.pagination-controls {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pagination-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-buttons .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.pagination-buttons .btn:disabled {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+    border: 1px solid #dee2e6;
+}
+
+.pagination-buttons .btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.pagination-footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+/* Remove the pagination info styles since we're not using it */
+.pagination-info {
+    display: none;
+}
+
+/* Responsive pagination */
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pagination-left, .pagination-right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .pagination-buttons .btn {
+        min-width: 140px;
+        padding: 12px 20px;
+    }
+}
+
+/* Department-specific sections */
+.department-specific {
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <audio id="notificationSound" class="notification-sound" preload="auto">
+        <source src="mixkit-software-interface-start-2574.wav" type="audio/wav">
+    </audio>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-user-tie"></i> <span>Manager Portal</span></h1>
+                <p>Welcome, <span id="sidebarUserNameSpan">Manager</span></p>
+            </div>
+            <div class="menu-item active" data-section="home-section"><i class="fas fa-home"></i> <span>Dashboard</span></div>
+            <div class="menu-item" data-section="profile-section"><i class="fas fa-user"></i> <span>My Profile</span></div>
+            <div class="menu-item" data-section="team-management-section"><i class="fas fa-users"></i> <span>Team Management</span></div>
+            <div class="menu-item" data-section="leave-approval-section"><i class="fas fa-calendar-check"></i> <span>Leave Approval</span></div>
+            <div class="menu-item" data-section="performance-section"><i class="fas fa-chart-line"></i> <span>Performance</span></div>
+            <div class="menu-item" data-section="attendance-section"><i class="fas fa-user-check"></i> <span>Team Attendance</span></div>
+            <div class="menu-item" data-section="reports-section"><i class="fas fa-file-alt"></i> <span>Reports</span></div>
+            
+            <!-- Department-specific sections -->
+            <div class="menu-item department-specific hr" data-section="recruitment-section"><i class="fas fa-user-plus"></i> <span>Recruitment</span></div>
+            <div class="menu-item department-specific hr" data-section="training-section"><i class="fas fa-graduation-cap"></i> <span>Training</span></div>
+            <div class="menu-item department-specific sales" data-section="sales-section"><i class="fas fa-chart-bar"></i> <span>Sales Analytics</span></div>
+            <div class="menu-item department-specific finance" data-section="budget-section"><i class="fas fa-money-bill-wave"></i> <span>Budget Management</span></div>
+            <div class="menu-item department-specific procurement" data-section="vendor-section"><i class="fas fa-handshake"></i> <span>Vendor Management</span></div>
+            <div class="menu-item department-specific logistics" data-section="shipment-section"><i class="fas fa-shipping-fast"></i> <span>Shipment Tracking</span></div>
+            <div class="menu-item department-specific technical" data-section="projects-section"><i class="fas fa-tasks"></i> <span>Project Management</span></div>
+            <div class="menu-item department-specific it" data-section="system-section"><i class="fas fa-server"></i> <span>System Monitoring</span></div>
+            <div class="menu-item department-specific risk" data-section="risk-section"><i class="fas fa-shield-alt"></i> <span>Risk Assessment</span></div>
+            <div class="menu-item department-specific control" data-section="audit-section"><i class="fas fa-search-dollar"></i> <span>Internal Audit</span></div>
+            <div class="menu-item department-specific store" data-section="inventory-section"><i class="fas fa-boxes"></i> <span>Inventory Management</span></div>
+            
+            <div class="menu-item" data-section="settings-section"><i class="fas fa-cog"></i> <span>Settings</span></div>
+            <div class="menu-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <button class="toggle-sidebar" id="sidebarCollapse">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="header-right">
+                    <div class="notification-wrapper">
+                        <button class="notification-bell" id="notificationBell">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-dot" id="notificationDot"></span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="dropdown-header">
+                                <h3>Notifications</h3>
+                                <button id="markAllRead">Mark all as read</button>
+                            </div>
+                            <div class="dropdown-list" id="notificationList">
+                                <!-- Notifications will be populated here -->
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#" id="viewAllNotifications">View All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <img id="headerProfileImage" src="https://ui-avatars.com/api/?name=Manager&background=random" alt="Profile">
+                        <span id="headerUserNameSpan">Manager</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Section -->
+            <div class="content-section active" id="home-section">
+                <h2>Manager Dashboard</h2>
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Team Members</div>
+                            <div class="card-icon"><i class="fas fa-users"></i></div>
+                        </div>
+                        <div class="card-value">24</div>
+                        <div class="card-subtext">Total employees</div>
+                        <div class="card-change positive"><i class="fas fa-arrow-up"></i> 2 new hires</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Pending Approvals</div>
+                            <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="card-value">7</div>
+                        <div class="card-subtext">Leave requests</div>
+                        <div class="card-change negative"><i class="fas fa-arrow-up"></i> 3 urgent</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Team Performance</div>
+                            <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <div class="card-value">87%</div>
+                        <div class="card-subtext">This month</div>
+                        <div class="card-change positive"><i class="fas fa-arrow-up"></i> 5% increase</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Attendance Rate</div>
+                            <div class="card-icon"><i class="fas fa-user-check"></i></div>
+                        </div>
+                        <div class="card-value">94%</div>
+                        <div class="card-subtext">This week</div>
+                        <div class="card-change positive"><i class="fas fa-arrow-up"></i> 2% increase</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Pending Tasks</div>
+                            <div class="card-icon"><i class="fas fa-tasks"></i></div>
+                        </div>
+                        <div class="card-value">12</div>
+                        <div class="card-subtext">To be reviewed</div>
+                        <div class="card-change negative"><i class="fas fa-arrow-up"></i> 3 overdue</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Budget Utilization</div>
+                            <div class="card-icon"><i class="fas fa-money-bill-wave"></i></div>
+                        </div>
+                        <div class="card-value">68%</div>
+                        <div class="card-subtext">Department budget</div>
+                        <div class="card-change positive"><i class="fas fa-arrow-down"></i> 5% under budget</div>
+                    </div>
+                </div>
+
+                <div class="recent-activities">
+                    <h3>Recent Activities</h3>
+                    <div class="activities-list">
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-user-plus text-success"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-message">New team member ian isack joined the department</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-calendar-check text-primary"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-message">You approved Sarah Johnson's leave request</div>
+                                <div class="activity-time">Yesterday, 3:45 PM</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-exclamation-triangle text-warning"></i></div>
+                            <div class="activity-content">
+                                <div class="activity-message">Performance review for Michael Brown is overdue</div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="content-section" id="profile-section">
+                <h2 class="profile-title">My Profile</h2>
+                <div class="profile-container">
+                    <div class="profile-photo-section">
+                        <img id="profileImage" src="https://ui-avatars.com/api/?name=Manager&background=random" alt="Profile" class="profile-image-large">
+                        <div class="photo-actions">
+                            <button class="btn btn-primary" id="changePhotoBtn">
+                                <i class="fas fa-camera"></i> Change Profile Photo
+                            </button>
+                            <button class="btn btn-info" id="editProfileBtn">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-details-section">
+                        <div class="employee-info">
+                            <h3>Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name:</label>
+                                    <span id="profileFullName">John Manager</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Employee ID:</label>
+                                    <span id="profileEmployeeId">MGR-001</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Department:</label>
+                                    <span id="profileDepartment">Human Resources</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Position:</label>
+                                    <span id="profilePosition">HR Manager</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <span id="profileEmail">john.manager@company.com</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone:</label>
+                                    <span id="profilePhone">+1 (555) 123-4567</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Location:</label>
+                                    <span id="profileLocation">New York Office</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Manager Since:</label>
+                                    <span id="profileJoinDate">January 15, 2020</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="password-section">
+                            <h3>Change Password</h3>
+                            <form class="password-form" id="passwordForm">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" id="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" id="newPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Management Section -->
+            <div class="content-section" id="team-management-section">
+                <h2>Team Management</h2>
+                <div class="pagination-controls">
+                    <div class="pagination-left">
+                        <button class="btn btn-primary" id="addTeamMemberBtn">
+                            <i class="fas fa-user-plus"></i> Add Team Member
+                        </button>
+                    </div>
+                    <div class="pagination-right">
+                        <div class="pagination-buttons">
+                            <button class="btn btn-info" id="prevPageBtn" disabled>
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button class="btn btn-info" id="nextPageBtn">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamTableBody">
+                        <!-- Team data will be populated here -->
+                    </tbody>
+                </table>
+                <div class="pagination-footer">
+                    Showing <span id="currentPageSpan">1</span> of <span id="totalPagesSpan">5</span> pages
+                </div>
+            </div>
+
+            <!-- Leave Approval Section -->
+            <div class="content-section" id="leave-approval-section">
+                <h2>Leave Approval</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td>Vacation</td>
+                            <td>2023-06-15</td>
+                            <td>2023-06-20</td>
+                            <td>Family vacation</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm approve-leave">Approve</button>
+                                <button class="btn btn-danger btn-sm reject-leave">Reject</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Michael Brown</td>
+                            <td>Sick Leave</td>
+                            <td>2023-06-10</td>
+                            <td>2023-06-12</td>
+                            <td>Medical appointment</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm approve-leave">Approve</button>
+                                <button class="btn btn-danger btn-sm reject-leave">Reject</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Performance Section -->
+            <div class="content-section" id="performance-section">
+                <h2>Team Performance</h2>
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Average Performance</div>
+                            <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <div class="card-value">87%</div>
+                        <div class="card-subtext">This quarter</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Performer</div>
+                            <div class="card-icon"><i class="fas fa-trophy"></i></div>
+                        </div>
+                        <div class="card-value">Sarah J.</div>
+                        <div class="card-subtext">95% rating</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Needs Improvement</div>
+                            <div class="card-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        </div>
+                        <div class="card-value">2</div>
+                        <div class="card-subtext">Employees</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department-specific sections (initially hidden) -->
+            <div class="content-section department-specific hr" id="recruitment-section">
+                <h2>Recruitment</h2>
+                <p>HR-specific recruitment tools and data.</p>
+            </div>
+            <div class="content-section department-specific hr" id="training-section">
+                <h2>Training & Development</h2>
+                <p>HR-specific training management tools.</p>
+            </div>
+            <div class="content-section department-specific sales" id="sales-section">
+                <h2>Sales Analytics</h2>
+                <p>Sales-specific analytics and performance data.</p>
+            </div>
+            <div class="content-section department-specific finance" id="budget-section">
+                <h2>Budget Management</h2>
+                <p>Finance-specific budget tracking and management.</p>
+            </div>
+            <div class="content-section department-specific procurement" id="vendor-section">
+                <h2>Vendor Management</h2>
+                <p>Procurement-specific vendor management tools.</p>
+            </div>
+            <div class="content-section department-specific logistics" id="shipment-section">
+                <h2>Shipment Tracking</h2>
+                <p>Logistics-specific shipment tracking tools.</p>
+            </div>
+            <div class="content-section department-specific technical" id="projects-section">
+                <h2>Project Management</h2>
+                <p>Technical-specific project management tools.</p>
+            </div>
+            <div class="content-section department-specific it" id="system-section">
+                <h2>System Monitoring</h2>
+                <p>IT-specific system monitoring tools.</p>
+            </div>
+            <div class="content-section department-specific risk" id="risk-section">
+                <h2>Risk Assessment</h2>
+                <p>Risk Management-specific assessment tools.</p>
+            </div>
+            <div class="content-section department-specific control" id="audit-section">
+                <h2>Internal Audit</h2>
+                <p>Control Unit-specific audit tools.</p>
+            </div>
+            <div class="content-section department-specific store" id="inventory-section">
+                <h2>Inventory Management</h2>
+                <p>Store-specific inventory management tools.</p>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="content-section" id="settings-section">
+                <h2>Settings</h2>
+                <p>Dashboard settings and preferences.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding team member -->
+    <div class="modal-overlay" id="addTeamMemberModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeTeamMemberModal">&times;</button>
+            <h2>Add Team Member</h2>
+            <form id="addTeamMemberForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newMemberName">Full Name</label>
+                        <input type="text" id="newMemberName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newMemberPosition">Position</label>
+                        <input type="text" id="newMemberPosition" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newMemberEmail">Email</label>
+                        <input type="email" id="newMemberEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newMemberDepartment">Department</label>
+                        <select id="newMemberDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="HR">HR</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Procurement">Procurement</option>
+                            <option value="Logistics">Logistics</option>
+                            <option value="Technical">Technical</option>
+                            <option value="IT">IT</option>
+                            <option value="Risk Management">Risk Management</option>
+                            <option value="Control Unit">Control Unit</option>
+                            <option value="Store">Store</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Team Member</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+const API_BASE = 'api/';
+let currentPage = 1;
+const itemsPerPage = 5;
+let totalPages = 1;
+let currentManagerData = null;
+
+async function initDashboard() {
+    try {
+        // Check authentication
+        const authResponse = await fetch(API_BASE + 'auth.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=check_session'
+        });
+        
+        const authData = await authResponse.json();
+        
+        if (!authData.success) {
+            window.location.href = 'matrix-login.html';
+            return;
+        }
+        
+        currentManagerData = authData.data;
+        
+        // Set department
+        setDepartment(currentManagerData.department);
+        
+        // Update UI with manager data
+        updateManagerUI(currentManagerData);
+        
+        // Load dashboard data
+        await loadDashboardStats();
+        await loadTeamData();
+        await loadNotifications();
+        
+        // Setup event listeners
+        setupEventListeners();
+    } catch (error) {
+        console.error('[v0] Dashboard initialization error:', error);
+        showError('Failed to initialize dashboard');
+    }
+}
+
+function updateManagerUI(manager) {
+    document.getElementById('headerUserNameSpan').textContent = manager.full_name;
+    document.getElementById('sidebarUserNameSpan').textContent = manager.full_name;
+    
+    const profileImage = manager.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(manager.full_name)}&background=random`;
+    document.getElementById('headerProfileImage').src = profileImage;
+    document.getElementById('profileImage').src = profileImage;
+    
+    // Update profile details
+    document.getElementById('profileFullName').textContent = manager.full_name;
+    document.getElementById('profileEmployeeId').textContent = manager.employee_id || 'N/A';
+    document.getElementById('profileDepartment').textContent = getDepartmentName(manager.department);
+    document.getElementById('profilePosition').textContent = manager.position;
+    document.getElementById('profileEmail').textContent = manager.email;
+    document.getElementById('profilePhone').textContent = manager.phone || 'N/A';
+    document.getElementById('profileLocation').textContent = manager.location || 'N/A';
+    document.getElementById('profileJoinDate').textContent = formatDate(manager.join_date);
+}
+
+async function loadDashboardStats() {
+    try {
+        const response = await fetch(API_BASE + 'dashboard.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            const stats = data.data.stats;
+            
+            // Update stat cards
+            document.querySelector('.card:nth-child(1) .card-value').textContent = stats.total_team;
+            document.querySelector('.card:nth-child(2) .card-value').textContent = stats.pending_leaves;
+            document.querySelector('.card:nth-child(3) .card-value').textContent = stats.active_employees;
+            
+            // Update recent activities
+            renderActivities(data.data.activities);
+        }
+    } catch (error) {
+        console.error('[v0] Failed to load dashboard stats:', error);
+    }
+}
+
+async function loadTeamData(page = 1, search = '') {
+    try {
+        showLoading('teamTableBody');
+        
+        const response = await fetch(`${API_BASE}team.php?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            currentPage = data.data.page;
+            totalPages = data.data.totalPages;
+            renderTeamTable(data.data.employees);
+            updatePaginationControls();
+        } else {
+            showError(data.message);
+        }
+    } catch (error) {
+        console.error('[v0] Failed to load team data:', error);
+        showError('Failed to load team data');
+    }
+}
+
+function renderTeamTable(employees) {
+    const tbody = document.getElementById('teamTableBody');
+    tbody.innerHTML = '';
+    
+    if (employees.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No team members found</td></tr>';
+        return;
+    }
+    
+    employees.forEach(member => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${member.employee_id}</td>
+            <td>${member.full_name}</td>
+            <td>${member.position}</td>
+            <td>${member.email}</td>
+            <td><span class="status-badge ${getStatusClass(member.status)}">${member.status}</span></td>
+            <td>
+                <button class="btn btn-primary btn-sm view-profile" data-id="${member.id}">View</button>
+                <button class="btn btn-info btn-sm edit-member" data-id="${member.id}">Edit</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    // Add event listeners to buttons
+    document.querySelectorAll('.view-profile').forEach(btn => {
+        btn.addEventListener('click', () => viewEmployeeProfile(btn.dataset.id));
+    });
+    
+    document.querySelectorAll('.edit-member').forEach(btn => {
+        btn.addEventListener('click', () => editEmployee(btn.dataset.id));
+    });
+}
+
+async function loadNotifications() {
+    try {
+        const response = await fetch(API_BASE + 'notifications.php?limit=10');
+        const data = await response.json();
+        
+        if (data.success) {
+            renderNotifications(data.data.notifications);
+            updateNotificationDot(data.data.unread_count);
+        }
+    } catch (error) {
+        console.error('[v0] Failed to load notifications:', error);
+    }
+}
+
+function renderNotifications(notifications) {
+    const notificationList = document.getElementById('notificationList');
+    notificationList.innerHTML = '';
+    
+    if (notifications.length === 0) {
+        notificationList.innerHTML = '<div class="dropdown-empty">No notifications</div>';
+        return;
+    }
+    
+    notifications.forEach(notification => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        if (!notification.is_read) {
+            item.style.backgroundColor = '#f0f7ff';
+        }
+        
+        item.innerHTML = `
+            <div class="notification-message">${notification.message}</div>
+            <div class="notification-time">${formatTimeAgo(notification.created_at)}</div>
+        `;
+        
+        item.addEventListener('click', () => markNotificationAsRead(notification.id));
+        notificationList.appendChild(item);
+    });
+}
+
+async function markNotificationAsRead(id) {
+    try {
+        const response = await fetch(API_BASE + 'notifications.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'mark_read', notification_id: id })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            await loadNotifications();
+        }
+    } catch (error) {
+        console.error('[v0] Failed to mark notification as read:', error);
+    }
+}
+
+async function markAllNotificationsAsRead() {
+    try {
+        const response = await fetch(API_BASE + 'notifications.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'mark_all_read' })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            await loadNotifications();
+        }
+    } catch (error) {
+        console.error('[v0] Failed to mark all notifications as read:', error);
+    }
+}
+
+async function addTeamMember(formData) {
+    try {
+        const response = await fetch(API_BASE + 'team.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'add',
+                ...formData
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showSuccess('Team member added successfully');
+            await loadTeamData(currentPage);
+            return true;
+        } else {
+            showError(data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('[v0] Failed to add team member:', error);
+        showError('Failed to add team member');
+        return false;
+    }
+}
+
+async function updatePassword(currentPassword, newPassword) {
+    try {
+        const response = await fetch(API_BASE + 'profile.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'change_password',
+                current_password: currentPassword,
+                new_password: newPassword
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showSuccess('Password updated successfully');
+            return true;
+        } else {
+            showError(data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('[v0] Failed to update password:', error);
+        showError('Failed to update password');
+        return false;
+    }
+}
+
+async function logout() {
+    try {
+        const response = await fetch(API_BASE + 'auth.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=logout'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.location.href = 'matrix-login.html';
+        }
+    } catch (error) {
+        console.error('[v0] Logout failed:', error);
+        window.location.href = 'matrix-login.html';
+    }
+}
+
+// Helper functions
+function showLoading(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    }
+}
+
+function showError(message) {
+    alert('Error: ' + message);
+}
+
+function showSuccess(message) {
+    alert('Success: ' + message);
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'Active': 'status-approved',
+        'On Leave': 'status-pending',
+        'Remote': 'status-rejected',
+        'Inactive': 'status-rejected'
+    };
+    return statusMap[status] || 'status-pending';
+}
+
+function getDepartmentName(dept) {
+    const deptMap = {
+        'hr': 'Human Resources',
+        'sales': 'Customer Admin-Sales',
+        'finance': 'Accountant-Finance',
+        'procurement': 'Procurement',
+        'logistics': 'Logistic/Transport',
+        'technical': 'Technical',
+        'it': 'IT',
+        'risk': 'Risk Management',
+        'control': 'Control Unit',
+        'store': 'Store'
+    };
+    return deptMap[dept] || dept;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+    return Math.floor(seconds / 86400) + ' days ago';
+}
+
+function renderActivities(activities) {
+    const activitiesList = document.querySelector('.activities-list');
+    if (!activitiesList) return;
+    
+    activitiesList.innerHTML = '';
+    
+    activities.forEach(activity => {
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        item.innerHTML = `
+            <div class="activity-icon"><i class="${activity.icon || 'fas fa-info-circle'}"></i></div>
+            <div class="activity-content">
+                <div class="activity-message">${activity.message}</div>
+                <div class="activity-time">${formatTimeAgo(activity.created_at)}</div>
+            </div>
+        `;
+        activitiesList.appendChild(item);
+    });
+}
+
+function updateNotificationDot(unreadCount) {
+    const dot = document.getElementById('notificationDot');
+    if (dot) {
+        dot.style.display = unreadCount > 0 ? 'block' : 'none';
+    }
+}
+
+function setupEventListeners() {
+    // Sidebar toggle
+    document.getElementById('sidebarCollapse').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+        document.querySelector('.main-content').classList.toggle('expanded');
+    });
+
+    // Menu items
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const sectionId = item.getAttribute('data-section');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        });
+    });
+
+    // Notification bell
+    document.getElementById('notificationBell').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = document.getElementById('notificationDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Mark all read
+    document.getElementById('markAllRead').addEventListener('click', (e) => {
+        e.stopPropagation();
+        markAllNotificationsAsRead();
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to logout?')) {
+            logout();
+        }
+    });
+
+    // Pagination
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            loadTeamData(currentPage - 1);
+        }
+    });
+
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            loadTeamData(currentPage + 1);
+        }
+    });
+
+    // Add team member modal
+    document.getElementById('addTeamMemberBtn').addEventListener('click', () => {
+        document.getElementById('addTeamMemberModal').style.display = 'flex';
+    });
+
+    document.getElementById('closeTeamMemberModal').addEventListener('click', () => {
+        document.getElementById('addTeamMemberModal').style.display = 'none';
+    });
+
+    // Add team member form
+    document.getElementById('addTeamMemberForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            full_name: document.getElementById('newMemberName').value,
+            position: document.getElementById('newMemberPosition').value,
+            email: document.getElementById('newMemberEmail').value,
+            department: document.getElementById('newMemberDepartment').value
+        };
+        
+        const success = await addTeamMember(formData);
+        
+        if (success) {
+            document.getElementById('addTeamMemberModal').style.display = 'none';
+            document.getElementById('addTeamMemberForm').reset();
+        }
+    });
+
+    // Password form
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (newPassword !== confirmPassword) {
+            showError('New passwords do not match!');
+            return;
+        }
+        
+        const success = await updatePassword(currentPassword, newPassword);
+        
+        if (success) {
+            document.getElementById('passwordForm').reset();
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('notificationDropdown');
+        const bell = document.getElementById('notificationBell');
+        if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
+
+function updatePaginationControls() {
+    document.getElementById('currentPageSpan').textContent = currentPage;
+    document.getElementById('totalPagesSpan').textContent = totalPages;
+    
+    document.getElementById('prevPageBtn').disabled = currentPage === 1;
+    document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+}
+
+function setDepartment(department) {
+    document.querySelectorAll('.department-specific').forEach(item => {
+        item.style.display = 'none';
+    });
+    
+    const departmentItems = document.querySelectorAll(`.department-specific.${department}`);
+    departmentItems.forEach(item => {
+        item.style.display = 'flex';
+    });
+}
+
+function viewEmployeeProfile(id) {
+    alert('View employee profile: ' + id);
+}
+
+function editEmployee(id) {
+    alert('Edit employee: ' + id);
+}
+
+// Initialize dashboard when page loads
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

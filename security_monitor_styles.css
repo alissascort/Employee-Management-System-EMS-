@@ -1,0 +1,334 @@
+/* Attendance System Security Monitor Styles */
+
+/* Status Cards */
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.status-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.status-card.warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.status-card.critical {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    animation: pulse 2s infinite;
+}
+
+.status-card.disabled {
+    background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+}
+
+.status-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+    opacity: 0.9;
+}
+
+.status-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.status-info p {
+    margin: 0 0 5px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.status-info small {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+/* CSO Time Book */
+.cso-timebook {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.check-in-section, .check-out-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 2px solid #e9ecef;
+}
+
+.check-in-section h3, .check-out-section h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+}
+
+.check-in-section h3::before {
+    content: "🟢";
+    margin-right: 10px;
+}
+
+.check-out-section h3::before {
+    content: "🔴";
+    margin-right: 10px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Control Panel */
+.control-panel {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.control-group {
+    margin-bottom: 25px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.control-group h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.control-buttons, .monitoring-controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.control-buttons .btn, .monitoring-controls .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-buttons .btn:hover, .monitoring-controls .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Alerts Container */
+.alerts-container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.alert-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.alert-filters select {
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.alerts-table {
+    overflow-x: auto;
+}
+
+.alerts-table .data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.alerts-table .data-table th {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.alerts-table .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.alerts-table .data-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* Severity badges */
+.severity-critical {
+    background: #dc3545;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.severity-warning {
+    background: #ffc107;
+    color: #212529;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.severity-info {
+    background: #17a2b8;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    border: 2px solid #e9ecef;
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+}
+
+.metric-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.metric-card p {
+    margin: 0 0 5px 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.metric-card small {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .status-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .cso-timebook {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-buttons, .monitoring-controls {
+        flex-direction: column;
+    }
+    
+    .alert-filters {
+        flex-direction: column;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-card {
+        padding: 15px;
+    }
+    
+    .status-icon {
+        font-size: 2rem;
+    }
+} 

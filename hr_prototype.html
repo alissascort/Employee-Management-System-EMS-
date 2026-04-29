@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FortishieldMatrix - HR Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: #2c3e50;
+            color: #fff;
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+
+        #sidebar.active {
+            margin-left: -250px;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #34495e;
+            border-bottom: 1px solid #47748b;
+        }
+
+        .sidebar-header h3 {
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .sidebar-header .user-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        #sidebar ul.components {
+            padding: 20px 0;
+        }
+
+        #sidebar ul li a {
+            padding: 15px 20px;
+            font-size: 1.1em;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        #sidebar ul li a:hover {
+            color: #3498db;
+            background: #34495e;
+        }
+
+        #sidebar ul li.active > a {
+            color: #fff;
+            background: #3498db;
+        }
+
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        #content.active {
+            width: calc(100% + 250px);
+        }
+
+        .navbar {
+            padding: 15px 10px !important;
+            background: #fff !important;
+            border: none !important;
+            border-radius: 10px !important;
+            margin-bottom: 20px !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+        }
+
+        .content-section {
+            display: none;
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card i {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .chart-container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Added notification and user dropdown styles to match employee dashboard layout */
+        .btn-toggle {
+            background: transparent !important;
+            border: none !important;
+            font-size: 1rem !important;
+            color: #4361ee !important;
+            cursor: pointer;
+            padding: 8px 16px !important;
+            border-radius: 6px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            font-weight: 500 !important;
+        }
+
+        .btn-toggle:hover {
+            background-color: rgba(67, 97, 238, 0.1) !important;
+            color: #4361ee !important;
+        }
+
+        .notification-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .notification-bell {
+            background: transparent;
+            border: none;
+            position: relative;
+            font-size: 1.4rem;
+            color: #4361ee;
+            cursor: pointer;
+            outline: none;
+            transition: color 0.2s;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .notification-bell:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            background: #e53935;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: none;
+            z-index: 2;
+        }
+
+        .user-dropdown {
+            display: flex !important;
+            align-items: center !important;
+            cursor: pointer !important;
+            padding: 6px 12px !important;
+            border-radius: 8px !important;
+            transition: background-color 0.2s !important;
+            position: relative !important;
+        }
+
+        .user-dropdown:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #2d3748;
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            color: #718096;
+            transition: transform 0.2s;
+        }
+
+        .user-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown-menu {
+            position: absolute !important;
+            top: calc(100% + 8px) !important;
+            right: 0 !important;
+            background: white !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            min-width: 180px !important;
+            z-index: 1000 !important;
+            display: none !important;
+            border: 1px solid #e2e8f0 !important;
+            overflow: hidden !important;
+        }
+
+        .user-dropdown-menu.show {
+            display: block;
+            animation: dropdownFadeIn 0.15s ease-out;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-menu-item:hover {
+            background-color: #f7fafc;
+        }
+
+        .dropdown-menu-item:last-child {
+            color: #e53e3e;
+        }
+
+        .dropdown-menu-item:last-child:hover {
+            background-color: #fed7d7;
+        }
+
+        .dropdown-menu-item i {
+            width: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>FortishieldMatrix</h3>
+                <small>HR</small>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="user-name">Loading...</span>
+                </div>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('employees')">
+                        <i class="fas fa-users"></i>
+                        Employee Directory
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('leave')">
+                        <i class="fas fa-calendar-alt"></i>
+                        Leave Management
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('attendance')">
+                        <i class="fas fa-clock"></i>
+                        Attendance
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('performance')">
+                        <i class="fas fa-chart-line"></i>
+                        Performance
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('training')">
+                        <i class="fas fa-graduation-cap"></i>
+                        Training
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('recruitment')">
+                        <i class="fas fa-user-plus"></i>
+                        Recruitment
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('documents')">
+                        <i class="fas fa-file-alt"></i>
+                        Documents
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('audit')">
+                        <i class="fas fa-search"></i>
+                        Audit Logs
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('ticket')">
+                        <i class="fas fa-ticket-alt"></i>
+                        Ticket Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Updated navbar to match employee dashboard layout with bell, profile, name, dropdown -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid d-flex align-items-center" style="padding-left: 0; padding-right: 0;">
+                    <div class="d-flex align-items-center" style="flex: 1 0 auto;">
+                        <button type="button" id="sidebarCollapse" class="btn-toggle" title="Toggle sidebar">
+                            <i class="fas fa-bars"></i>
+                            <span>Toggle Sidebar</span>
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center ms-auto" style="gap: 8px;">
+                        <div class="notification-wrapper">
+                            <button class="notification-bell" id="notificationBell" title="Notifications">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-dot" id="notificationDot"></span>
+                            </button>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <img src="Parrot.JPG" alt="User" class="user-avatar" id="userAvatar">
+                            <span class="user-name" id="headerUserName">Loading...</span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            <div class="user-dropdown-menu" id="userDropdownMenu">
+                                <div class="dropdown-menu-item" onclick="showProfile()">
+                                    <i class="fas fa-user"></i>
+                                    <span>Profile</span>
+                                </div>
+                                <div class="dropdown-menu-item" onclick="showSettings()">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Settings</span>
+                                </div>
+                                <div class="dropdown-menu-item" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <h2>HR Dashboard</h2>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3 id="totalEmployees">0</h3>
+                        <p>Total Employees</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3 id="pendingLeaves">0</h3>
+                        <p>Pending Leaves</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3 id="lateEmployees">0</h3>
+                        <p>Late Today</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3 id="overdueTrainings">0</h3>
+                        <p>Overdue Trainings</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <h4>Attendance This Week</h4>
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <h4>Leave Requests</h4>
+                            <canvas id="leaveChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h4>Recent Activities</h4>
+                    <div id="recentActivities">
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Directory Section -->
+            <div id="employees" class="content-section">
+                <h2>Employee Directory</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="employeeSearch" placeholder="Search employees by name, email, or ID...">
+                            <button class="btn btn-primary" type="button" onclick="loadEmployees()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="departmentFilter" onchange="loadEmployees()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter" onchange="loadEmployees()">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-success" onclick="addNewEmployee()">
+                            <i class="fas fa-plus"></i> Add New Employee
+                        </button>
+                        <button class="btn btn-secondary ms-2" onclick="exportEmployees()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="employeeCount" class="text-muted">Loading employees...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Status</th>
+                                <th>Hire Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center">Loading employees...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Employee pagination">
+                    <ul class="pagination justify-content-center" id="employeePagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Other sections would go here -->
+            <!-- Replaced placeholder leave section with full leave management interface -->
+            <div id="leave" class="content-section">
+                <h2>Leave Management</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <select class="form-select" id="leaveStatusFilter" onchange="loadLeaveRequests()">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="leaveDepartmentFilter" onchange="loadLeaveRequests()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="date" class="form-control" id="leaveDateFilter" onchange="loadLeaveRequests()" title="Filter by start date">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success" onclick="bulkApproveLeaves()">
+                                <i class="fas fa-check"></i> Bulk Approve
+                            </button>
+                            <button class="btn btn-danger ms-2" onclick="bulkRejectLeaves()">
+                                <i class="fas fa-times"></i> Bulk Reject
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="leaveCount" class="text-muted">Loading leave requests...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllLeaves" onchange="toggleAllLeaveSelection()">
+                                </th>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaveTableBody">
+                            <tr>
+                                <td colspan="11" class="text-center">Loading leave requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Leave pagination">
+                    <ul class="pagination justify-content-center" id="leavePagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Replaced placeholder attendance section with full attendance tracking interface -->
+            <div id="attendance" class="content-section">
+                <h2>Attendance Tracking</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="attendanceDateFilter" onchange="loadAttendanceRecords()" value="">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="attendanceDepartmentFilter" onchange="loadAttendanceRecords()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="attendanceStatusFilter" onchange="loadAttendanceRecords()">
+                            <option value="">All Status</option>
+                            <option value="present">Present</option>
+                            <option value="late">Late</option>
+                            <option value="present_late">Present (Late)</option>
+                            <option value="absent">Absent</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" onclick="exportAttendance()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Attendance Summary</h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalPresent" class="text-success">0</h4>
+                                            <small>Present</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalLate" class="text-warning">0</h4>
+                                            <small>Late</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalAbsent" class="text-danger">0</h4>
+                                            <small>Absent</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="attendanceRate" class="text-info">0%</h4>
+                                            <small>Attendance Rate</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-success" onclick="markBulkPresent()">
+                            <i class="fas fa-check"></i> Mark Selected Present
+                        </button>
+                        <button class="btn btn-warning ms-2" onclick="markBulkLate()">
+                            <i class="fas fa-clock"></i> Mark Selected Late
+                        </button>
+                        <button class="btn btn-danger ms-2" onclick="markBulkAbsent()">
+                            <i class="fas fa-times"></i> Mark Selected Absent
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="attendanceCount" class="text-muted">Loading attendance records...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllAttendance" onchange="toggleAllAttendanceSelection()">
+                                </th>
+                                <th>Employee Code</th>
+                                <th>Employee Name</th>
+                                <th>Department</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Hours Worked</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <tr>
+                                <td colspan="10" class="text-center">Loading attendance records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Attendance pagination">
+                    <ul class="pagination justify-content-center" id="attendancePagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Replaced placeholder performance section with full performance review system -->
+            <div id="performance" class="content-section">
+                <h2>Performance Review System</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <select class="form-select" id="performanceStatusFilter" onchange="loadPerformanceReviews()">
+                            <option value="">All Status</option>
+                            <option value="Draft">Draft</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="performanceDepartmentFilter" onchange="loadPerformanceReviews()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="performancePeriodFilter" onchange="loadPerformanceReviews()">
+                            <option value="">All Periods</option>
+                            <option value="Q1 2024">Q1 2024</option>
+                            <option value="Q2 2024">Q2 2024</option>
+                            <option value="Q3 2024">Q3 2024</option>
+                            <option value="Q4 2024">Q4 2024</option>
+                            <option value="Annual 2024">Annual 2024</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" onclick="createNewReview()">
+                            <i class="fas fa-plus"></i> New Review
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Performance Review Summary</h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalReviews" class="text-primary">0</h4>
+                                            <small>Total Reviews</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="completedReviews" class="text-success">0</h4>
+                                            <small>Completed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="inProgressReviews" class="text-warning">0</h4>
+                                            <small>In Progress</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="overdueReviews" class="text-danger">0</h4>
+                                            <small>Overdue</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success" onclick="bulkCompleteReviews()">
+                                <i class="fas fa-check"></i> Bulk Complete
+                            </button>
+                            <button class="btn btn-secondary ms-2" onclick="exportPerformanceReviews()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="performanceCount" class="text-muted">Loading performance reviews...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllPerformance" onchange="toggleAllPerformanceSelection()">
+                                </th>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Review Period</th>
+                                <th>Review Type</th>
+                                <th>Overall Score</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                                <th>Reviewer</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceTableBody">
+                            <tr>
+                                <td colspan="10" class="text-center">Loading performance reviews...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Performance pagination">
+                    <ul class="pagination justify-content-center" id="performancePagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Replace placeholder training section with full training management system -->
+            <div id="training" class="content-section">
+                <h2>Training Management</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <select class="form-select" id="trainingStatusFilter" onchange="loadTrainingRecords()">
+                            <option value="">All Status</option>
+                            <option value="Not Started">Not Started</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="trainingDepartmentFilter" onchange="loadTrainingRecords()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="trainingTypeFilter" onchange="loadTrainingRecords()">
+                            <option value="">All Types</option>
+                            <option value="Mandatory">Mandatory</option>
+                            <option value="Optional">Optional</option>
+                            <option value="Certification">Certification</option>
+                            <option value="Skills Development">Skills Development</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" onclick="createNewTraining()">
+                            <i class="fas fa-plus"></i> New Training
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Training Summary</h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalTrainings" class="text-primary">0</h4>
+                                            <small>Total Trainings</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="completedTrainings" class="text-success">0</h4>
+                                            <small>Completed</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="inProgressTrainings" class="text-warning">0</h4>
+                                            <small>In Progress</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="overdueTrainingsCount" class="text-danger">0</h4>
+                                            <small>Overdue</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success" onclick="bulkCompleteTrainings()">
+                                <i class="fas fa-check"></i> Bulk Complete
+                            </button>
+                            <button class="btn btn-warning" onclick="sendTrainingReminders()">
+                                <i class="fas fa-bell"></i> Send Reminders
+                            </button>
+                            <button class="btn btn-secondary ms-2" onclick="exportTrainingRecords()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="trainingCount" class="text-muted">Loading training records...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllTraining" onchange="toggleAllTrainingSelection()">
+                                </th>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Training Title</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Due Date</th>
+                                <th>Completion Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trainingTableBody">
+                            <tr>
+                                <td colspan="10" class="text-center">Loading training records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Training pagination">
+                    <ul class="pagination justify-content-center" id="trainingPagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <div id="recruitment" class="content-section">
+                <h2>Recruitment</h2>
+                <p>Recruitment features coming soon...</p>
+            </div>
+
+            <div id="documents" class="content-section">
+                <h2>Documents</h2>
+                <p>Document management features coming soon...</p>
+            </div>
+
+            <!-- Replace placeholder audit section with full audit log system -->
+            <div id="audit" class="content-section">
+                <h2>Audit Logs</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <select class="form-select" id="auditActionFilter" onchange="loadAuditLogs()">
+                            <option value="">All Actions</option>
+                            <option value="LOGIN">Login</option>
+                            <option value="LOGOUT">Logout</option>
+                            <option value="CREATE">Create</option>
+                            <option value="UPDATE">Update</option>
+                            <option value="DELETE">Delete</option>
+                            <option value="APPROVE">Approve</option>
+                            <option value="REJECT">Reject</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="auditModuleFilter" onchange="loadAuditLogs()">
+                            <option value="">All Modules</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Leave">Leave</option>
+                            <option value="Attendance">Attendance</option>
+                            <option value="Performance">Performance</option>
+                            <option value="Training">Training</option>
+                            <option value="System">System</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="auditDateFilter" onchange="loadAuditLogs()" title="Filter by date">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="auditUserFilter" placeholder="Search by user..." onchange="loadAuditLogs()">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Audit Summary</h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="totalAuditLogs" class="text-primary">0</h4>
+                                            <small>Total Logs</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="todayAuditLogs" class="text-success">0</h4>
+                                            <small>Today's Logs</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="uniqueUsers" class="text-info">0</h4>
+                                            <small>Active Users</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-item">
+                                            <h4 id="criticalActions" class="text-warning">0</h4>
+                                            <small>Critical Actions</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-secondary" onclick="exportAuditLogs()">
+                            <i class="fas fa-download"></i> Export Logs
+                        </button>
+                        <button class="btn btn-warning ms-2" onclick="clearOldLogs()">
+                            <i class="fas fa-trash"></i> Clear Old Logs
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span id="auditCount" class="text-muted">Loading audit logs...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Module</th>
+                                <th>Description</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center">Loading audit logs...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav aria-label="Audit pagination">
+                    <ul class="pagination justify-content-center" id="auditPagination">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Add User Profile Modal -->
+            <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <div class="col-md-4 text-center">
+                                        <div class="profile-photo-container mb-3">
+                                            <img id="profilePhoto" src="Parrot.JPG" alt="Profile Photo" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                            <div class="mt-2">
+                                                <input type="file" id="photoUpload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                                                <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('photoUpload').click()">
+                                                    <i class="fas fa-camera"></i> Change Photo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profileFirstName" class="form-label">First Name</label>
+                                                <input type="text" class="form-control" id="profileFirstName" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profileLastName" class="form-label">Last Name</label>
+                                                <input type="text" class="form-control" id="profileLastName" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="profileEmail" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="profileEmail" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profilePhone" class="form-label">Phone</label>
+                                                <input type="tel" class="form-control" id="profilePhone">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profileDepartment" class="form-label">Department</label>
+                                                <input type="text" class="form-control" id="profileDepartment" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profilePosition" class="form-label">Position</label>
+                                                <input type="text" class="form-control" id="profilePosition" readonly>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="profileHireDate" class="form-label">Hire Date</label>
+                                                <input type="date" class="form-control" id="profileHireDate" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr>
+                                
+                                <h6>Change Password</h6>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="currentPassword" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="currentPassword">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="newPassword" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="newPassword">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                        <input type="password" class="form-control" id="confirmPassword">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ticket" class="content-section">
+                <h2>Ticket Management</h2>
+                <p>Ticket management features coming soon...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        
+        // Global variables
+        let currentUser = null;
+        let attendanceChart = null;
+        let leaveChart = null;
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+        const sidebarCollapse = document.getElementById('sidebarCollapse');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Initialize the application
+        init();
+
+        function init() {
+            checkAuthentication();
+        }
+
+        function checkAuthentication() {
+            showLoading();
+            
+            fetch('get_user_session.php', { 
+                credentials: 'include',
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    setupEventListeners();
+                    initCharts();
+                    updateUIForAuthenticatedUser();
+                    loadDashboardData();
+                } else {
+                    showError('Unauthorized Access: ' + data.message);
+                    // Redirect to login after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = 'FSM.ESM.HR.html';
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Authentication check failed:', error);
+                showError('Error checking authentication: ' + error.message);
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+            });
+        }
+
+        function setupEventListeners() {
+            // Sidebar toggle
+            sidebarCollapse.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                content.classList.toggle('active');
+            });
+
+            const userDropdown = document.getElementById('userDropdown');
+            const userDropdownMenu = document.getElementById('userDropdownMenu');
+            
+            if (userDropdown && userDropdownMenu) {
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = userDropdownMenu.classList.contains('show');
+                    
+                    if (isOpen) {
+                        userDropdownMenu.classList.remove('show');
+                        userDropdown.classList.remove('active');
+                    } else {
+                        userDropdownMenu.classList.add('show');
+                        userDropdown.classList.add('active');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userDropdown.contains(e.target)) {
+                        userDropdownMenu.classList.remove('show');
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Close dropdown on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        userDropdownMenu.classList.remove('show');
+                        userDropdown.classList.remove('active');
+                    }
+                });
+            }
+
+            const notificationBell = document.getElementById('notificationBell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    alert('Notifications feature coming soon!');
+                });
+            }
+        }
+
+        function logout() {
+            fetch('logout.php', { 
+                credentials: 'include',
+                method: 'POST'
+            })
+            .then(() => {
+                window.location.href = 'FSM.ESM.HR.html';
+            })
+            .catch(() => {
+                // Force redirect even if logout fails
+                window.location.href = 'FSM.ESM.HR.html';
+            });
+        }
+
+        function showLoading() {
+            loadingSpinner.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function updateUIForAuthenticatedUser() {
+            // Update user info in sidebar
+            const userNames = document.querySelectorAll('.user-name');
+            userNames.forEach(element => {
+                element.textContent = currentUser.full_name || 'HR Manager';
+            });
+
+            const headerUserName = document.getElementById('headerUserName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (headerUserName) {
+                headerUserName.textContent = currentUser.full_name || 'HR Manager';
+            }
+            
+            if (userAvatar) {
+                if (currentUser.profile_photo && currentUser.profile_photo !== '') {
+                    userAvatar.src = currentUser.profile_photo;
+                } else {
+                    userAvatar.src = 'Parrot.JPG'; // fallback image
+                }
+                userAvatar.onerror = function() {
+                    this.src = 'Parrot.JPG'; // fallback if image fails to load
+                };
+            }
+
+            // Show dashboard section by default
+            showSection('dashboard');
+        }
+
+        function showProfile() {
+            document.getElementById('userDropdownMenu').classList.remove('show');
+            document.getElementById('userDropdown').classList.remove('active');
+            
+            // Load current user profile data
+            showLoading();
+            
+            fetch('get_user_profile.php', {
+                credentials: 'include',
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                if (data.success) {
+                    populateProfileForm(data.user);
+                    const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+                    profileModal.show();
+                } else {
+                    showError('Error loading profile: ' + data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Profile load failed:', error);
+                showError('Error loading profile: ' + error.message);
+            });
+        }
+
+        function showSettings() {
+            alert('Settings page coming soon!');
+            document.getElementById('userDropdownMenu').classList.remove('show');
+            document.getElementById('userDropdown').classList.remove('active');
+        }
+
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active menu item
+            document.querySelectorAll('#sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            event.target.closest('li').classList.add('active');
+
+            switch(sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'employees':
+                    loadEmployees();
+                    break;
+                case 'leave':
+                    loadLeaveRequests();
+                    break;
+                case 'attendance':
+                    loadAttendanceRecords();
+                    break;
+                case 'performance':
+                    loadPerformanceReviews();
+                    break;
+                case 'training':
+                    loadTrainingRecords();
+                    break;
+                case 'audit':
+                    loadAuditLogs();
+                    break;
+                // Add other cases as needed
+            }
+        }
+
+        // ... existing code for all other functions ...
+    </script>
+</body>
+</html>

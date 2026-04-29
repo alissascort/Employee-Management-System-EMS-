@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Account</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3498db;
+      --primary-hover: #2980b9;
+      --secondary: #2ecc71;
+      --dark: #2c3e50;
+      --light: #f5f7fa;
+      --border: #ecf0f1;
+      --text-muted: #7f8c8d;
+      --error: #e74c3c;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+   
+    .registration-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+    
+    .registration-header {
+      padding: 30px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .logo-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #3498db;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .registration-body {
+      padding: 20px 30px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    
+    .form-section {
+      margin-bottom: 25px;
+    }
+    
+    .form-section-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .form-section-title i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    
+    label.required::after {
+      content: '*';
+      color: var(--error);
+      margin-left: 4px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+    
+    .btn i {
+      font-size: 14px;
+    }
+    
+    .footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      padding: 20px;
+    }
+    
+    .hidden-field {
+      display: none;
+    }
+    
+    .error {
+      color: var(--error);
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    .form-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .form-step {
+      display: none;
+    }
+    
+    .form-step.active {
+      display: block;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      pointer-events: auto;
+      background: transparent;
+    }
+    
+    .password-toggle svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    
+    /* Password field styling */
+    .input-wrapper input[type="password"],
+    .input-wrapper input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+      padding: 10px;
+    }
+    
+    /* Ensure password toggle is clickable */
+    .form-group .input-wrapper .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      pointer-events: auto;
+      background: transparent;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .registration-body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="registration-container">
+    <div class="registration-header">
+      <div class="logo-container">
+        <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo">
+      </div>
+      <h1>Create Your Account</h1>
+      <p>Join our organization by filling out the form below</p>
+    </div>
+    
+    <div class="registration-body">
+      <form id="registerForm" enctype="multipart/form-data">
+        <!-- Step 1 - User Type and Basic Info -->
+        <div class="form-step active" id="step1">
+          <div class="form-section">
+            <h3 class="form-section-title"><i class="fas fa-user-tag"></i> Account Type</h3>
+            <div class="form-group">
+              <label for="user_type" class="required">User Type</label>
+              <select id="user_type" required>
+                <option value="">Select your role</option>
+                <option value="admin">Administrator</option>
+                <option value="employee">Employee</option>
+                <option value="cso">Security Officer (CSO)</option>
+                <option value="hr">Human Resources (HR)</option>
+                <option value="Dept Manager">Department Manager</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h3 class="form-section-title"><i class="fas fa-lock"></i> Login Credentials</h3>
+            <div class="form-group">
+              <label for="email" class="required">Email Address</label>
+              <input type="email" id="email" required placeholder="***********************">
+              <div class="error" id="emailError">Please enter a valid email address</div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password" class="required">Password</label>
+                <div class="input-wrapper">
+                  <input type="password" id="password" required>
+                  <span class="password-toggle" onclick="togglePassword('password')">
+                    <!-- Show password icon (blue eye) -->
+                    <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                    </svg>
+                    <!-- Hide password icon (blue slashed eye) -->
+                    <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                      <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                      <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                    </svg>
+                  </span>
+                </div>
+                <div class="error" id="passwordError">Password must be at least 8 characters</div>
+              </div>
+              <div class="form-group">
+                <label for="confirm_password" class="required">Confirm Password</label>
+                <div class="input-wrapper">
+                  <input type="password" id="confirm_password" required>
+                  <span class="password-toggle" onclick="togglePassword('confirm_password')">
+                    <!-- Show password icon (blue eye) -->
+                    <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                    </svg>
+                    <!-- Hide password icon (blue slashed eye) -->
+                    <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                      <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                      <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                    </svg>
+                  </span>
+                </div>
+                <div class="error" id="confirmPasswordError">Passwords do not match</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-nav">
+            <button type="button" class="btn" id="nextBtn">
+              <i class="fas fa-arrow-right"></i> Continue
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 2 - Role-Specific Information -->
+        <div class="form-step" id="step2">
+          <!-- Admin Fields -->
+          <div id="adminFields" class="hidden-field">
+            <div class="form-section">
+              <h3 class="form-section-title"><i class="fas fa-user-shield"></i> Administrator Information</h3>
+              <div class="form-group">
+                <label for="admin_name" class="required">Full Name</label>
+                <input type="text" id="admin_name">
+                <div class="error" id="adminNameError">Full name is required</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Employee Fields -->
+          <div id="employeeFields" class="hidden-field">
+            <div class="form-section">
+              <h3 class="form-section-title"><i class="fas fa-user-tie"></i> Employee Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="first_name" class="required">First Name</label>
+                  <input type="text" id="first_name">
+                  <div class="error" id="firstNameError">First name is required</div>
+                </div>
+                <div class="form-group">
+                  <label for="last_name" class="required">Last Name</label>
+                  <input type="text" id="last_name">
+                  <div class="error" id="lastNameError">Last name is required</div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="department" class="required">Department</label>
+                  <select id="department">
+                    <option value="">Select Department</option>
+                    <option value="IT">Information Technology</option>
+                    <option value="HR">Human Resources</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Security">Security</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Admin">Administration</option>
+                  </select>
+                  <div class="error" id="departmentError">Department is required</div>
+                </div>
+                <div class="form-group">
+                  <label for="position" class="required">Position</label>
+                  <input type="text" id="position" placeholder="Your job title">
+                  <div class="error" id="positionError">Position is required</div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="hire_date" class="required">Hire Date</label>
+                  <input type="date" id="hire_date">
+                  <div class="error" id="hireDateError">Hire date is required</div>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input type="tel" id="phone" placeholder="+1234567890">
+                  <div class="error" id="phoneError">Please enter a valid phone number</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- CSO Fields -->
+          <div id="csoFields" class="hidden-field">
+            <div class="form-section">
+              <h3 class="form-section-title"><i class="fas fa-shield-alt"></i> Security Officer Information</h3>
+              <div class="form-group">
+                <label for="cso_name" class="required">Full Name</label>
+                <input type="text" id="cso_name">
+                <div class="error" id="csoNameError">Full name is required</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- HR Fields -->
+          <div id="hrFields" class="hidden-field">
+            <div class="form-section">
+              <h3 class="form-section-title"><i class="fas fa-users"></i> Human Resources Information</h3>
+              <div class="form-group">
+                <label for="hr_name" class="required">Full Name</label>
+                <input type="text" id="hr_name" name="full_name">
+                <div class="error" id="hrNameError">Full name is required</div>
+              </div>
+            </div>
+          </div>
+         
+          <!-- Dept Manager Fields -->
+          <div id="deptManagerFields" class="hidden-field">
+            <div class="form-section">
+              <h3 class="form-section-title"><i class="fas fa-user-tie"></i> Department Manager Information</h3>
+              <div class="form-group">
+                <label for="dept_manager_name" class="required">Full Name</label>
+                <input type="text" id="dept_manager_name">
+                <div class="error" id="deptManagerNameError">Full name is required</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="dept_manager_department" class="required">Department</label>
+                <select id="dept_manager_department">
+                  <option value="">Select Department</option>
+                  <option value="IT">Information Technology</option>
+                  <option value="HR">Human Resources</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Security">Security</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Procurement">Procurement</option>
+                  <option value="Admin">Administration</option>
+                </select>
+                <div class="error" id="deptManagerDepartmentError">Department is required</div>
+              </div>
+            </div>
+          </div>
+         
+          <!-- Profile Photo Upload (for all user types) -->
+          <div class="form-section">
+            <h3 class="form-section-title"><i class="fas fa-image"></i> Profile Photo</h3>
+            <div class="form-group">
+              <label for="profile_photo">Upload Profile Photo <span style="color: #7f8c8d; font-weight: normal; font-size: 13px;">(JPG, PNG, max 2MB)</span></label>
+              <input type="file" id="profile_photo" name="profile_photo" accept="image/jpeg, image/png">
+              <div class="error" id="photoError">Please upload a valid image (JPG, PNG, max 2MB)</div>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-outline" id="prevBtn">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button type="submit" class="btn" id="submitBtn">
+              <i class="fas fa-user-plus"></i> Register
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="footer">
+      <p>© <span id="currentYear"></span> All Rights Reserved. Powered by Fortishield-Matrix</p>
+    </div>
+  </div>
+
+    <script>
+    // Global function for password toggle
+    function togglePassword(fieldId) {
+      console.log('togglePassword called for:', fieldId);
+      const passwordInput = document.getElementById(fieldId);
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      
+      const toggleSpan = passwordInput.parentElement.querySelector('.password-toggle');
+      const showIcon = toggleSpan.querySelector('.show-icon');
+      const hideIcon = toggleSpan.querySelector('.hide-icon');
+      
+      showIcon.style.display = isPassword ? 'none' : '';
+      hideIcon.style.display = isPassword ? '' : 'none';
+      console.log('Password visibility toggled:', isPassword ? 'shown' : 'hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const userTypeSelect = document.getElementById('user_type');
+
+  userTypeSelect.addEventListener('change', function() {
+    const userType = this.value;
+    document.getElementById('adminFields').classList.toggle('hidden-field', userType !== 'admin');
+    document.getElementById('employeeFields').classList.toggle('hidden-field', userType !== 'employee');
+    document.getElementById('csoFields').classList.toggle('hidden-field', userType !== 'cso');
+    document.getElementById('hrFields').classList.toggle('hidden-field', userType !== 'hr');
+    document.getElementById('deptManagerFields').classList.toggle('hidden-field', userType !== 'Dept Manager');
+    document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+  });
+
+  nextBtn.addEventListener('click', function() {
+    if (validateStep1()) {
+      step1.classList.remove('active');
+      step2.classList.add('active');
+      document.querySelector('.registration-body').scrollTop = 0;
+    }
+  });
+
+  prevBtn.addEventListener('click', function() {
+    step2.classList.remove('active');
+    step1.classList.add('active');
+    document.querySelector('.registration-body').scrollTop = 0;
+  });
+
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submitBtn');
+    const originalBtnText = submitBtn.innerHTML;
+
+    if (!validateStep1() || !validateStep2()) return;
+
+    // Prepare FormData
+    const formData = new FormData();
+    formData.append('user_type', userTypeSelect.value);
+    formData.append('email', document.getElementById('email').value.trim());
+    formData.append('password', document.getElementById('password').value);
+    formData.append('confirm_password', document.getElementById('confirm_password').value);
+
+    if (userTypeSelect.value === 'admin') {
+      formData.append('full_name', document.getElementById('admin_name').value.trim());
+    } else if (userTypeSelect.value === 'employee') {
+      formData.append('first_name', document.getElementById('first_name').value.trim());
+      formData.append('last_name', document.getElementById('last_name').value.trim());
+      formData.append('department', document.getElementById('department').value);
+      formData.append('position', document.getElementById('position').value.trim());
+      formData.append('hire_date', document.getElementById('hire_date').value);
+      formData.append('phone', document.getElementById('phone').value.trim());
+    } else if (userTypeSelect.value === 'cso') {
+      formData.append('full_name', document.getElementById('cso_name').value.trim());
+    } else if (userTypeSelect.value === 'hr') {
+      formData.append('full_name', document.getElementById('hr_name').value.trim());
+    } else if (userTypeSelect.value === 'Dept Manager') {
+      formData.append('full_name', document.getElementById('dept_manager_name').value.trim());
+      formData.append('department', document.getElementById('dept_manager_department').value);
+    }
+
+    // Handle profile photo
+    const photoInput = document.getElementById('profile_photo');
+    const photoFile = photoInput.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (photoFile) {
+      if (!allowedTypes.includes(photoFile.type) || photoFile.size > maxSize) {
+        document.getElementById('photoError').style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+        return;
+      }
+      formData.append('profile_photo', photoFile);
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+    try {
+      const response = await fetch('http://localhost:8000/register.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const text = await response.text();
+      let result;
+
+      try {
+        result = JSON.parse(text);
+        if (result.success) {
+          alert(result.message);
+          switch (result.role) {
+            case 'admin': window.location.href = 'FSM.ESM.ADMIN LOGIN PANEL.html'; break;
+            case 'employee': window.location.href = 'FSM.ESM.EMPLOYEE.html'; break;
+            case 'cso': window.location.href = 'FSM.ESM.CSO.html'; break;
+            case 'hr': window.location.href = 'FSM.ESM.HR.html'; break;
+            case 'Dept Manager': window.location.href = 'FSM.ESM.DEPT_MANAGER.html'; break;
+            default: window.location.href = 'FSM.ESM.FRONT.1.html'; break;
+          }
+        } else {
+          alert(result.message || 'Registration failed.');
+        }
+      } catch (parseError) {
+        console.error('Invalid JSON:', text);
+        alert('Server error or invalid JSON response.');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error occurred.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  });
+
+  function validateStep1() {
+    let valid = true;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const confirmError = document.getElementById('confirmPasswordError');
+
+    if (!userTypeSelect.value) { alert('Select your user type'); valid = false; }
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      emailError.textContent = 'Enter a valid email address';
+      emailError.style.display = 'block';
+      valid = false;
+    } else emailError.style.display = 'none';
+
+    if (!password || password.length < 8) {
+      passwordError.textContent = 'Password must be at least 8 characters';
+      passwordError.style.display = 'block';
+      valid = false;
+    } else passwordError.style.display = 'none';
+
+    if (password !== confirm) {
+      confirmError.textContent = 'Passwords do not match';
+      confirmError.style.display = 'block';
+      valid = false;
+    } else confirmError.style.display = 'none';
+
+    return valid;
+  }
+
+  function validateStep2() {
+    let valid = true;
+    const userType = userTypeSelect.value;
+
+    if (userType === 'admin') {
+      if (!document.getElementById('admin_name').value.trim()) {
+        document.getElementById('adminNameError').style.display = 'block';
+        valid = false;
+      } else document.getElementById('adminNameError').style.display = 'none';
+    }
+
+    if (userType === 'employee') {
+      ['first_name', 'last_name', 'department', 'position', 'hire_date'].forEach(id => {
+        const el = document.getElementById(id);
+        const errorEl = document.getElementById(id + 'Error');
+        
+        if (el && errorEl) {
+          if (!el.value.trim()) {
+            errorEl.style.display = 'block';
+            valid = false;
+          } else {
+            errorEl.style.display = 'none';
+          }
+        }
+      });
+
+      const phone = document.getElementById('phone').value.trim();
+      const phoneError = document.getElementById('phoneError');
+      if (phone && !/^\+?[\d\s-]{10,}$/.test(phone)) {
+        phoneError.style.display = 'block';
+        valid = false;
+      } else phoneError.style.display = 'none';
+    }
+
+    if (userType === 'cso') {
+      if (!document.getElementById('cso_name').value.trim()) {
+        document.getElementById('csoNameError').style.display = 'block';
+        valid = false;
+      } else document.getElementById('csoNameError').style.display = 'none';
+    }
+
+    if (userType === 'hr') {
+      if (!document.getElementById('hr_name').value.trim()) {
+        document.getElementById('hrNameError').style.display = 'block';
+        valid = false;
+      } else document.getElementById('hrNameError').style.display = 'none';
+    }
+
+    if (userType === 'Dept Manager') {
+      if (!document.getElementById('dept_manager_name').value.trim()) {
+        document.getElementById('deptManagerNameError').style.display = 'block';
+        valid = false;
+      } else document.getElementById('deptManagerNameError').style.display = 'none';
+      
+      if (!document.getElementById('dept_manager_department').value) {
+        document.getElementById('deptManagerDepartmentError').style.display = 'block';
+        valid = false;
+      } else document.getElementById('deptManagerDepartmentError').style.display = 'none';
+    }
+
+    return valid;
+  }
+});
+  </script>
+</body>
+</html>

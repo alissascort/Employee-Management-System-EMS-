@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRM Sidebar</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+    }
+
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #1f2a44;
+      color: #fff;
+      padding: 20px 0;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu-item {
+      margin: 5px 0;
+    }
+
+    .menu-link {
+      display: block;
+      padding: 10px 15px;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .menu-link:hover {
+      background: #2d3a58;
+    }
+
+    .submenu {
+      list-style: none;
+      padding-left: 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      background: #24324d;
+    }
+
+    .submenu li a {
+      display: block;
+      padding: 8px 15px;
+      font-size: 14px;
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .submenu li a:hover {
+      background: #344563;
+      color: #fff;
+    }
+
+    .submenu.open {
+      max-height: 500px; /* enough to fit children */
+      padding: 5px 0;
+    }
+
+    /* Content area */
+    .content {
+      margin-left: 220px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>CRM Hub</h2>
+    <ul class="menu">
+      <li class="menu-item">
+        <a href="#" class="menu-link toggle">Contacts ▸</a>
+        <ul class="submenu">
+          <li><a href="#">All Contacts</a></li>
+          <li><a href="#">Import Contacts</a></li>
+          <li><a href="#">New Contact</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#" class="menu-link toggle">Companies ▸</a>
+        <ul class="submenu">
+          <li><a href="#">All Companies</a></li>
+          <li><a href="#">New Company</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#" class="menu-link toggle">Deals ▸</a>
+        <ul class="submenu">
+          <li><a href="#">All Deals</a></li>
+          <li><a href="#">New Deal</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#" class="menu-link toggle">Reports ▸</a>
+        <ul class="submenu">
+          <li><a href="#">Sales Report</a></li>
+          <li><a href="#">Performance</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Dashboard</h1>
+    <p>Welcome back! Select a section from the sidebar.</p>
+  </div>
+
+  <script>
+    document.querySelectorAll('.toggle').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        let submenu = this.nextElementSibling;
+
+        // Close other submenus
+        document.querySelectorAll('.submenu').forEach(s => {
+          if (s !== submenu) s.classList.remove('open');
+        });
+
+        // Toggle current submenu
+        submenu.classList.toggle('open');
+      });
+    });
+  </script>
+</body>
+</html>

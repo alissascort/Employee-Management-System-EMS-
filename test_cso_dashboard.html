@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSO Session Test</title>
+</head>
+<body>
+    <h1>CSO Session Test</h1>
+    <div id="result">Loading...</div>
+    
+    <script>
+        async function testCSOSession() {
+            try {
+                console.log('Testing CSO session...');
+                const response = await fetch('get_cso_session_info.php', { 
+                    credentials: 'include' 
+                });
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Session data:', data);
+                
+                const resultDiv = document.getElementById('result');
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <h2>✅ Session Working!</h2>
+                        <p><strong>Name:</strong> ${data.cso.full_name}</p>
+                        <p><strong>Email:</strong> ${data.cso.email}</p>
+                        <p><strong>Profile Photo:</strong> ${data.cso.profile_photo}</p>
+                        <p><strong>CSO Code:</strong> ${data.cso.code}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h2>❌ Session Failed</h2>
+                        <p><strong>Error:</strong> ${data.message}</p>
+                        <p><a href="FSM.ESM.CSO.html">Go to Login</a></p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h2>❌ Network Error</h2>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        testCSOSession();
+    </script>
+</body>
+</html> 

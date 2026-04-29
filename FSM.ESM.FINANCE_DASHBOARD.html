@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FortishieldMatrix - Finance Dashboard</title>
+    <!-- Load jQuery FIRST -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Base Styles */
+        .dashboard-body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: #343a40;
+            color: #fff;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #sidebar.collapsed {
+            margin-left: -250px;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #2c3136;
+            text-align: center;
+        }
+
+        #sidebar .sidebar-header h3 {
+            color: #fff;
+            margin-bottom: 0;
+            font-weight: 700;
+        }
+
+        #sidebar .sidebar-header strong {
+            display: none;
+        }
+
+        #sidebar ul.components {
+            padding: 20px 0;
+        }
+
+        #sidebar ul li a {
+            padding: 12px 20px;
+            font-size: 1em;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        #sidebar ul li a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        #sidebar ul li.active > a {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #sidebar ul ul a {
+            font-size: 0.9em !important;
+            padding-left: 50px !important;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Content Styles */
+        #content {
+            width: calc(100% - 250px);
+            min-height: 100vh;
+            transition: all 0.3s;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        #content.expanded {
+            width: 100%;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            padding: 15px 20px;
+            background: #fff !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .navbar-btn {
+            box-shadow: none;
+            outline: none !important;
+            border: none;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Chart Styles */
+        .chart-area {
+            position: relative;
+            height: 20rem;
+            width: 100%;
+        }
+
+        .chart-pie {
+            position: relative;
+            height: 15rem;
+            width: 100%;
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #5a5c69;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #e3e6f0;
+            background-color: #f8f9fc;
+            font-weight: 600;
+        }
+
+        .table td, .table th {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        /* Badge Styles */
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        .badge-primary {
+            background-color: #4e73df;
+        }
+
+        .badge-success {
+            background-color: #1cc88a;
+        }
+
+        .badge-info {
+            background-color: #36b9cc;
+        }
+
+        .badge-warning {
+            background-color: #f6c23e;
+        }
+
+        .badge-danger {
+            background-color: #e74a3b;
+        }
+
+        /* Button Styles */
+        .btn {
+            border-radius: 0.35rem;
+            font-weight: 600;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+
+        .btn-success {
+            background-color: #1cc88a;
+            border-color: #1cc88a;
+        }
+
+        .btn-info {
+            background-color: #36b9cc;
+            border-color: #36b9cc;
+        }
+
+        .btn-warning {
+            background-color: #f6c23e;
+            border-color: #f6c23e;
+            color: #1f2d3d;
+        }
+
+        .btn-danger {
+            background-color: #e74a3b;
+            border-color: #e74a3b;
+        }
+
+        /* Utility Classes */
+        .text-primary {
+            color: #4e73df !important;
+        }
+
+        .text-success {
+            color: #1cc88a !important;
+        }
+
+        .text-info {
+            color: #36b9cc !important;
+        }
+
+        .text-warning {
+            color: #f6c23e !important;
+        }
+
+        .text-danger {
+            color: #e74a3b !important;
+        }
+
+        .border-left-primary {
+            border-left: 0.25rem solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 0.25rem solid #1cc88a !important;
+        }
+
+        .border-left-info {
+            border-left: 0.25rem solid #36b9cc !important;
+        }
+
+        .border-left-warning {
+            border-left: 0.25rem solid #f6c23e !important;
+        }
+
+        .border-left-danger {
+            border-left: 0.25rem solid #e74a3b !important;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -250px;
+            }
+            
+            #sidebar.collapsed {
+                margin-left: 0;
+            }
+            
+            #content {
+                width: 100%;
+            }
+            
+            #content.expanded {
+                width: calc(100% - 250px);
+            }
+            
+            .sidebar-header strong {
+                display: block;
+            }
+        }
+
+        /* Animation for alerts */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-animate {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Custom scrollbar for sidebar */
+        #sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #sidebar::-webkit-scrollbar-track {
+            background: #2c3136;
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: #4e73df;
+            border-radius: 10px;
+        }
+        /* Profile Image Styles */
+.profile-image {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+    border-color: #4e73df;
+    transform: scale(1.05);
+}
+
+/* User info in sidebar (optional) */
+.user-profile-sidebar {
+    padding: 15px 20px;
+    border-bottom: 1px solid #4e545a;
+    text-align: center;
+}
+
+.user-profile-sidebar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4e73df;
+    margin-bottom: 10px;
+}
+
+.user-profile-sidebar h6 {
+    color: #fff;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.user-profile-sidebar p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>FortishieldMatrix</h3>
+                <strong>FM</strong>
+            </div>
+            
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#dashboard" data-bs-toggle="collapse" aria-expanded="true" class="dashboard-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#payrollSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-money-bill-wave"></i> Payroll
+                    </a>
+                    <ul class="collapse list-unstyled" id="payrollSubmenu">
+                        <li><a href="#" class="payroll-monthly"><i class="fas fa-calendar-alt"></i> Monthly Processing</a></li>
+                        <li><a href="#" class="payroll-slips"><i class="fas fa-file-invoice-dollar"></i> Salary Slips</a></li>
+                        <li><a href="#" class="payroll-tax"><i class="fas fa-calculator"></i> Tax Calculations</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#expenseSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-receipt"></i> Expenses
+                    </a>
+                    <ul class="collapse list-unstyled" id="expenseSubmenu">
+                        <li><a href="#" class="expense-pending"><i class="fas fa-inbox"></i> Pending Approval</a></li>
+                        <li><a href="#" class="expense-track"><i class="fas fa-filter"></i> Track & Filter</a></li>
+                        <li><a href="#" class="expense-submit"><i class="fas fa-upload"></i> Submit Expense</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#budgetSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-chart-pie"></i> Budgets
+                    </a>
+                    <ul class="collapse list-unstyled" id="budgetSubmenu">
+                        <li><a href="#" class="budget-overview"><i class="fas fa-eye"></i> Department Overview</a></li>
+                        <li><a href="#" class="budget-alerts"><i class="fas fa-bell"></i> Alerts</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#invoicesSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-file-invoice"></i> Invoices
+                    </a>
+                    <ul class="collapse list-unstyled" id="invoicesSubmenu">
+                        <li><a href="#" class="invoice-sent"><i class="fas fa-paper-plane"></i> Sent</a></li>
+                        <li><a href="#" class="invoice-received"><i class="fas fa-download"></i> Received</a></li>
+                        <li><a href="#" class="invoice-history"><i class="fas fa-history"></i> Payment History</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#reportsSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                    <ul class="collapse list-unstyled" id="reportsSubmenu">
+                        <li><a href="#" class="report-monthly"><i class="fas fa-calendar-week"></i> Monthly</a></li>
+                        <li><a href="#" class="report-quarterly"><i class="fas fa-calendar"></i> Quarterly</a></li>
+                        <li><a href="#" class="report-annual"><i class="fas fa-calendar-check"></i> Annual</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#auditSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-clipboard-list"></i> Audit Logs
+                    </a>
+                    <ul class="collapse list-unstyled" id="auditSubmenu">
+                        <li><a href="#" class="audit-view"><i class="fas fa-search"></i> View Logs</a></li>
+                        <li><a href="#" class="audit-export"><i class="fas fa-file-export"></i> Export</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="Ticket_Management_System.html">
+                        <i class="fas fa-ticket-alt"></i> Ticket Management
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Top Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="fas fa-align-left"></i>
+                        <span>Toggle Sidebar</span>
+                    </button>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="notificationDropdown" 
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="badge bg-danger">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                                <li><h6 class="dropdown-header">Notifications</h6></li>
+                                <li><a class="dropdown-item notification-item" href="#">5 expenses pending approval</a></li>
+                                <li><a class="dropdown-item notification-item" href="#">Marketing budget exceeded</a></li>
+                                <li><a class="dropdown-item notification-item" href="#">Payroll due in 3 days</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item view-all-notifications" href="#">View all notifications</a></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- In the navbar section, replace the user dropdown -->
+                         <div class="dropdown ms-3">
+                            <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" 
+                            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Profile Image -->
+                             <img src="" alt="Profile" class="rounded-circle me-2 profile-image" 
+                             style="width: 32px; height: 32px; object-fit: cover;" id="profileImage">
+                             <span id="userName">Finance Manager</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item profile-link" href="#"><i class="fas fa-user"></i> Profile</a></li>
+                                <li><a class="dropdown-item settings-link" href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item logout-link" href="FSM.ESM.DEPT_MANAGER.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Dashboard Content -->
+            <div class="container-fluid">
+                <!-- Alert Placeholder -->
+                <div id="alertPlaceholder" style="position: fixed; top: 80px; right: 20px; width: 300px; z-index: 1100;"></div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2>Finance Dashboard</h2>
+                        <p class="text-muted">Welcome back! Today is <span id="current-date"></span></p>
+                    </div>
+                </div>
+                <!-- Summary Cards -->
+                <div class="row" id="summaryCardsRow">
+                    <!-- Cards will be injected here -->
+                </div>
+                <!-- Charts Row -->
+                <div class="row">
+                    <!-- Budget vs Actual Chart -->
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Department Budget vs Actual Spend</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-area">
+                                    <canvas id="budgetActualChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Expense Categories Pie Chart -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Expense Categories</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-pie pt-4 pb-2">
+                                    <canvas id="expensePieChart"></canvas>
+                                </div>
+                                <div class="mt-4 text-center small" id="expensePieLegend"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Data Tables Row -->
+                <div class="row">
+                    <!-- Pending Expenses Table -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">Pending Expense Approvals</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="pendingExpensesTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Date</th>
+                                                <th>Employee</th>
+                                                <th>Amount</th>
+                                                <th>Category</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Recent Payroll Activity -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">Recent Payroll Activity</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="payrollActivityTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>Period</th>
+                                                <th>Employees</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Invoices Table Row -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">Recent Invoices</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="invoicesTable" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Date</th>
+                                                <th>Vendor</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <!-- Custom Script -->
+    <script>
+    let budgetActualChart, expensePieChart;
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCurrentDate();
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+        const toggleBtn = document.getElementById('sidebarCollapse');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+            content.classList.add('expanded');
+        }
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            content.classList.toggle('expanded');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+        fetchAndRenderFinanceDashboard();
+    });
+    function updateCurrentDate() {
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    async function loadDashboardData() {
+        try {
+            const res = await fetch('get_finance_dashboard_data.php');
+            const data = await res.json();
+            if (!data.success) throw new Error('Failed to load dashboard data');
+            renderSummaryCards(data.summary);
+            renderPendingExpensesTable(data.expenses);
+            renderPayrollTable(data.payroll);
+            renderInvoicesTable(data.invoices);
+            renderCharts(data.charts);
+        } catch (e) {
+            alert('Error loading dashboard: ' + e.message);
+        }
+    }
+    function renderSummaryCards(summary) {
+        const row = document.getElementById('summaryCardsRow');
+        row.innerHTML = `
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Payroll (This Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">$${summary.totalPayroll.toLocaleString()}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pending Expenses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">$${summary.pendingExpenses.toLocaleString()}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Unpaid Invoices</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">$${summary.unpaidInvoices.toLocaleString()}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Budget Alerts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">-</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    function renderPendingExpensesTable(expenses) {
+        const tbody = document.querySelector('#pendingExpensesTable tbody');
+        tbody.innerHTML = '';
+        expenses.forEach(exp => {
+            tbody.innerHTML += `<tr>
+                <td>${exp.id || exp.expense_id || ''}</td>
+                <td>${exp.date || ''}</td>
+                <td>${exp.employee_name || exp.employee || ''}</td>
+                <td>$${Number(exp.amount).toLocaleString()}</td>
+                <td>${exp.category || ''}</td>
+                <td>${exp.status || ''}</td>
+            </tr>`;
+        });
+        if ($.fn.DataTable.isDataTable('#pendingExpensesTable')) {
+            $('#pendingExpensesTable').DataTable().destroy();
+        }
+        $('#pendingExpensesTable').DataTable({ searching: false, paging: false, info: false });
+    }
+    function renderPayrollTable(payroll) {
+        const tbody = document.querySelector('#payrollActivityTable tbody');
+        tbody.innerHTML = '';
+        payroll.forEach(row => {
+            tbody.innerHTML += `<tr>
+                <td>${row.pay_period || ''}</td>
+                <td>${row.employee_count || row.employees || ''}</td>
+                <td>$${Number(row.net_salary || row.total || 0).toLocaleString()}</td>
+                <td>${row.status || ''}</td>
+            </tr>`;
+        });
+        if ($.fn.DataTable.isDataTable('#payrollActivityTable')) {
+            $('#payrollActivityTable').DataTable().destroy();
+        }
+        $('#payrollActivityTable').DataTable({ searching: false, paging: false, info: false });
+    }
+    function renderInvoicesTable(invoices) {
+        const tbody = document.querySelector('#invoicesTable tbody');
+        tbody.innerHTML = '';
+        invoices.forEach(inv => {
+            tbody.innerHTML += `<tr>
+                <td>${inv.id || inv.invoice_id || ''}</td>
+                <td>${inv.date || ''}</td>
+                <td>${inv.vendor || inv.vendor_name || ''}</td>
+                <td>$${Number(inv.amount).toLocaleString()}</td>
+                <td>${inv.status || ''}</td>
+            </tr>`;
+        });
+        if ($.fn.DataTable.isDataTable('#invoicesTable')) {
+            $('#invoicesTable').DataTable().destroy();
+        }
+        $('#invoicesTable').DataTable({ searching: false, paging: false, info: false });
+    }
+    function renderCharts(charts) {
+        // Budget vs Actual
+        const ctx = document.getElementById('budgetActualChart').getContext('2d');
+        if (budgetActualChart) budgetActualChart.destroy();
+        budgetActualChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: charts.budgetActual.labels,
+                datasets: [
+                    { label: 'Budget', data: charts.budgetActual.budget, backgroundColor: 'rgba(54, 162, 235, 0.5)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 },
+                    { label: 'Actual', data: charts.budgetActual.actual, backgroundColor: 'rgba(75, 192, 192, 0.5)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v.toLocaleString() } } },
+                plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': $' + ctx.raw.toLocaleString() } } }
+            }
+        });
+        // Expense Pie
+        const pieCtx = document.getElementById('expensePieChart').getContext('2d');
+        if (expensePieChart) expensePieChart.destroy();
+        expensePieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: charts.expensePie.labels,
+                datasets: [{ data: charts.expensePie.data, backgroundColor: [ 'rgba(54, 162, 235, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)', 'rgba(255, 99, 132, 0.7)' ], borderWidth: 1 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { tooltip: { callbacks: { label: ctx => `${ctx.label}: $${ctx.raw} (${Math.round((ctx.raw / charts.expensePie.data.reduce((a,b)=>a+b,0))*100)}%)` } } }
+            }
+        });
+        // Legend
+        const legend = charts.expensePie.labels.map((label, i) => `<span class="mr-2"><i class="fas fa-circle" style="color:${expensePieChart.data.datasets[0].backgroundColor[i]}"></i> ${label}</span>`).join(' ');
+        document.getElementById('expensePieLegend').innerHTML = legend;
+    }
+    // Load manager profile from database
+async function loadManagerProfile() {
+    try {
+        const response = await fetch('get_manager_profile.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update profile image with real data from database
+            const profileImage = document.getElementById('profileImage');
+            if (data.profile_photo) {
+                profileImage.src = data.profile_photo;
+            } else {
+                // Professional fallback - no demo data
+                profileImage.style.display = 'none';
+            }
+            
+            // Update user name with real data
+            document.getElementById('userName').textContent = data.full_name || 'Finance Manager';
+            
+        } else {
+            // System fallback 
+            setSystemFallbackProfile();
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        // System error handling 
+        setSystemFallbackProfile();
+    }
+}
+
+// System fallback for when profile data cannot be loaded
+function setSystemFallbackProfile() {
+    const profileImage = document.getElementById('profileImage');
+    const userName = document.getElementById('userName');
+    
+    // Hide profile image if not available
+    profileImage.style.display = 'none';
+    
+    // Set generic professional title
+    userName.textContent = 'Finance Manager';
+    
+    // Log the issue for system administrators
+    console.warn('Manager profile data unavailable - using system fallback');
+}
+
+// Initialize the dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateCurrentDate();
+    setupSidebarToggle();
+    loadManagerProfile();
+    loadDashboardData(); // This should be loadDashboardData()
+});
+    </script>
+</body>
+</html>

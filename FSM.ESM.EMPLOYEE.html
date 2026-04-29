@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPLOYEE Login Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 450px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3498db;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: #3498db;
+        }
+
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .forgot-password:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .signup-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .signup-link a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 12px;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        .login-btn {
+            width: 100%;
+            box-sizing: border-box;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
+
+        .login-btn {
+            margin-bottom: 0;
+        }
+
+        /* Update CSS for simple eye icon */
+        .input-wrapper {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+        
+        /* Add padding to password input to prevent field movement */
+        .input-wrapper input[type="password"],
+        .input-wrapper input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                height: 80px;
+                width: 80px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo">
+            <h1>Employee Panel</h1>
+        </div>
+        
+        <form id="loginForm" action="FSM.ESM.EMPLOYEE.dashboard.html" method="POST" novalidate>
+            <input type="hidden" id="expectedRole" value="employee">
+
+            <div class="form-group">
+                <label for="employee_code">Employee Code</label>
+                <input type="text" id="employee_code" name="employee_code" placeholder="*********" required>
+                <div id="employeeCodeError" class="error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="*********" required>
+                    <span class="password-toggle" onclick="togglePassword()">
+                    <!-- Show password icon (blue eye) -->
+                    <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                    </svg>
+                    <!-- Hide password icon (blue slashed eye) -->
+                    <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                        <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                    </svg>
+                                    </span>
+                </div>
+                <div id="passwordError" class="error"></div>
+            </div>
+            
+            <div class="options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="forgot-password.html" class="forgot-password">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <div class="signup-link">
+            <p>Don't have an account? <a href="register.html">Sign up</a></p>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by: Fortishield-Matrix</p>
+        </div>
+    </div>
+
+    <script>
+    const form = document.getElementById('loginForm');
+    const employeeCodeInput = document.getElementById('employee_code');
+    const passwordInput = document.getElementById('password');
+    const employeeCodeError = document.getElementById('employeeCodeError');
+    const passwordError = document.getElementById('passwordError');
+    const expectedRole = document.getElementById('expectedRole').value;
+    const rememberCheckbox = document.getElementById('remember');
+
+
+    // Check for remembered employee code
+    window.addEventListener('DOMContentLoaded', function () {
+        const rememberedEmployeeCode = localStorage.getItem('rememberedEmployeeCode');
+        if (rememberedEmployeeCode) {
+            employeeCodeInput.value = rememberedEmployeeCode;
+            rememberCheckbox.checked = true;
+        }
+    });
+
+    // Real-time validation
+    employeeCodeInput.addEventListener('input', validateEmployeeCode);
+    passwordInput.addEventListener('input', validatePassword);
+
+    function validateEmployeeCode() {
+        const employeeCode = employeeCodeInput.value.trim();
+        const employeeCodePattern = /^[0-9]{4}\/EMP\/[0-9]{4}$/;
+        
+        if (!employeeCode) {
+            employeeCodeError.textContent = 'Employee code is required';
+            employeeCodeError.style.display = 'block';
+            return false;
+        } else if (!employeeCodePattern.test(employeeCode)) {
+            employeeCodeError.textContent = 'Enter a valid employee code (e.g., 2025/EMP/5363)';
+            employeeCodeError.style.display = 'block';
+            return false;
+        } else {
+            employeeCodeError.style.display = 'none';
+            return true;
+        }
+    }
+
+    function validatePassword() {
+        const password = passwordInput.value;
+        
+        if (!password) {
+            passwordError.textContent = 'Password is required';
+            passwordError.style.display = 'block';
+            return false;
+        } else if (password.length < 6) {
+            passwordError.textContent = 'Password must be at least 6 characters';
+            passwordError.style.display = 'block';
+            return false;
+        } else {
+            passwordError.style.display = 'none';
+            return true;
+        }
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const isEmployeeCodeValid = validateEmployeeCode();
+        const isPasswordValid = validatePassword();
+
+        if (!isEmployeeCodeValid || !isPasswordValid) {
+            return;
+        }
+
+        const employeeCode = employeeCodeInput.value.trim();
+        const password = passwordInput.value;
+
+        try {
+            const response = await fetch('FSM.ESM.FRONT.1.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    employee_code: employeeCode, 
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('rememberedEmployeeCode', employeeCode);
+                } else {
+                    localStorage.removeItem('rememberedEmployeeCode');
+                }
+                  // Use redirect from server response or fallback
+            window.location.href = result.redirect || 'FSM.ESM.EMPLOYEE.dashboard.html';
+            } else {
+                alert(result.message || 'Invalid employee code or password');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            alert('Server error. Please try again later.');
+        }
+    });
+
+    // Update JS for toggling
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        document.querySelector('.show-icon').style.display = isPassword ? 'none' : '';
+        document.querySelector('.hide-icon').style.display = isPassword ? '' : 'none';
+    }
+    </script>
+</body>
+</html>

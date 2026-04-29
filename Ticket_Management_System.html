@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FortishieldMatrix Ticketing System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: #343a40;
+            color: #fff;
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+        #sidebar.active {
+            margin-left: -250px;
+        }
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #2c3e50;
+        }
+        #sidebar ul.components {
+            padding: 20px 0;
+        }
+        #sidebar ul li a {
+            padding: 10px 15px;
+            font-size: 1.1em;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+        #sidebar ul li a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+        #sidebar ul li.active > a {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .dropdown-toggle::after {
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+        }
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        @media (max-width: 900px) {
+            #sidebar {
+                left: -250px;
+                top: 0;
+                height: 100vh;
+                z-index: 100;
+                position: fixed;
+            }
+            #sidebar.open {
+                left: 0;
+            }
+            #content {
+                margin-left: 0 !important;
+            }
+        }
+
+        /* Ticket Comment Styles */
+        .comment {
+            border-left: 3px solid #007bff;
+            padding-left: 10px;
+            margin-bottom: 15px;
+        }
+
+        .comment-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            color: #6c757d;
+            font-size: 0.8em;
+        }
+
+        /* Hidden elements */
+        .department-tickets, .admin-menu {
+            display: none;
+        }
+
+        /* Additional spacing */
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+        .mt-4 {
+            margin-top: 1.5rem !important;
+        }
+        .mr-2 {
+            margin-right: 0.5rem !important;
+        }
+        
+        /* Ensure buttons are clickable */
+        .btn {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* Debug styles for refresh buttons */
+        #refresh-tickets, #refresh-dept-tickets, #refresh-users, #refresh-categories {
+            background-color: #007bff !important;
+            color: white !important;
+            border: 2px solid #0056b3 !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        #refresh-tickets:hover, #refresh-dept-tickets:hover, #refresh-users:hover, #refresh-categories:hover {
+            background-color: #0056b3 !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* Password toggle styles for user management modal */
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        
+        .password-toggle:hover {
+            color: #007bff;
+        }
+        
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Ensure input fields maintain consistent styling */
+        input[type="password"], input[type="text"], input[type="email"] {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            padding: 10px;
+        }
+        /* CSO-specific styles for ticket system */
+.cso-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.cso-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white;
+}
+
+.security-ticket {
+    border-left: 4px solid #667eea;
+}
+
+/* CSO Panel Styles */
+#cso-panel {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.cso-panel-section {
+    margin-bottom: 20px;
+}
+
+.health-status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.health-status-good {
+    background-color: #28a745;
+}
+
+.health-status-warning {
+    background-color: #ffc107;
+}
+
+.health-status-critical {
+    background-color: #dc3545;
+}
+
+.vulnerability-item {
+    padding: 10px;
+    border-left: 3px solid #dc3545;
+    background-color: #f8f9fa;
+    margin-bottom: 8px;
+}
+
+.performance-message {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.performance-error {
+    background-color: #f8d7da;
+    border-left: 3px solid #dc3545;
+    color: #721c24;
+}
+
+.performance-warning {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    color: #856404;
+}
+
+.performance-info {
+    background-color: #d1ecf1;
+    border-left: 3px solid #17a2b8;
+    color: #0c5460;
+}
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="active">
+            <div class="sidebar-header">
+                <h3>FortishieldMatrix</h3>
+                <strong>FW</strong>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#" id="dashboard-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#ticketSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-ticket-alt"></i> Tickets
+                    </a>
+                    <ul class="collapse list-unstyled" id="ticketSubmenu">
+                        <li>
+                            <a href="#" id="create-ticket-link"><i class="fas fa-plus-circle"></i> Create New</a>
+                        </li>
+                        <li>
+                            <a href="#" id="my-tickets-link"><i class="fas fa-list"></i> My Tickets</a>
+                        </li>
+                        <li class="department-tickets">
+                            <a href="#" id="dept-tickets-link"><i class="fas fa-building"></i> Department Tickets</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="admin-menu">
+                    <a href="#adminSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-cog"></i> Administration
+                    </a>
+                    <ul class="collapse list-unstyled" id="adminSubmenu">
+                        <li>
+                            <a href="#" id="manage-users-link"><i class="fas fa-users"></i> Users</a>
+                        </li>
+                        <li>
+                            <a href="#" id="manage-categories-link"><i class="fas fa-tags"></i> Categories</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="fas fa-align-left"></i>
+                        <span>Toggle Sidebar</span>
+                    </button>
+                    
+                    <div class="ml-auto">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-toggle="dropdown">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="badge badge-danger" id="notification-count">0</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" id="notification-list">
+                                    <a class="dropdown-item" href="#">No new notifications</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                    <img id="navbarProfileImage" src="Parrot.JPG" alt="Profile" style="width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:6px;vertical-align:middle;">
+                                    <span id="username-display">User</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="#" id="refresh-profile-link">
+                                        <i class="fas fa-sync-alt"></i> Refresh Profile
+                                    </a>
+                                    <a class="dropdown-item" href="#" id="profile-link">Profile</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" id="logout-link">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            
+              <!-- CSO Panel (Hidden by default) -->
+            <div id="cso-panel">
+                <div class="card cso-header">
+                    <div class="card-header">
+                        <h4><i class="fas fa-shield-alt"></i> CSO Security Dashboard</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 cso-panel-section">
+                                <h5>System Health Status</h5>
+                                <div id="system-health-status">
+                                    <p>Loading system health...</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 cso-panel-section">
+                                <h5>Vulnerability Analysis</h5>
+                                <div id="vulnerability-list">
+                                    <p>Loading vulnerabilities...</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 cso-panel-section">
+                                <h5>Performance Messages</h5>
+                                <div id="performance-messages">
+                                    <p>Loading performance data...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right mt-3">
+                            <button class="btn btn-sm btn-outline-light" id="refresh-cso-metrics">
+                                <i class="fas fa-sync-alt"></i> Refresh Security Metrics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="container-fluid" id="main-content">
+                <!-- Content will be loaded dynamically here -->
+                <div id="dashboard-content">
+                    <h2>Dashboard</h2>
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card text-white bg-primary mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Open Tickets</h5>
+                                    <h1 class="card-text" id="open-tickets">0</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Assigned</h5>
+                                    <h1 class="card-text" id="assigned-tickets">0</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-warning mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">In Progress</h5>
+                                    <h1 class="card-text" id="inprogress-tickets">0</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Resolved</h5>
+                                    <h1 class="card-text" id="resolved-tickets">0</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Recent Tickets</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="recent-tickets-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Title</th>
+                                                    <th>Category</th>
+                                                    <th>Priority</th>
+                                                    <th>Status</th>
+                                                    <th>Created</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Tickets will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Ticket Form (hidden by default) -->
+                <div id="create-ticket-content" style="display: none;">
+                    <h2>Create New Ticket</h2>
+                    <form id="ticket-form">
+                        <div class="form-group">
+                            <label for="ticket-title">Title</label>
+                            <input type="text" class="form-control" id="ticket-title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ticket-category">Category</label>
+                            <select class="form-control" id="ticket-category" required>
+                                <option value="">Select a category</option>
+                                <!-- Categories will be loaded here -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ticket-priority">Priority</label>
+                            <select class="form-control" id="ticket-priority" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ticket-description">Description</label>
+                            <textarea class="form-control" id="ticket-description" rows="5" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ticket-attachment">Attachment (optional)</label>
+                            <input type="file" class="form-control-file" id="ticket-attachment">
+                            <small class="form-text text-muted">Max file size: 5MB. Allowed types: JPG, PNG, GIF, PDF, DOC, DOCX</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                    </form>
+                </div>
+
+                <!-- My Tickets List (hidden by default) -->
+                <div id="my-tickets-content" style="display: none;">
+                    <h2>My Tickets</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>All Tickets Created By Me</h5>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button class="btn btn-sm btn-primary" id="refresh-tickets" 
+                                            onclick="console.log('Refresh tickets clicked via onclick'); loadMyTickets();"
+                                            onmouseover="console.log('Mouse over refresh-tickets')"
+                                            onmouseenter="console.log('Mouse enter refresh-tickets')">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="my-tickets-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Tickets will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Department Tickets List (hidden by default) -->
+                <div id="dept-tickets-content" style="display: none;">
+                    <h2>Department Tickets</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>All Tickets in My Department</h5>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button class="btn btn-sm btn-primary" id="refresh-dept-tickets" 
+                                            onclick="console.log('Refresh dept tickets clicked via onclick'); loadDepartmentTickets();"
+                                            onmouseover="console.log('Mouse over refresh-dept-tickets')"
+                                            onmouseenter="console.log('Mouse enter refresh-dept-tickets')">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="dept-tickets-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Created By</th>
+                                            <th>Created</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Department tickets will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section (hidden by default) -->
+                <div id="user-management-content" style="display: none;">
+                    <h2>User Management</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Manage System Users</h5>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button class="btn btn-sm btn-success" id="add-user-btn">
+                                        <i class="fas fa-plus"></i> Add User
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" id="refresh-users" 
+                                            onclick="console.log('Refresh users clicked via onclick'); loadUsers();"
+                                            onmouseover="console.log('Mouse over refresh-users')"
+                                            onmouseenter="console.log('Mouse enter refresh-users')">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- User Type Filter -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <select class="form-control" id="user-type-filter">
+                                        <option value="">All User Types</option>
+                                        <option value="employee">Employees</option>
+                                        <option value="admin">Admins</option>
+                                        <option value="dept_manager">Department Managers</option>
+                                        <option value="hr">HR Staff</option>
+                                        <option value="cso">CSO Staff</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" id="department-filter">
+                                        <option value="">All Departments</option>
+                                        <!-- Departments will be loaded here -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" id="status-filter">
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="search-users" placeholder="Search users...">
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email/Code</th>
+                                            <th>User Type</th>
+                                            <th>Department</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Users will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add/Edit User Modal -->
+                <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="userModalLabel">Add New User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="user-form">
+                                    <input type="hidden" id="user-id" name="user_id">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-first-name">First Name *</label>
+                                                <input type="text" class="form-control" id="user-first-name" name="first_name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-last-name">Last Name *</label>
+                                                <input type="text" class="form-control" id="user-last-name" name="last_name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-email">Email *</label>
+                                                <input type="email" class="form-control" id="user-email" name="email" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-type">User Type *</label>
+                                                <select class="form-control" id="user-type" name="user_type" required>
+                                                    <option value="">Select User Type</option>
+                                                    <option value="employee">Employee</option>
+                                                    <option value="admin">Admin</option>
+                                                    <option value="dept_manager">Department Manager</option>
+                                                    <option value="hr">HR Staff</option>
+                                                    <option value="cso">CSO Staff</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-department">Department</label>
+                                                <select class="form-control" id="user-department" name="department">
+                                                    <option value="">Select Department</option>
+                                                    <!-- Departments will be loaded here -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-position">Position</label>
+                                                <input type="text" class="form-control" id="user-position" name="position">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-phone">Phone</label>
+                                                <input type="tel" class="form-control" id="user-phone" name="phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="user-status">Status</label>
+                                                <select class="form-control" id="user-status" name="status">
+                                                    <option value="active">Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user-password">Password *</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" class="form-control" id="user-password" name="password" required>
+                                            <span class="password-toggle" onclick="togglePassword('user-password')">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <small class="form-text text-muted">Minimum 8 characters</small>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="save-user-btn">Save User</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Management Section (hidden by default) -->
+                <div id="category-management-content" style="display: none;">
+                    <h2>Category Management</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Manage Ticket Categories</h5>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button class="btn btn-sm btn-success" id="add-category-btn">
+                                        <i class="fas fa-plus"></i> Add Category
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" id="refresh-categories" 
+                                            onclick="console.log('Refresh categories clicked via onclick'); loadCategories();"
+                                            onmouseover="console.log('Mouse over refresh-categories')"
+                                            onmouseenter="console.log('Mouse enter refresh-categories')">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="categories-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Category Name</th>
+                                            <th>Description</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Categories will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add/Edit Category Modal -->
+                <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="categoryModalLabel">Add New Category</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="category-form">
+                                    <input type="hidden" id="category-id" name="category_id">
+                                    <div class="form-group">
+                                        <label for="category-name">Category Name *</label>
+                                        <input type="text" class="form-control" id="category-name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="category-description">Description</label>
+                                        <textarea class="form-control" id="category-description" name="description" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="category-status">Status</label>
+                                        <select class="form-control" id="category-status" name="status">
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="save-category-btn">Save Category</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Details Modal -->
+    <div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ticketModalLabel">Ticket Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="ticket-modal-body">
+                    <!-- Ticket details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Tab-specific session management
+    let currentTabId = null;
+    
+    // Generate unique tab ID
+    function generateTabId() {
+        if (!currentTabId) {
+            currentTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            console.log('Generated tab ID:', currentTabId);
+        }
+        return currentTabId;
+    }
+    
+ 
+// Unified Session Loader with CSO Ticket Support
+function fetchSessionInfo(tabId = 'dashboard') {
+    console.log('📌 fetchSessionInfo() called - Tab ID:', tabId);
+
+    // Special handling for CSO Ticket Management
+    if (tabId === 'ticket_system_cso') {
+        console.log('🎫 Fetching session info for CSO ticket access...');
+
+        // 1. Check stored CSO session
+        const storedUser = sessionStorage.getItem('ticket_system_user');
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            console.log('Found stored CSO session:', user);
+
+            const sessionAge = Date.now() - user.timestamp;
+            const maxSessionAge = 30 * 60 * 1000; // 30 mins
+
+            if (sessionAge < maxSessionAge) {
+                console.log('✅ Stored CSO session is valid');
+                return Promise.resolve(user);
+            } else {
+                console.log('🕒 Stored CSO session expired, refreshing...');
+                sessionStorage.removeItem('ticket_system_user');
+            }
+        }
+
+        // 2. If no stored session, validate with CSO ticket session endpoint
+        return fetch('cso_ticket_session.php', { credentials: 'include' })
+            .then(res => {
+                console.log('CSO ticket session response status:', res.status);
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(user => {
+                console.log('CSO ticket session response:', user);
+
+                if (user && user.success) {
+                    sessionStorage.setItem('ticket_system_user', JSON.stringify({
+                        ...user,
+                        timestamp: Date.now()
+                    }));
+                    console.log('✅ CSO session validated successfully:', user.full_name);
+                    return user;
+                } else {
+                    console.log('❌ CSO session invalid - redirecting to CSO login');
+                    window.location.href = user.redirect || 'FSM.ESM.CSO.html';
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error('❌ CSO session fetch error:', error);
+                console.log('🔄 Trying fallback to general session check...');
+                return fetch('get_tab_specific_user_info.php?tab_id=ticket_fallback', { credentials: 'include' })
+                    .then(res => res.json())
+                    .then(user => {
+                        if (user && user.success && user.user_type === 'cso') {
+                            console.log('✅ Fallback CSO session successful');
+                            return user;
+                        } else {
+                            window.location.href = 'FSM.ESM.CSO.html';
+                            return null;
+                        }
+                    })
+                    .catch(fallbackError => {
+                        console.error('❌ Fallback session check failed:', fallbackError);
+                        window.location.href = 'FSM.ESM.CSO.html';
+                        return null;
+                    });
+            });
+    }
+
+    // Default: Normal session check for other dashboard tabs
+    return fetch('get_tab_specific_user_info.php?tab_id=' + tabId, { credentials: 'include' })
+        .then(res => {
+            console.log('Tab-specific user info response status:', res.status);
+            return res.json();
+        })
+        .then(user => {
+            console.log('Tab-specific user info response:', user);
+
+            if (user && user.success) {
+                console.log('✅ User identified in tab:', user.tab_id, '| Type:', user.user_type);
+                return user;
+            } else {
+                console.log('No valid session found - redirecting to main page');
+                window.location.href = 'FSM.ESM.FRONT.1.html';
+                return null;
+            }
+        })
+        .catch(error => {
+            console.error('❌ Session fetch error:', error);
+            window.location.href = 'FSM.ESM.FRONT.1.html';
+            return null;
+        });
+}
+
+// CSO Security Metrics Loader
+function loadCsoSecurityMetrics() {
+    console.log('Loading CSO security metrics...');
+    
+    fetch('get_ticket_system_health.php', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('CSO security metrics loaded:', data);
+        updateCsoPanel(data);
+    })
+    .catch(error => {
+        console.error('Error loading CSO security metrics:', error);
+        // Display error state in CSO panel
+        document.getElementById('system-health-status').innerHTML = 
+            '<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load system health</p>';
+        document.getElementById('vulnerability-list').innerHTML = 
+            '<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load vulnerabilities</p>';
+        document.getElementById('performance-messages').innerHTML = 
+            '<p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load performance data</p>';
+    });
+}
+
+// Update CSO Panel with Data
+function updateCsoPanel(data) {
+    // Update System Health Status
+    const healthStatus = document.getElementById('system-health-status');
+    let healthStatusHtml = '';
+    
+    if (data.health_status) {
+        const status = data.health_status.status || 'unknown';
+        const statusClass = status === 'good' ? 'health-status-good' : 
+                           status === 'warning' ? 'health-status-warning' : 'health-status-critical';
+        const statusText = status === 'good' ? 'Good' : 
+                          status === 'warning' ? 'Warning' : 'Critical';
+        
+        healthStatusHtml = `
+            <div class="d-flex align-items-center mb-2">
+                <span class="health-status-indicator ${statusClass}"></span>
+                <strong>Overall Status: ${statusText}</strong>
+            </div>
+            <p><small>Last checked: ${data.health_status.last_checked || 'N/A'}</small></p>
+            <div class="mt-2">
+                <strong>Components:</strong>
+                <ul class="list-unstyled mt-1">
+                    ${(data.health_status.components || []).map(comp => `
+                        <li class="d-flex align-items-center">
+                            <span class="health-status-indicator ${comp.status === 'good' ? 'health-status-good' : 
+                                comp.status === 'warning' ? 'health-status-warning' : 'health-status-critical'}"></span>
+                            ${comp.name}: ${comp.status}
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+        `;
+    } else {
+        healthStatusHtml = '<p>No health data available</p>';
+    }
+    healthStatus.innerHTML = healthStatusHtml;
+
+    // Update Vulnerability Analysis
+    const vulnerabilityList = document.getElementById('vulnerability-list');
+    let vulnerabilityHtml = '';
+    
+    if (data.vulnerabilities && data.vulnerabilities.length > 0) {
+        vulnerabilityHtml = data.vulnerabilities.map(vuln => `
+            <div class="vulnerability-item">
+                <strong>${vuln.title || 'Unknown Issue'}</strong>
+                <p class="mb-1">${vuln.description || 'No description available'}</p>
+                <small class="text-muted">Severity: ${vuln.severity || 'Unknown'} | Found: ${vuln.date_found || 'N/A'}</small>
+            </div>
+        `).join('');
+    } else {
+        vulnerabilityHtml = '<p class="text-success"><i class="fas fa-check-circle"></i> No vulnerabilities detected</p>';
+    }
+    vulnerabilityList.innerHTML = vulnerabilityHtml;
+
+    // Update Performance Messages
+    const performanceMessages = document.getElementById('performance-messages');
+    let performanceHtml = '';
+    
+    if (data.performance_messages && data.performance_messages.length > 0) {
+        performanceHtml = data.performance_messages.map(msg => {
+            const msgClass = msg.type === 'error' ? 'performance-error' : 
+                            msg.type === 'warning' ? 'performance-warning' : 'performance-info';
+            return `
+                <div class="performance-message ${msgClass}">
+                    <strong>${msg.title || 'System Message'}</strong>
+                    <p class="mb-0">${msg.message || 'No details available'}</p>
+                    <small>${msg.timestamp || ''}</small>
+                </div>
+            `;
+        }).join('');
+    } else {
+        performanceHtml = '<p class="text-success"><i class="fas fa-check-circle"></i> All systems operational</p>';
+    }
+    performanceMessages.innerHTML = performanceHtml;
+}
+
+// Check if user is CSO and show/hide CSO panel
+function checkCsoAccess(user) {
+    const csoPanel = document.getElementById('cso-panel');
+    
+    if (user && user.user_type === 'cso') {
+        console.log('✅ User is CSO - showing CSO panel');
+        csoPanel.style.display = 'block';
+        // Load CSO security metrics
+        loadCsoSecurityMetrics();
+    } else {
+        console.log('❌ User is not CSO - hiding CSO panel');
+        csoPanel.style.display = 'none';
+    }
+}
+
+// Enhanced ticket creation with CSO auto-assignment
+function createTicketWithCsoAssignment(ticketData) {
+    // Auto-assign to CSO if category is "Security"
+    if (ticketData.category && ticketData.category.toLowerCase() === 'security') {
+        console.log('🔒 Security ticket detected - auto-assigning to CSO');
+        ticketData.assigned_to = 'cso'; // This should be the CSO user ID or role identifier
+        ticketData.priority = 'high'; // Auto-escalate security tickets
+    }
+    
+    return createTicket(ticketData); // Your existing createTicket function
+}
+
+// Update ticket display to show creator and role
+function displayTicketWithCreator(ticket) {
+    // Your existing ticket display logic, but add creator info
+    const creatorInfo = ticket.created_by_role && ticket.created_by_name ? 
+        `Created by ${ticket.created_by_role} - ${ticket.created_by_name}` : 
+        `Created by ${ticket.created_by || 'Unknown'}`;
+    
+    // Add this info to your ticket display HTML
+    return `
+        <div class="ticket-card ${ticket.category === 'Security' ? 'security-ticket' : ''}">
+            <h5>${ticket.title}</h5>
+            <p>${ticket.description}</p>
+            <div class="ticket-meta">
+                <span class="badge badge-${getPriorityBadgeClass(ticket.priority)}">${ticket.priority}</span>
+                <span class="badge badge-secondary">${ticket.category}</span>
+                <small class="text-muted">${creatorInfo}</small>
+                ${ticket.category === 'Security' ? '<span class="cso-badge">CSO</span>' : ''}
+            </div>
+        </div>
+    `;
+}
+
+// Helper function for priority badge classes
+function getPriorityBadgeClass(priority) {
+    switch (priority) {
+        case 'critical': return 'danger';
+        case 'high': return 'warning';
+        case 'medium': return 'info';
+        case 'low': return 'secondary';
+        default: return 'secondary';
+    }
+}
+
+// Initialize CSO features when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing CSO features...');
+    
+    // Add event listener for CSO metrics refresh
+    const refreshCsoMetricsBtn = document.getElementById('refresh-cso-metrics');
+    if (refreshCsoMetricsBtn) {
+        refreshCsoMetricsBtn.addEventListener('click', function() {
+            console.log('🔄 Refreshing CSO security metrics...');
+            loadCsoSecurityMetrics();
+        });
+    }
+    
+    // Check CSO access when session is loaded
+    fetchSessionInfo().then(user => {
+        if (user) {
+            checkCsoAccess(user);
+        }
+    });
+});
+
+    // Function to refresh user info (can be called when needed)
+    function refreshUserInfo() {
+        fetchSessionInfo().then(user => {
+            if (!user) return;
+            window.currentUser = user;
+            $('#username-display').text(user.full_name || user.first_name || user.name);
+            // Set profile photo
+            var photo = user.profile_photo && user.profile_photo.trim() ? user.profile_photo : 'Parrot.JPG';
+            document.getElementById('navbarProfileImage').src = photo;
+        });
+    }
+
+    // Session validation function (same as employee dashboard)
+    function validateUserSession() {
+        // For employees, use the same check as employee dashboard
+        if (window.currentUser && window.currentUser.user_type === 'employee') {
+            return fetch('employee_auth.php?action=check_session', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success || !data.logged_in) {
+                        console.log('Employee session invalid - redirecting to login');
+                        window.location.href = 'FSM.ESM.EMPLOYEE.html';
+                        return false;
+                    }
+                    return true;
+                })
+                .catch(error => {
+                    console.error('Error checking employee session:', error);
+                    window.location.href = 'FSM.ESM.EMPLOYEE.html';
+                    return false;
+                });
+        }
+        // For other user types, session is already validated by fetchSessionInfo
+        return Promise.resolve(true);
+    }
+
+    $(document).ready(function() {
+        console.log('Ticket Management System - Document ready');
+        
+        // Check if elements exist
+        const usernameElement = document.getElementById('username-display');
+        const profileImageElement = document.getElementById('navbarProfileImage');
+        
+        console.log('Username element found:', !!usernameElement);
+        console.log('Profile image element found:', !!profileImageElement);
+        
+        fetchSessionInfo().then(user => {
+            console.log('Session info received:', user);
+            if (!user) {
+                console.log('No user session found');
+                return;
+            }
+            
+            window.currentUser = user;
+            console.log('Current user set:', user);
+            
+            // Update username display
+            const displayName = user.full_name || user.first_name || user.name || 'Unknown User';
+            if (usernameElement) {
+                usernameElement.textContent = displayName;
+                console.log('Username displayed:', displayName);
+            } else {
+                console.error('Username element not found!');
+            }
+            
+            // Set profile photo
+            const photo = user.profile_photo && user.profile_photo.trim() ? user.profile_photo : 'Parrot.JPG';
+            if (profileImageElement) {
+                profileImageElement.src = photo;
+                console.log('Profile photo set:', photo);
+            } else {
+                console.error('Profile image element not found!');
+            }
+            // Set role in UI if needed
+            // Role-based UI
+            if (user.user_type === 'dept_manager' || user.user_type === 'admin' || user.user_type === 'ceo') {
+                $('.department-tickets').show();
+            }
+            if (user.user_type === 'admin') {
+                $('.admin-menu').show();
+            }
+            // Initial load
+            showDashboard();
+            loadTicketCategories();
+            loadNotifications();
+            setInterval(loadNotifications, 30000);
+            
+            // Refresh user info when page gains focus (in case profile was updated in another tab)
+            window.addEventListener('focus', function() {
+                console.log('Tab focused - refreshing user info');
+                refreshUserInfo();
+            });
+            
+            // Also refresh when tab becomes visible
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    console.log('Tab became visible - refreshing user info');
+                    refreshUserInfo();
+                }
+            });
+        });
+
+        // IMMEDIATE EVENT HANDLER SETUP (outside session callback)
+        console.log('Setting up event handlers immediately...');
+        
+        // Test if jQuery is working
+        console.log('jQuery version:', $.fn.jquery);
+        
+        // Refresh buttons using event delegation (IMMEDIATE setup)
+        $(document).on('click', '#refresh-tickets', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Refresh tickets button clicked via jQuery');
+            loadMyTickets();
+        });
+        
+        $(document).on('click', '#refresh-dept-tickets', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Refresh department tickets button clicked via jQuery');
+            loadDepartmentTickets();
+        });
+        
+        $(document).on('click', '#refresh-users', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Refresh users button clicked via jQuery');
+            loadUsers();
+        });
+        
+        $(document).on('click', '#refresh-categories', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Refresh categories button clicked via jQuery');
+            loadCategories();
+        });
+        
+        // Test button existence immediately
+        console.log('Testing button existence:');
+        console.log('refresh-tickets exists:', $('#refresh-tickets').length);
+        console.log('refresh-dept-tickets exists:', $('#refresh-dept-tickets').length);
+        console.log('refresh-users exists:', $('#refresh-users').length);
+        console.log('refresh-categories exists:', $('#refresh-categories').length);
+        
+        // Test button visibility and clickability after a delay
+        setTimeout(function() {
+            console.log('Button visibility test:');
+            console.log('refresh-tickets visible:', $('#refresh-tickets').is(':visible'));
+            console.log('refresh-tickets offset:', $('#refresh-tickets').offset());
+            console.log('refresh-tickets css display:', $('#refresh-tickets').css('display'));
+            console.log('refresh-tickets css pointer-events:', $('#refresh-tickets').css('pointer-events'));
+        }, 1000);
+
+        // Sidebar and navigation handlers (unchanged)
+        $('#dashboard-link').on('click', function(e) {
+            e.preventDefault();
+            showDashboard();
+        });
+    
+        $('#create-ticket-link').on('click', function(e) {
+            e.preventDefault();
+            showCreateTicketForm();
+        });
+        
+        $('#my-tickets-link').on('click', function(e) {
+            e.preventDefault();
+            showMyTickets();
+        });
+        
+        $('#dept-tickets-link').on('click', function(e) {
+            e.preventDefault();
+            showDepartmentTickets();
+        });
+        
+        $('#manage-users-link').on('click', function(e) {
+            e.preventDefault();
+            showUserManagement();
+        });
+        
+        $('#manage-categories-link').on('click', function(e) {
+            e.preventDefault();
+            showCategoryManagement();
+        });
+        
+        $('#refresh-profile-link').on('click', function(e) {
+            e.preventDefault();
+            refreshUserInfo();
+            alert('Profile refreshed!');
+        });
+        
+        $('#profile-link').on('click', function(e) {
+            e.preventDefault();
+            alert('Profile page will be implemented in the PHP version');
+        });
+        
+        $('#logout-link').on('click', function(e) {
+            e.preventDefault();
+            alert('Logout functionality will be implemented in the PHP version');
+        });
+        
+        // Form submission
+        $('#ticket-form').on('submit', function(e) {
+            e.preventDefault();
+            createTicket();
+        });
+        
+        // User management event handlers
+        
+        $('#add-user-btn').on('click', function() {
+            showAddUserModal();
+        });
+        
+        $('#save-user-btn').on('click', function() {
+            saveUser();
+        });
+        
+        // User management filters
+        $('#user-type-filter, #department-filter, #status-filter').on('change', function() {
+            loadUsers();
+        });
+        
+        $('#search-users').on('input', function() {
+            clearTimeout(window.searchTimeout);
+            window.searchTimeout = setTimeout(function() {
+                loadUsers();
+            }, 500);
+        });
+        
+        // Category management event handlers
+        
+        $('#add-category-btn').on('click', function() {
+            showAddCategoryModal();
+        });
+        
+        $('#save-category-btn').on('click', function() {
+            saveCategory();
+        });
+    });
+
+function showDashboard() {
+    $('#main-content > div').hide();
+    $('#dashboard-content').show();
+    loadDashboardStats();
+    loadRecentTickets();
+}
+
+function showCreateTicketForm() {
+    $('#main-content > div').hide();
+    $('#create-ticket-content').show();
+}
+
+function showMyTickets() {
+    console.log('showMyTickets called');
+    $('#main-content > div').hide();
+    $('#my-tickets-content').show();
+    console.log('my-tickets-content visible:', $('#my-tickets-content').is(':visible'));
+    console.log('refresh-tickets visible:', $('#refresh-tickets').is(':visible'));
+    loadMyTickets();
+}
+
+function showDepartmentTickets() {
+    console.log('showDepartmentTickets called');
+    $('#main-content > div').hide();
+    $('#dept-tickets-content').show();
+    console.log('dept-tickets-content visible:', $('#dept-tickets-content').is(':visible'));
+    console.log('refresh-dept-tickets visible:', $('#refresh-dept-tickets').is(':visible'));
+    loadDepartmentTickets();
+}
+
+function loadDashboardStats() {
+    // Fetch tickets and count by status
+    fetch('get_tickets.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const tickets = data.tickets;
+            $('#open-tickets').text(tickets.filter(t => t.status === 'open').length);
+            $('#assigned-tickets').text(tickets.filter(t => t.status === 'assigned').length);
+            $('#inprogress-tickets').text(tickets.filter(t => t.status === 'in_progress').length);
+            $('#resolved-tickets').text(tickets.filter(t => t.status === 'resolved').length);
+        });
+}
+
+function loadRecentTickets() {
+    fetch('get_tickets.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const tickets = data.tickets.slice(0, 10);
+            const $tableBody = $('#recent-tickets-table tbody');
+            $tableBody.empty();
+            tickets.forEach(ticket => {
+                const row = `
+                    <tr>
+                        <td>#${ticket.id}</td>
+                        <td>${ticket.title}</td>
+                        <td>${ticket.category || ''}</td>
+                        <td><span class="badge badge-priority-${ticket.priority}">${capitalize(ticket.priority)}</span></td>
+                        <td><span class="badge badge-status-${ticket.status}">${capitalize(ticket.status.replace('_', ' '))}</span></td>
+                        <td>${formatDate(ticket.created_at)}</td>
+                        <td><button class="btn btn-sm btn-info view-ticket" data-id="${ticket.id}">View</button></td>
+                    </tr>
+                `;
+                $tableBody.append(row);
+            });
+            $('.view-ticket').on('click', function() {
+                const ticketId = $(this).data('id');
+                viewTicketDetails(ticketId);
+            });
+        });
+}
+
+function loadMyTickets() {
+    console.log('loadMyTickets function called');
+    fetch('get_tickets.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const tickets = data.tickets.filter(t => t.created_by == window.currentUser.employee_id);
+            const $tableBody = $('#my-tickets-table tbody');
+            $tableBody.empty();
+            tickets.forEach(ticket => {
+                const row = `
+                    <tr>
+                        <td>#${ticket.id}</td>
+                        <td>${ticket.title}</td>
+                        <td>${ticket.category || ''}</td>
+                        <td><span class="badge badge-priority-${ticket.priority}">${capitalize(ticket.priority)}</span></td>
+                        <td><span class="badge badge-status-${ticket.status}">${capitalize(ticket.status.replace('_', ' '))}</span></td>
+                        <td>${formatDate(ticket.created_at)}</td>
+                        <td><button class="btn btn-sm btn-info view-ticket" data-id="${ticket.id}">View</button></td>
+                    </tr>
+                `;
+                $tableBody.append(row);
+            });
+            $('.view-ticket').on('click', function() {
+                const ticketId = $(this).data('id');
+                viewTicketDetails(ticketId);
+            });
+        });
+}
+
+function loadDepartmentTickets() {
+    console.log('loadDepartmentTickets function called');
+    fetch('get_department_tickets.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to load department tickets:', data.message);
+                return;
+            }
+            
+            const tickets = data.tickets;
+            const $tableBody = $('#dept-tickets-table tbody');
+            $tableBody.empty();
+            
+            if (tickets.length === 0) {
+                $tableBody.append('<tr><td colspan="8" class="text-center">No tickets found in your department</td></tr>');
+                return;
+            }
+            
+            tickets.forEach(ticket => {
+                const row = `
+                    <tr>
+                        <td>#${ticket.id}</td>
+                        <td>${ticket.title}</td>
+                        <td>${ticket.department || 'N/A'}</td>
+                        <td><span class="badge badge-priority-${ticket.priority}">${capitalize(ticket.priority)}</span></td>
+                        <td><span class="badge badge-status-${ticket.status}">${capitalize(ticket.status.replace('_', ' '))}</span></td>
+                        <td>${ticket.created_by_name} (${ticket.created_by_code})</td>
+                        <td>${formatDate(ticket.created_at)}</td>
+                        <td><button class="btn btn-sm btn-info view-ticket" data-id="${ticket.id}">View</button></td>
+                    </tr>
+                `;
+                $tableBody.append(row);
+            });
+            
+            $('.view-ticket').on('click', function() {
+                const ticketId = $(this).data('id');
+                viewTicketDetails(ticketId);
+            });
+            
+            console.log(`Loaded ${tickets.length} department tickets for user type: ${data.user_type}`);
+        })
+        .catch(error => {
+            console.error('Error loading department tickets:', error);
+            const $tableBody = $('#dept-tickets-table tbody');
+            $tableBody.empty();
+            $tableBody.append('<tr><td colspan="8" class="text-center text-danger">Error loading department tickets</td></tr>');
+        });
+}
+
+function showUserManagement() {
+    console.log('showUserManagement called');
+    $('#main-content > div').hide();
+    $('#user-management-content').show();
+    console.log('user-management-content visible:', $('#user-management-content').is(':visible'));
+    console.log('refresh-users visible:', $('#refresh-users').is(':visible'));
+    loadUsers();
+    loadDepartmentsForFilter();
+}
+
+function loadUsers() {
+    console.log('loadUsers function called');
+    const userType = $('#user-type-filter').val();
+    const department = $('#department-filter').val();
+    const status = $('#status-filter').val();
+    const search = $('#search-users').val();
+    
+    const params = new URLSearchParams();
+    if (userType) params.append('user_type', userType);
+    if (department) params.append('department', department);
+    if (status) params.append('status', status);
+    if (search) params.append('search', search);
+    
+    fetch('get_users.php?' + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to load users:', data.message);
+                return;
+            }
+            
+            const users = data.users;
+            const $tableBody = $('#users-table tbody');
+            $tableBody.empty();
+            
+            if (users.length === 0) {
+                $tableBody.append('<tr><td colspan="8" class="text-center">No users found</td></tr>');
+                return;
+            }
+            
+            users.forEach(user => {
+                const statusBadge = user.status === 'active' ? 
+                    '<span class="badge badge-success">Active</span>' : 
+                    '<span class="badge badge-secondary">Inactive</span>';
+                
+                const userTypeBadge = `<span class="badge badge-info">${capitalize(user.user_type.replace('_', ' '))}</span>`;
+                
+                const row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.identifier}</td>
+                        <td>${userTypeBadge}</td>
+                        <td>${user.department || 'N/A'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${formatDate(user.created_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-user" data-id="${user.id}" data-type="${user.user_type}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-user" data-id="${user.id}" data-type="${user.user_type}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                $tableBody.append(row);
+            });
+            
+            // Add event handlers for edit and delete buttons
+            $('.edit-user').on('click', function() {
+                const userId = $(this).data('id');
+                const userType = $(this).data('type');
+                editUser(userId, userType);
+            });
+            
+            $('.delete-user').on('click', function() {
+                const userId = $(this).data('id');
+                const userType = $(this).data('type');
+                deleteUser(userId, userType);
+            });
+            
+            console.log(`Loaded ${users.length} users`);
+        })
+        .catch(error => {
+            console.error('Error loading users:', error);
+            const $tableBody = $('#users-table tbody');
+            $tableBody.empty();
+            $tableBody.append('<tr><td colspan="8" class="text-center text-danger">Error loading users</td></tr>');
+        });
+}
+
+function loadDepartmentsForFilter() {
+    fetch('get_ticket_categories.php')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const $departmentFilter = $('#department-filter');
+                const $userDepartment = $('#user-department');
+                
+                // Add common departments
+                const departments = ['IT', 'HR', 'Finance', 'Marketing', 'Sales', 'Operations', 'Security'];
+                departments.forEach(dept => {
+                    $departmentFilter.append(`<option value="${dept}">${dept}</option>`);
+                    $userDepartment.append(`<option value="${dept}">${dept}</option>`);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading departments:', error);
+        });
+}
+
+function showAddUserModal() {
+    $('#userModalLabel').text('Add New User');
+    $('#user-form')[0].reset();
+    $('#user-id').val('');
+    $('#userModal').modal('show');
+}
+
+function editUser(userId, userType) {
+    // For now, just show the modal with basic info
+    // In a full implementation, you would fetch user details and populate the form
+    $('#userModalLabel').text('Edit User');
+    $('#user-id').val(userId);
+    $('#user-type').val(userType);
+    $('#userModal').modal('show');
+}
+
+function saveUser() {
+    const formData = new FormData($('#user-form')[0]);
+    const userData = Object.fromEntries(formData.entries());
+    
+    const userId = $('#user-id').val();
+    const action = userId ? 'edit' : 'add';
+    
+    if (userId) {
+        userData.user_id = userId;
+    }
+    
+    fetch('manage_user.php?action=' + action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            $('#userModal').modal('hide');
+            loadUsers();
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving user:', error);
+        alert('Error saving user');
+    });
+}
+
+function deleteUser(userId, userType) {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch('manage_user.php?action=delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            user_type: userType
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            loadUsers();
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting user:', error);
+        alert('Error deleting user');
+    });
+}
+
+function showCategoryManagement() {
+    console.log('showCategoryManagement called');
+    $('#main-content > div').hide();
+    $('#category-management-content').show();
+    console.log('category-management-content visible:', $('#category-management-content').is(':visible'));
+    console.log('refresh-categories visible:', $('#refresh-categories').is(':visible'));
+    loadCategories();
+}
+
+function loadCategories() {
+    console.log('loadCategories function called');
+    fetch('get_ticket_categories.php?all=true')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to load categories:', data.message);
+                return;
+            }
+            
+            const categories = data.categories;
+            const $tableBody = $('#categories-table tbody');
+            $tableBody.empty();
+            
+            if (categories.length === 0) {
+                $tableBody.append('<tr><td colspan="6" class="text-center">No categories found</td></tr>');
+                return;
+            }
+            
+            categories.forEach(category => {
+                const statusBadge = category.is_active == 1 ? 
+                    '<span class="badge badge-success">Active</span>' : 
+                    '<span class="badge badge-secondary">Inactive</span>';
+                
+                const row = `
+                    <tr>
+                        <td>${category.id}</td>
+                        <td>${category.name}</td>
+                        <td>${category.description || 'No description'}</td>
+                        <td>${statusBadge}</td>
+                        <td>${formatDate(category.created_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-category" data-id="${category.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-category" data-id="${category.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                $tableBody.append(row);
+            });
+            
+            // Add event handlers for edit and delete buttons
+            $('.edit-category').on('click', function() {
+                const categoryId = $(this).data('id');
+                editCategory(categoryId);
+            });
+            
+            $('.delete-category').on('click', function() {
+                const categoryId = $(this).data('id');
+                deleteCategory(categoryId);
+            });
+            
+            console.log(`Loaded ${categories.length} categories`);
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+            const $tableBody = $('#categories-table tbody');
+            $tableBody.empty();
+            $tableBody.append('<tr><td colspan="6" class="text-center text-danger">Error loading categories</td></tr>');
+        });
+}
+
+function showAddCategoryModal() {
+    $('#categoryModalLabel').text('Add New Category');
+    $('#category-form')[0].reset();
+    $('#category-id').val('');
+    $('#categoryModal').modal('show');
+}
+
+function editCategory(categoryId) {
+    // Fetch category details and populate the form
+    fetch('manage_categories.php?action=get', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            category_id: categoryId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const category = data.category;
+            $('#categoryModalLabel').text('Edit Category');
+            $('#category-id').val(category.id);
+            $('#category-name').val(category.name);
+            $('#category-description').val(category.description);
+            $('#category-status').val(category.is_active == 1 ? 'active' : 'inactive');
+            $('#categoryModal').modal('show');
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching category details:', error);
+        alert('Error fetching category details');
+    });
+}
+
+function saveCategory() {
+    const formData = new FormData($('#category-form')[0]);
+    const categoryData = Object.fromEntries(formData.entries());
+    
+    const categoryId = $('#category-id').val();
+    const action = categoryId ? 'edit' : 'add';
+    
+    if (categoryId) {
+        categoryData.category_id = categoryId;
+    }
+    
+    fetch('manage_categories.php?action=' + action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(categoryData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            $('#categoryModal').modal('hide');
+            loadCategories();
+            // Also refresh ticket categories in create ticket form
+            loadTicketCategories();
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving category:', error);
+        alert('Error saving category');
+    });
+}
+
+function deleteCategory(categoryId) {
+    if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch('manage_categories.php?action=delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            category_id: categoryId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            loadCategories();
+            // Also refresh ticket categories in create ticket form
+            loadTicketCategories();
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting category:', error);
+        alert('Error deleting category');
+    });
+}
+
+function togglePassword(fieldId) {
+    const input = document.getElementById(fieldId);
+    const toggle = input.nextElementSibling;
+    const svg = toggle.querySelector('svg');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        // Show slashed eye icon
+        svg.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        `;
+    } else {
+        input.type = 'password';
+        // Show open eye icon
+        svg.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        `;
+    }
+}
+
+function createTicket() {
+    const title = $('#ticket-title').val();
+    const category = $('#ticket-category').val();
+    const priority = $('#ticket-priority').val();
+    const description = $('#ticket-description').val();
+    const department = window.currentUser.department;
+    const assigned_role = 'dept_manager'; // Default assignment, can be dynamic
+    if (!title || !category || !description) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    fetch('create_ticket.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, priority, assigned_role, department })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Ticket created successfully!');
+            showDashboard();
+            // Optionally trigger notification here
+        } else {
+            alert('Failed to create ticket: ' + data.message);
+        }
+    });
+}
+
+function viewTicketDetails(ticketId) {
+    fetch('get_tickets.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) return;
+            const ticket = data.tickets.find(t => t.id == ticketId);
+            if (!ticket) return;
+            
+            let modalContent = `
+                <div class="ticket-header mb-4">
+                    <h4>#${ticket.id} - ${ticket.title}</h4>
+                    <div class="ticket-meta">
+                        <span class="badge badge-priority-${ticket.priority} mr-2">${capitalize(ticket.priority)}</span>
+                        <span class="badge badge-status-${ticket.status} mr-2">${capitalize(ticket.status.replace('_', ' '))}</span>
+                        <span class="text-muted">Created: ${formatDate(ticket.created_at)}</span>
+                    </div>
+                </div>
+                <div class="ticket-description mb-4">
+                    <h5>Description</h5>
+                    <p>${ticket.description}</p>
+                </div>
+                
+                <!-- STATUS UPDATE BUTTONS -->
+                <div class="status-actions mb-4">
+                    <h5>Update Status</h5>
+                    <div class="btn-group" role="group">
+            `;
+            
+            // Show appropriate buttons based on current status and user permissions
+            if (ticket.status === 'open' && (window.currentUser.user_type === 'admin' || window.currentUser.user_type === 'dept_manager')) {
+                modalContent += `
+                    <button class="btn btn-warning btn-sm" id="assign-ticket">Assign to Me</button>
+                `;
+            }
+            
+            if (ticket.status === 'assigned' && ticket.assigned_to == window.currentUser.employee_id) {
+                modalContent += `
+                    <button class="btn btn-info btn-sm" id="start-progress">Start Progress</button>
+                `;
+            }
+            
+            if (ticket.status === 'in_progress' && ticket.assigned_to == window.currentUser.employee_id) {
+                modalContent += `
+                    <button class="btn btn-success btn-sm" id="resolve-ticket">Mark Resolved</button>
+                `;
+            }
+            
+            modalContent += `
+                    </div>
+                </div>
+                
+                <div class="ticket-comments">
+                    <h5>Comments</h5>
+                    <div id="comments-list"></div>
+                    <div class="form-group mt-4">
+                        <label for="comment-text">Add Comment</label>
+                        <textarea class="form-control" id="comment-text" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="add-comment">Add Comment</button>
+                </div>
+            `;
+            
+            $('#ticket-modal-body').html(modalContent);
+            $('#ticketModal').modal('show');
+            
+            // Add event handlers for status update buttons
+            addStatusUpdateHandlers(ticketId);
+            loadTicketComments(ticketId);
+        });
+}
+
+function addStatusUpdateHandlers(ticketId) {
+    // Assign Ticket
+    $('#assign-ticket').on('click', function() {
+        updateTicketStatus(ticketId, 'assigned', window.currentUser.employee_id);
+    });
+    
+    // Start Progress
+    $('#start-progress').on('click', function() {
+        updateTicketStatus(ticketId, 'in_progress');
+    });
+    
+    // Resolve Ticket
+    $('#resolve-ticket').on('click', function() {
+        updateTicketStatus(ticketId, 'resolved');
+    });
+}
+
+function updateTicketStatus(ticketId, newStatus, assignedTo = null) {
+    const updateData = {
+        ticket_id: ticketId,
+        status: newStatus
+    };
+    
+    if (assignedTo) {
+        updateData.assigned_to = assignedTo;
+    }
+    
+    fetch('update_ticket.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Ticket status updated to ${newStatus}`);
+            $('#ticketModal').modal('hide');
+            
+            // Refresh all data
+            loadDashboardStats();
+            loadRecentTickets();
+            loadMyTickets();
+            loadDepartmentTickets();
+        } else {
+            alert('Failed to update ticket: ' + data.message);
+        }
+    });
+}
+
+function loadTicketComments(ticketId) {
+    // Optional: implement get_ticket_comments.php, for now fetch all and filter
+    fetch('get_ticket_comments.php?ticket_id=' + ticketId)
+        .then(res => res.json())
+        .then(data => {
+            const $list = $('#comments-list');
+            $list.empty();
+            if (data.success && data.comments.length > 0) {
+                data.comments.forEach(comment => {
+                    $list.append(`
+                        <div class="comment mb-3">
+                            <div class="comment-header">
+                                ${comment.user_name} <span class="comment-date">${formatDateTime(comment.created_at)}</span>
+                            </div>
+                            <div class="comment-body">
+                                ${comment.comment}
+                            </div>
+                        </div>
+                    `);
+                });
+            } else {
+                $list.html('<p>No comments yet.</p>');
+            }
+        });
+}
+
+function addTicketComment(ticketId, commentText) {
+    fetch('update_ticket.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket_id: ticketId, comment: commentText })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            loadTicketComments(ticketId);
+            $('#comment-text').val('');
+        } else {
+            alert('Failed to add comment: ' + data.message);
+        }
+    });
+}
+
+function loadTicketCategories() {
+    // Fetch categories from database
+    fetch('get_ticket_categories.php')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to load categories:', data.message);
+                return;
+            }
+            const $select = $('#ticket-category');
+            $select.empty().append('<option value="">Select a category</option>');
+            data.categories.forEach(category => {
+                $select.append(`<option value="${category.name}">${category.name}</option>`);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+        });
+}
+
+function loadNotifications() {
+    fetch('get_notifications.php')
+        .then(res => res.json())
+        .then(data => {
+            const notifications = data.success ? data.notifications : [];
+            const $notificationList = $('#notification-list');
+            const $notificationCount = $('#notification-count');
+            if (notifications.length > 0) {
+                $notificationList.empty();
+                $notificationCount.text(notifications.length).show();
+                notifications.forEach(notification => {
+                    $notificationList.append(`
+                        <a class="dropdown-item" href="#" data-id="${notification.related_id}">
+                            ${notification.message}
+                        </a>
+                    `);
+                });
+                $notificationList.append('<div class="dropdown-divider"></div>');
+                $notificationList.append('<a class="dropdown-item text-center" href="#">View All</a>');
+                $notificationList.find('.dropdown-item[data-id]').on('click', function(e) {
+                    e.preventDefault();
+                    const ticketId = $(this).data('id');
+                    viewTicketDetails(ticketId);
+                });
+            } else {
+                $notificationList.html('<a class="dropdown-item" href="#">No new notifications</a>');
+                $notificationCount.hide();
+            }
+        });
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+function formatDateTime(dateTimeString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return new Date(dateTimeString).toLocaleDateString(undefined, options);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarCollapse');
+    toggleBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+});
+
+// Auto-refresh dashboard every 30 seconds when on dashboard
+function startDashboardAutoRefresh() {
+    setInterval(() => {
+        if ($('#dashboard-content').is(':visible')) {
+            loadDashboardStats();
+            loadRecentTickets();
+        }
+    }, 30000); // 30 seconds
+}
+
+// Call this in your document ready after initial load
+startDashboardAutoRefresh();
+
+</script>
+</body>
+</html>

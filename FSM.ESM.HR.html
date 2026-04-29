@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Portal Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 450px;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3498db;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        .login-btn {
+            width: 100%;
+            box-sizing: border-box;
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+        
+        /* Password field styling */
+        .input-wrapper input[type="password"],
+        .input-wrapper input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .login-btn {
+            margin-bottom: 0;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .signup-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 12px;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <img src="FSM.LOGO.JPG" alt="HR Logo" class="logo">
+            <h1>HR Portal Login</h1>
+        </div>
+
+        <form id="loginForm" action="HR_Management_system.html" method="POST">
+        <input type="hidden" id="expectedRole" value="hr">
+        
+            <div class="form-group">
+                <label for="email">HR Email</label>
+                <input type="email" id="email" name="email" placeholder="*********" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="*********" required>
+                    <span class="password-toggle" onclick="togglePassword()">
+                        <!-- Show password icon (blue eye) -->
+                        <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                        </svg>
+                        <!-- Hide password icon (blue slashed eye) -->
+                        <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                            <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div class="options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="forgot-password.html" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <div style="text-align:center; margin-top:10px; font-size:14px; color:#7f8c8d;">
+            Need HR access? <a href="register.html" style="color:#3498db; text-decoration:none; font-weight:500;">Request credentials</a>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by: Fortishield-Matrix</p>
+        </div>
+    </div>
+
+   <script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const expectedRole = document.getElementById('expectedRole').value;
+    const rememberCheckbox = document.getElementById('remember');
+
+    window.addEventListener('DOMContentLoaded', function () {
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        if (rememberedEmail) {
+            emailInput.value = rememberedEmail;
+            rememberCheckbox.checked = true;
+        }
+    });
+    
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        document.querySelector('.show-icon').style.display = isPassword ? 'none' : '';
+        document.querySelector('.hide-icon').style.display = isPassword ? '' : 'none';
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // Validation
+        const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,}$/;
+        if (!email.match(emailPattern)) {
+            alert('Enter a valid email address');
+            return;
+        }
+        if (password.length < 6) {
+            alert('Password must be at least 6 characters');
+            return;
+        }
+
+        try {
+            const response = await fetch('auth.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, user_type: expectedRole })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                if (result.role === expectedRole) {
+                    if (rememberCheckbox.checked) {
+                        localStorage.setItem('rememberedEmail', email);
+                    } else {
+                        localStorage.removeItem('rememberedEmail');
+                    }
+                    window.location.href = 'HR_Management_system.html';
+                } else {
+                    alert(`Access denied: This login page is for ${expectedRole.toUpperCase()}. You are logged in as ${result.role.toUpperCase()}.`);
+                }
+            } else {
+                alert(result.message || 'Invalid email or password');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            alert('Server error. Try again later.');
+        }
+    });
+</script>
+</body>
+</html>
