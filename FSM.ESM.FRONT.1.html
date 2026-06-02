@@ -4,364 +4,725 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Employee Management System</title>
-  <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
-    background-size: cover;         /* Shows full image without cropping */
-    background-repeat: no-repeat;   /* Prevents tiling */
-    background-position: center;    /* Centers the image */
-    background-attachment: fixed;   /* Optional: Fixed position */
-    background-color: #f5f7fa;      /* Fallback color matching your design */
-    position: relative;
-  }
-
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.2);
-      z-index: 0;
-    }
-
-    .ems-container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .logo-container {
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #3498db;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-    }
-
-    h1 {
-      color: #2c3e50;
-      margin: 10px 0 25px;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .login-controls {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .role-selector {
-      position: relative;
-      width: 100%;
-    }
-
-    .role-selector select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 15px;
-      appearance: none;
-      background-color: white;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-size: 1em;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .role-selector select:focus {
-      border-color: #3498db;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-    }
-    
-    .input-wrapper {
-      position: relative;
-    }
-    
-    .password-toggle {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      pointer-events: auto;
-    }
-    
-    .password-toggle svg {
-      width: 20px;
-      height: 20px;
-      display: block;
-    }
-    
-    /* Input field styling */
-    .input-wrapper input[type="email"],
-    .input-wrapper input[type="text"],
-    .input-wrapper input[type="password"] {
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-      padding: 10px;
-    }
-
-    .login-btn {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-
-    .login-btn:hover,
-    .login-btn:focus {
-      background-color: #2980b9;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      outline: none;
-    }
-
-    .login-btn:disabled {
-      background-color: #95a5a6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .footer {
-      margin-top: 30px;
-      color: #7f8c8d;
-      font-size: 12px;
-      border-top: 1px solid #ecf0f1;
-      padding-top: 15px;
-    }
-
-    .subscribe-form {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .form-group {
-      width: 100%;
-      max-width: 400px;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #2c3e50;
-      font-size: 14px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input:focus {
-      border-color: #3498db;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-    }
-
-    .form-group .error {
-      color: #e74c3c;
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .subscribe-btn {
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .subscribe-btn:hover,
-    .subscribe-btn:focus {
-      background-color: #27ae60;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      outline: none;
-    }
-
-    .subscribe-btn:disabled {
-      background-color: #95a5a6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .success-message {
-      color: #2ecc71;
-      font-weight: 500;
-      margin-top: 15px;
-      font-size: 14px;
-      display: none;
-    }
-
-    @media (max-width: 480px) {
-      .ems-container {
-        padding: 20px;
-      }
-      
-      .logo {
-        height: 80px;
-        width: 80px;
-      }
-      
-      h1 {
-        font-size: 18px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="ems-container">
-    <div class="logo-container">
-      <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo" />
-      <h1>Employee Management System</h1>
-    </div>
-
-    <div class="login-controls">
-      <div class="role-selector">
-        <label for="roleSelect" style="display:block; text-align:left; margin-bottom:5px; font-weight:500; color:#2c3e50; font-size:14px;">
-          Select your role
-        </label>
-        <select id="roleSelect">
-          <option value="" selected disabled>Select your role</option>
-          <option value="admin">Admin</option>
-          <option value="employee">Employee</option>
-          <option value="cso">CSO</option>
-          <option value="hr">HR</option>
-          <option value="Dept Manager">Dept Manager</option>
-        </select>
-      </div>
-      
-      <button id="loginBtn" class="login-btn" disabled>
-        <i class="fas fa-sign-in-alt" aria-hidden="true"></i> LOGIN
-      </button>
-    </div>
-
-    <form id="subscribeForm" class="subscribe-form" novalidate>
-      <div class="form-group">
-        <label for="email">Email for Newsletter</label>
-        <div class="input-wrapper">
-          <input type="email" id="email" name="email" placeholder="***************" required />
-          <span class="password-toggle" onclick="toggleVisibility('email')">
-            <!-- Show icon (blue eye) -->
-            <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-            </svg>
-            <!-- Hide icon (blue slashed eye) -->
-            <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-              <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
-            </svg>
-          </span>
-        </div>
-        <div class="error" id="emailError">Please enter a valid email address</div>
-      </div>
-
-      <div class="form-group">
-        <label for="name">Your Name </label>
-        <div class="input-wrapper">
-          <input type="text" id="name" name="name" placeholder="****" />
-          <span class="password-toggle" onclick="toggleVisibility('name')">
-            <!-- Show icon (blue eye) -->
-            <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-            </svg>
-            <!-- Hide icon (blue slashed eye) -->
-            <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-              <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
-            </svg>
-          </span>
-        </div>
-      </div>
-
-      <button type="submit" class="subscribe-btn" id="subscribeBtn" disabled>
-        <i class="fas fa-envelope" aria-hidden="true"></i> SUBSCRIBE
-      </button>
-
-      <div class="success-message" id="successMessage">
-        Thank you for subscribing! You'll receive our newsletter soon.
-      </div>
-    </form>
-
-    <div class="footer">
-      <p>© <span id="currentYear"></span> All Rights Reserved.</p>
-      <p>Powered by: Fortishield-Matrix</p>
-    </div>
-  </div>
-
   <!-- Font Awesome for icons -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
   />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <script>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ========== LEFT PANEL - Branding Side ========== */
+    .left-panel {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 40px;
+      text-align: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* Background image with blur */
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(8px) brightness(0.45);
+      z-index: -2;
+    }
+
+    /* Subtle gradient overlay on top of blurred image */
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(44, 62, 80, 0.7) 0%,
+        rgba(52, 73, 94, 0.5) 50%,
+        rgba(41, 128, 185, 0.6) 100%
+      );
+      z-index: -1;
+    }
+
+    .left-content {
+      position: relative;
+      z-index: 2;
+      max-width: 450px;
+    }
+
+    .logo-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      margin-bottom: 25px;
+      animation: logoFloat 3s ease-in-out infinite;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-circle:hover {
+      animation-play-state: paused;
+      transform: scale(1.08);
+    }
+
+    @keyframes logoFloat {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    /* ===== ANIMATED TEXT STYLES ===== */
+    .animated-heading {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+
+    .animated-heading .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.6s forwards;
+    }
+
+    .animated-heading .word:nth-child(1) { animation-delay: 0.1s; }
+    .animated-heading .word:nth-child(2) { animation-delay: 0.3s; }
+    .animated-heading .word:nth-child(3) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Tagline typing effect */
+    .tagline-container {
+      margin-bottom: 30px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tagline {
+      font-size: 15px;
+      opacity: 0;
+      line-height: 1.6;
+      animation: fadeSlideIn 0.8s 0.8s forwards;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 0.9;
+        transform: translateX(0);
+      }
+    }
+
+    /* Typing cursor effect for dynamic text */
+    .dynamic-text-wrapper {
+      display: inline-block;
+      position: relative;
+    }
+
+    .dynamic-text {
+      color: #2ecc71;
+      font-weight: 700;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 18px;
+      background-color: #2ecc71;
+      margin-left: 2px;
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Feature list with staggered animation */
+    .feature-list {
+      list-style: none;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 14px;
+      opacity: 0;
+      transform: translateX(-25px);
+      animation: slideInRight 0.5s forwards;
+    }
+
+    .feature-list li:nth-child(1) { animation-delay: 1.0s; }
+    .feature-list li:nth-child(2) { animation-delay: 1.2s; }
+    .feature-list li:nth-child(3) { animation-delay: 1.4s; }
+    .feature-list li:nth-child(4) { animation-delay: 1.6s; }
+    .feature-list li:nth-child(5) { animation-delay: 1.8s; }
+
+    @keyframes slideInRight {
+      to {
+        opacity: 0.9;
+        transform: translateX(0);
+      }
+    }
+
+    .feature-list li i {
+      font-size: 18px;
+      width: 26px;
+      height: 26px;
+      text-align: center;
+      line-height: 26px;
+      color: #2ecc71;
+      background: rgba(46, 204, 113, 0.15);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .feature-list li:hover i {
+      background: rgba(46, 204, 113, 0.3);
+      transform: scale(1.2) rotate(360deg);
+      transition: all 0.5s ease;
+    }
+
+    .feature-list li:hover {
+      opacity: 1;
+      transform: translateX(5px);
+      transition: all 0.3s ease;
+    }
+
+    /* ========== RIGHT PANEL - Form Side (UNCHANGED) ========== */
+    .right-panel {
+      flex: 1;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      position: relative;
+    }
+
+    .right-content {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .right-panel .mobile-logo {
+      display: none;
+    }
+
+    .right-panel h2 {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .right-panel .subtitle {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+    }
+
+    /* Form Styles */
+    .form-section {
+      margin-bottom: 25px;
+    }
+
+    .form-section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #95a5a6;
+      margin-bottom: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #ecf0f1;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 13px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e8ecf1;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background-color: #f8fafc;
+      color: #2c3e50;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      background-color: #fff;
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237f8c8d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
+      cursor: pointer;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .password-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .error {
+      color: #e74c3c;
+      font-size: 11px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .btn-primary {
+      background-color: #3498db;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-success {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background-color: #27ae60;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-subscribed {
+      background-color: #95a5a6 !important;
+      cursor: default !important;
+    }
+
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 12px;
+      display: none;
+      text-align: center;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #bdc3c7;
+      font-size: 12px;
+      position: relative;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 35%;
+      height: 1px;
+      background-color: #ecf0f1;
+    }
+
+    .divider::before {
+      left: 0;
+    }
+
+    .divider::after {
+      right: 0;
+    }
+
+    /* Footer */
+    .right-footer {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 11px;
+      color: #95a5a6;
+    }
+
+    .right-footer .powered-by {
+      font-weight: 600;
+      color: #3498db;
+      margin-top: 4px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        overflow: auto;
+      }
+
+      .left-panel {
+        padding: 30px 20px;
+        min-height: 280px;
+      }
+
+      .animated-heading {
+        font-size: 22px;
+      }
+
+      .logo-circle {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 15px;
+      }
+
+      .feature-list {
+        display: none;
+      }
+
+      .tagline-container {
+        min-height: auto;
+        margin-bottom: 10px;
+      }
+
+      .tagline {
+        font-size: 13px;
+      }
+
+      .right-panel {
+        padding: 25px 20px;
+      }
+
+      .right-panel .mobile-logo {
+        display: block;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .left-panel {
+        min-height: 200px;
+        padding: 20px 15px;
+      }
+
+      .right-panel {
+        padding: 20px 15px;
+      }
+
+      .right-panel h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ==================== LEFT PANEL ==================== -->
+  <div class="left-panel">
+    <div class="left-content">
+      <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo-circle" />
+      
+      <!-- Animated heading - each word animates in -->
+      <h1 class="animated-heading">
+        <span class="word">Employee</span>
+        <span class="word">Management</span>
+        <span class="word">System</span>
+      </h1>
+      
+      <!-- Dynamic tagline with typing effect -->
+      <div class="tagline-container">
+        <p class="tagline">
+          Streamline your workforce with 
+          <span class="dynamic-text-wrapper">
+            <span class="dynamic-text" id="dynamicText">powerful</span>
+            <span class="cursor"></span>
+          </span> 
+          management tools.
+        </p>
+      </div>
+
+      <!-- Feature list with staggered slide-in animation -->
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Role-based access control</li>
+        <li><i class="fas fa-check-circle"></i> Real-time employee tracking</li>
+        <li><i class="fas fa-check-circle"></i> Secure data management</li>
+        <li><i class="fas fa-check-circle"></i> Department collaboration tools</li>
+        <li><i class="fas fa-check-circle"></i> 24/7 dedicated support</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== RIGHT PANEL (UNCHANGED) ==================== -->
+  <div class="right-panel">
+    <div class="right-content">
+      <!-- Mobile logo (visible only on small screens) -->
+      <img src="FSM.LOGO.JPG" alt="Company Logo" class="mobile-logo" />
+
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to your account or subscribe to get started</p>
+
+      <!-- ===== LOGIN SECTION ===== -->
+      <div class="form-section">
+        <div class="form-section-title">Login</div>
+        
+        <div class="form-group">
+          <label for="roleSelect">Select Your Role</label>
+          <select id="roleSelect">
+            <option value="" selected disabled>Choose your role...</option>
+            <option value="admin">Administrator</option>
+            <option value="employee">Employee</option>
+            <option value="cso">CSO - Chief Security Officer</option>
+            <option value="hr">HR - Human Resources</option>
+            <option value="Dept Manager">Department Manager</option>
+          </select>
+        </div>
+
+        <button id="loginBtn" class="btn btn-primary" disabled>
+          <i class="fas fa-sign-in-alt" aria-hidden="true"></i> SUBSCRIBE FIRST TO LOGIN
+        </button>
+      </div>
+
+      <!-- ===== DIVIDER ===== -->
+      <div class="divider">OR SUBSCRIBE BELOW</div>
+
+      <!-- ===== SUBSCRIPTION SECTION ===== -->
+      <div class="form-section">
+        <div class="form-section-title">Newsletter Subscription</div>
+
+        <form id="subscribeForm" novalidate>
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <div class="input-wrapper">
+              <input type="text" id="name" name="name" placeholder="Enter your full name" />
+              <span class="password-toggle" onclick="toggleVisibility('name')">
+                <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                </svg>
+                <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                  <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                  <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-wrapper">
+              <input type="email" id="email" name="email" placeholder="Enter your email" required />
+              <span class="password-toggle" onclick="toggleVisibility('email')">
+                <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                </svg>
+                <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                  <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                  <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                </svg>
+              </span>
+            </div>
+            <div class="error" id="emailError">Please enter a valid email address</div>
+          </div>
+
+          <button type="submit" class="btn btn-success" id="subscribeBtn" disabled>
+            <i class="fas fa-envelope" aria-hidden="true"></i> SUBSCRIBE
+          </button>
+
+          <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> Subscription successful! You can now login.
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="right-footer">
+        <p>© <span id="currentYear"></span> All Rights Reserved.</p>
+        <p class="powered-by">Powered by: Fortishield-Matrix</p>
+      </div>
+    </div>
+  </div>
+
+    <script>
+    // ===== SET CURRENT YEAR =====
     document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // ===== DYNAMIC FULL SENTENCE ROTATION (Typing Effect) =====
+    const dynamicWords = [
+      "Streamline your workforce with enterprise-grade tools.",
+      "Empower teams with real-time workforce insights.",
+      "Transform HR operations with intelligent automation.",
+      "Drive productivity through seamless collaboration.",
+      "Manage talent efficiently with data-driven solutions.",
+      "Secure your employee data with advanced encryption.",
+      "Optimize performance with actionable analytics.",
+      "Scale your organization with cloud-based infrastructure.",
+      "Enhance decision-making with AI-powered dashboards.",
+      "Simplify compliance with automated reporting.",
+      "Unify departments with centralized management.",
+      "Accelerate growth with next-generation HR technology.",
+      "Reduce operational costs with smart workflows.",
+      "Elevate employee experience with self-service portals.",
+      "Monitor attendance and productivity in real-time.",
+      "Streamline onboarding with digital transformation.",
+      "Foster engagement with collaborative workspaces.",
+      "Achieve operational excellence with integrated systems.",
+      "Maximize efficiency with automated task management.",
+      "Build high-performing teams with actionable data."
+    ];
     
-    // Global function for visibility toggle
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const dynamicTextEl = document.getElementById('dynamicText');
+    
+    function typeEffect() {
+      const currentSentence = dynamicWords[wordIndex];
+      
+      if (isDeleting) {
+        dynamicTextEl.textContent = currentSentence.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        dynamicTextEl.textContent = currentSentence.substring(0, charIndex + 1);
+        charIndex++;
+      }
+      
+      let typeSpeed = isDeleting ? 30 : 60;
+      
+      if (!isDeleting && charIndex === currentSentence.length) {
+        typeSpeed = 3000; // Pause 3 seconds to read
+        isDeleting = true;
+      }
+      else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        wordIndex = (wordIndex + 1) % dynamicWords.length;
+        typeSpeed = 500;
+      }
+      
+      setTimeout(typeEffect, typeSpeed);
+    }
+    
+    setTimeout(typeEffect, 2000);
+
+    // ===== GLOBAL: Toggle visibility for input fields =====
     function toggleVisibility(fieldId) {
       const input = document.getElementById(fieldId);
       const originalType = input.getAttribute('data-original-type') || input.type;
@@ -373,10 +734,8 @@
       const isVisible = input.type === 'password';
       
       if (isVisible) {
-        // Show the text (restore original type)
         input.type = originalType;
       } else {
-        // Hide the text (change to password type)
         input.type = 'password';
       }
       
@@ -388,6 +747,7 @@
       hideIcon.style.display = isVisible ? '' : 'none';
     }
 
+    // ===== DOM ELEMENTS =====
     const subscribeForm = document.getElementById('subscribeForm');
     const emailInput = document.getElementById('email');
     const nameInput = document.getElementById('name');
@@ -397,7 +757,7 @@
     const roleSelect = document.getElementById('roleSelect');
     const loginBtn = document.getElementById('loginBtn');
 
-    // Role to panel mapping
+    // ===== ROLE TO PANEL MAPPING =====
     const rolePanels = {
       'admin': 'FSM.ESM.ADMIN LOGIN PANEL.html',
       'employee': 'FSM.ESM.EMPLOYEE.html',
@@ -406,20 +766,19 @@
       'Dept Manager': 'FSM.ESM.DEPT_MANAGER.html' 
     };
 
-    // Initially disable login button - requires subscription first
+    // ===== INITIAL STATE =====
     loginBtn.disabled = true;
-    loginBtn.textContent = 'SUBSCRIBE FIRST TO LOGIN';
+    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt" aria-hidden="true"></i> SUBSCRIBE FIRST TO LOGIN';
 
-    // Enable login button when role is selected AND subscription is complete
+    // ===== ROLE SELECT HANDLER =====
     roleSelect.addEventListener('change', function() {
-      // Only enable if subscription was successful
       if (this.value && window.subscriptionCompleted) {
         loginBtn.disabled = false;
-        loginBtn.textContent = 'LOGIN';
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt" aria-hidden="true"></i> LOGIN';
       }
     });
 
-    // Handle login button click
+    // ===== LOGIN BUTTON HANDLER =====
     loginBtn.addEventListener('click', function() {
       const selectedRole = roleSelect.value;
       if (selectedRole && rolePanels[selectedRole] && window.subscriptionCompleted) {
@@ -429,17 +788,7 @@
       }
     });
 
-    // Allow pressing Enter on role select to trigger login
-    roleSelect.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && roleSelect.value && window.subscriptionCompleted) {
-        loginBtn.click();
-      }
-    });
-
-    // Email validation and subscription logic
-    emailInput.addEventListener('input', toggleSubscribeButton);
-    nameInput.addEventListener('input', toggleSubscribeButton);
-
+    // ===== EMAIL VALIDATION =====
     function validateEmail(email) {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regex.test(email);
@@ -453,10 +802,18 @@
         emailError.style.display = 'none';
       } else {
         subscribeBtn.disabled = true;
-        emailError.style.display = 'block';
+        if (email.length > 0 && !validateEmail(email)) {
+          emailError.style.display = 'block';
+        } else {
+          emailError.style.display = 'none';
+        }
       }
     }
 
+    emailInput.addEventListener('input', toggleSubscribeButton);
+    nameInput.addEventListener('input', toggleSubscribeButton);
+
+    // ===== SUBSCRIPTION FORM SUBMISSION =====
     subscribeForm.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -473,7 +830,6 @@
       subscribeBtn.disabled = true;
       subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Subscribing...';
 
-      // Send subscription data to server
       try {
         const response = await fetch("send_material.php", {
           method: "POST",
@@ -484,23 +840,18 @@
         const result = await response.json();
 
         if (result.success) {
-          successMessage.style.display = "block";
-          subscribeBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> SUBSCRIBED';
-          subscribeBtn.style.backgroundColor = "#95a5a6";
-          subscribeForm.reset();
-          
-          // Mark subscription as completed
           window.subscriptionCompleted = true;
           
-          // Enable login if role is selected
+          subscribeBtn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> SUBSCRIBED';
+          subscribeBtn.classList.add('btn-subscribed');
+          subscribeBtn.disabled = true;
+          
+          successMessage.style.display = "block";
+          
           if (roleSelect.value) {
             loginBtn.disabled = false;
-            loginBtn.textContent = 'LOGIN';
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt" aria-hidden="true"></i> LOGIN';
           }
-          
-          // Show success message
-          successMessage.textContent = "Subscription successful! You can now login.";
-          successMessage.style.display = "block";
           
           setTimeout(() => {
             successMessage.style.display = "none";
@@ -509,15 +860,17 @@
           alert("Subscription failed: " + result.message);
           subscribeBtn.disabled = false;
           subscribeBtn.innerHTML = '<i class="fas fa-envelope" aria-hidden="true"></i> SUBSCRIBE';
+          subscribeBtn.classList.remove('btn-subscribed');
         }
       } catch (error) {
         alert("Server error: " + error.message);
         subscribeBtn.disabled = false;
         subscribeBtn.innerHTML = '<i class="fas fa-envelope" aria-hidden="true"></i> SUBSCRIBE';
+        subscribeBtn.classList.remove('btn-subscribed');
       }
     });
 
-    // Accessibility - keyboard navigation
+    // ===== KEYBOARD ACCESSIBILITY =====
     document.querySelectorAll('button, select').forEach(element => {
       element.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -525,6 +878,12 @@
           this.click();
         }
       });
+    });
+
+    roleSelect.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && roleSelect.value && window.subscriptionCompleted) {
+        loginBtn.click();
+      }
     });
   </script>
 </body>
