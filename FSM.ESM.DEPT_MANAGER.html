@@ -1,377 +1,681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Department Manager Login</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
-      background-color: #f5f7fa;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Manager Login</title>
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 255, 255, 0.2);
-      z-index: 0;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
 
-    .login-container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
+        /* ========== LEFT PANEL - Dept Manager Branding ========== */
+        .left-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 50px;
+            text-align: center;
+            overflow: hidden;
+            isolation: isolate;
+        }
 
-    .logo-container {
-      margin-bottom: 20px;
-    }
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background-image: url('654efd408a002efdfdfba23cc63b1780.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px) brightness(0.45);
+            z-index: -2;
+        }
 
-    .logo {
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #3498db;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-    }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(44, 62, 80, 0.7) 0%,
+                rgba(52, 73, 94, 0.5) 50%,
+                rgba(41, 128, 185, 0.6) 100%
+            );
+            z-index: -1;
+        }
 
-    h1 {
-      color: #2c3e50;
-      margin: 10px 0 25px;
-      font-size: 20px;
-      font-weight: 600;
-    }
+        .left-content {
+            position: relative;
+            z-index: 2;
+            max-width: 480px;
+        }
 
-    .form-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin-bottom: 25px;
+            animation: logoFloat 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
 
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-      color: #2c3e50;
-      font-size: 14px;
-    }
+        .logo-circle:hover {
+            animation-play-state: paused;
+            transform: scale(1.08);
+        }
 
-    .form-group input {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 15px;
-      transition: all 0.3s ease;
-    }
-    
-    .input-wrapper {
-      position: relative;
-    }
-    
-    .password-toggle {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      pointer-events: auto;
-    }
-    
-    .password-toggle svg {
-      width: 20px;
-      height: 20px;
-      display: block;
-    }
-    
-    /* Password field styling */
-    .input-wrapper input[type="password"],
-    .input-wrapper input[type="text"] {
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-      padding: 10px;
-    }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
 
-    .form-group input:focus {
-      border-color: #3498db;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-    }
+        .animated-heading {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
 
-    .error-message {
-      color: #e74c3c;
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
-    }
+        .animated-heading .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s forwards;
+        }
 
-    .login-btn {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-      margin-top: 10px;
-      margin-bottom: 0;
-    }
+        .animated-heading .word:nth-child(1) { animation-delay: 0.1s; }
+        .animated-heading .word:nth-child(2) { animation-delay: 0.3s; }
+        .animated-heading .word:nth-child(3) { animation-delay: 0.5s; }
 
-    .login-btn:hover {
-      background-color: #2980b9;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .login-btn:disabled {
-      background-color: #95a5a6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+        .tagline-container {
+            margin-bottom: 30px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .footer {
-      margin-top: 30px;
-      color: #7f8c8d;
-      font-size: 12px;
-      border-top: 1px solid #ecf0f1;
-      padding-top: 15px;
-    }
+        .tagline {
+            font-size: 15px;
+            opacity: 0;
+            line-height: 1.6;
+            animation: fadeSlideIn 0.8s 0.8s forwards;
+        }
 
-    input[type="email"],
-    input[type="password"],
-    .login-btn {
-        width: 100%;
-        box-sizing: border-box;
-        display: block;
-        margin: 0 auto 20px auto;
-    }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 0.9;
+                transform: translateX(0);
+            }
+        }
 
-    @media (max-width: 480px) {
-      .login-container {
-        padding: 20px;
-      }
-      
-      .logo {
-        height: 80px;
-        width: 80px;
-      }
-      
-      h1 {
-        font-size: 18px;
-      }
-    }
-  </style>
+        .dynamic-text {
+            color: #2ecc71;
+            font-weight: 700;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #2ecc71;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 15px;
+            opacity: 0;
+            transform: translateX(-25px);
+            animation: slideInRight 0.5s forwards;
+        }
+
+        .feature-list li:nth-child(1) { animation-delay: 1.0s; }
+        .feature-list li:nth-child(2) { animation-delay: 1.2s; }
+        .feature-list li:nth-child(3) { animation-delay: 1.4s; }
+        .feature-list li:nth-child(4) { animation-delay: 1.6s; }
+        .feature-list li:nth-child(5) { animation-delay: 1.8s; }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 0.9;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-list li i {
+            font-size: 20px;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.15);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .feature-list li:hover i {
+            background: rgba(46, 204, 113, 0.3);
+            transform: scale(1.2) rotate(360deg);
+            transition: all 0.5s ease;
+        }
+
+        .feature-list li:hover {
+            opacity: 1;
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+        }
+
+        /* ========== RIGHT PANEL - Dept Manager Login Form ========== */
+        .right-panel {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .right-content {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .right-panel .mobile-logo {
+            display: none;
+        }
+
+        .right-panel h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .right-panel .subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+            color: #2c3e50;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background-color: #fff;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input[type="password"],
+        .input-wrapper input[type="text"] {
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-top: 22px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .right-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 11px;
+            color: #95a5a6;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 15px;
+        }
+
+        .right-footer .powered-by {
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+
+            .left-panel {
+                padding: 30px 20px;
+                min-height: 240px;
+            }
+
+            .animated-heading {
+                font-size: 22px;
+            }
+
+            .logo-circle {
+                width: 85px;
+                height: 85px;
+                margin-bottom: 15px;
+            }
+
+            .feature-list {
+                display: none;
+            }
+
+            .tagline-container {
+                min-height: auto;
+                margin-bottom: 10px;
+            }
+
+            .tagline {
+                font-size: 13px;
+            }
+
+            .right-panel {
+                padding: 25px 20px;
+            }
+
+            .right-panel .mobile-logo {
+                display: block;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 15px;
+            }
+
+            .right-panel h2 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-panel {
+                min-height: 180px;
+                padding: 20px 15px;
+            }
+
+            .right-panel {
+                padding: 20px 15px;
+            }
+
+            .right-panel h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="login-container">
-    <div class="logo-container">
-      <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo" />
-      <h1>Department Manager Login</h1>
-    </div>
+    <!-- ==================== LEFT PANEL ==================== -->
+    <div class="left-panel">
+        <div class="left-content">
+            <img src="FSM.LOGO.JPG" alt="Company Logo" class="logo-circle" />
+            
+            <h1 class="animated-heading">
+                <span class="word">Department</span>
+                <span class="word">Manager</span>
+                <span class="word">Portal</span>
+            </h1>
+            
+            <div class="tagline-container">
+                <p class="tagline">
+                    <span class="dynamic-text-wrapper">
+                        <span class="dynamic-text" id="dynamicText"></span>
+                        <span class="cursor"></span>
+                    </span>
+                </p>
+            </div>
 
-    <form id="loginForm">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="*********" required />
-        <div class="error-message" id="emailError">Please enter a valid company email address</div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <input type="password" id="password" name="password" placeholder="*********" required />
-          <span class="password-toggle" onclick="togglePassword()">
-            <!-- Show password icon (blue eye) -->
-            <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-            </svg>
-            <!-- Hide password icon (blue slashed eye) -->
-            <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-              <circle cx="12" cy="12" r="10" fill="#3498db"/>
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
-              <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
-            </svg>
-          </span>
+            <ul class="feature-list">
+                <li><i class="fas fa-people-group"></i> Oversee your department team</li>
+                <li><i class="fas fa-tasks"></i> Assign & track project tasks</li>
+                <li><i class="fas fa-calendar-week"></i> Manage team schedules & shifts</li>
+                <li><i class="fas fa-comments"></i> Team communication & feedback</li>
+                <li><i class="fas fa-bullseye"></i> Set goals & monitor KPIs</li>
+            </ul>
         </div>
-        <div class="error-message" id="passwordError">Please enter your password</div>
-      </div>
-
-      <button type="submit" class="login-btn" id="loginBtn" disabled>
-        <i class="fas fa-sign-in-alt" aria-hidden="true"></i> LOGIN
-      </button>
-    </form>
-
-    <div class="footer">
-      <p>© <span id="currentYear"></span> All Rights Reserved.</p>
-      <p>Powered by: Fortishield-Matrix</p>
     </div>
-  </div>
 
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- ==================== RIGHT PANEL ==================== -->
+    <div class="right-panel">
+        <div class="right-content">
+            <img src="FSM.LOGO.JPG" alt="Company Logo" class="mobile-logo" />
 
-  <script>
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-    
-    function togglePassword() {
-      const passwordInput = document.getElementById('password');
-      const isPassword = passwordInput.type === 'password';
-      passwordInput.type = isPassword ? 'text' : 'password';
-      document.querySelector('.show-icon').style.display = isPassword ? 'none' : '';
-      document.querySelector('.hide-icon').style.display = isPassword ? '' : 'none';
-    }
+            <h2>Department Manager Login</h2>
+            <p class="subtitle">Enter your manager credentials to continue</p>
 
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-    const loginBtn = document.getElementById('loginBtn');
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="manager@company.com" required />
+                    <div class="error-message" id="emailError">Please enter a valid company email address</div>
+                </div>
 
-    // Enable login button when both fields have content
-    function validateForm() {
-      const emailValid = emailInput.value.trim() !== '';
-      const passwordValid = passwordInput.value.trim() !== '';
-      
-      loginBtn.disabled = !(emailValid && passwordValid);
-      
-      return emailValid && passwordValid;
-    }
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+                        <span class="password-toggle" onclick="togglePassword()">
+                            <svg class="show-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                            </svg>
+                            <svg class="hide-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                                <circle cx="12" cy="12" r="10" fill="#3498db"/>
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="black"/>
+                                <line x1="1" y1="23" x2="23" y2="1" stroke="black" stroke-width="2"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="error-message" id="passwordError">Please enter your password</div>
+                </div>
 
-    emailInput.addEventListener('input', validateForm);
-    passwordInput.addEventListener('input', validateForm);
+                <button type="submit" class="btn btn-primary" id="loginBtn" disabled>
+                    <i class="fas fa-right-to-bracket"></i> LOGIN
+                </button>
+            </form>
 
-    // Handle form submission
-    loginForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-      
-      // Reset error messages
-      emailError.style.display = 'none';
-      passwordError.style.display = 'none';
-      
-      // Validate email format
-      if (!validateEmail(email)) {
-        emailError.textContent = 'Please enter a valid email address';
-        emailError.style.display = 'block';
-        return;
-      }
-      
-      // Disable button and show loading
-      loginBtn.disabled = true;
-      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-      
-      try {
-        const response = await fetch('dept_manager_login.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+            <div class="right-footer">
+                <p>© <span id="currentYear"></span> All Rights Reserved.</p>
+                <p class="powered-by">Powered by: Fortishield-Matrix</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // ===== DYNAMIC TEXT ROTATION - Dept Manager Specific =====
+        const dynamicWords = [
+            "Lead your department with confidence and clarity.",
+            "Manage your team's performance and productivity.",
+            "Coordinate projects and track milestones effectively.",
+            "Foster collaboration across your department.",
+            "Monitor attendance and manage team schedules.",
+            "Provide feedback and conduct performance reviews.",
+            "Set departmental goals and track progress.",
+            "Allocate resources and manage budgets wisely.",
+            "Resolve team conflicts and build morale.",
+            "Report departmental metrics to senior leadership.",
+            "Streamline workflows for maximum efficiency.",
+            "Empower your team to achieve excellence."
+        ];
+        
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const dynamicTextEl = document.getElementById('dynamicText');
+        
+        function typeEffect() {
+            const currentSentence = dynamicWords[wordIndex];
+            
+            if (isDeleting) {
+                dynamicTextEl.textContent = currentSentence.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                dynamicTextEl.textContent = currentSentence.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 25 : 55;
+            
+            if (!isDeleting && charIndex === currentSentence.length) {
+                typeSpeed = 3000;
+                isDeleting = true;
+            }
+            else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % dynamicWords.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(typeEffect, typeSpeed);
+        }
+        
+        setTimeout(typeEffect, 2000);
+
+        // ===== FORM LOGIC =====
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            document.querySelector('.show-icon').style.display = isPassword ? 'none' : '';
+            document.querySelector('.hide-icon').style.display = isPassword ? '' : 'none';
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const loginBtn = document.getElementById('loginBtn');
+
+        function validateForm() {
+            const emailValid = emailInput.value.trim() !== '';
+            const passwordValid = passwordInput.value.trim() !== '';
+            loginBtn.disabled = !(emailValid && passwordValid);
+            return emailValid && passwordValid;
+        }
+
+        emailInput.addEventListener('input', validateForm);
+        passwordInput.addEventListener('input', validateForm);
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+            
+            if (!validateEmail(email)) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.style.display = 'block';
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            
+            try {
+                const response = await fetch('dept_manager_login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
+                    setTimeout(() => {
+                        const dashboardUrl = getDashboardUrl(result.manager.department);
+                        window.location.href = dashboardUrl;
+                    }, 1000);
+                } else {
+                    if (result.message.includes('No manager found')) {
+                        emailError.textContent = result.message;
+                        emailError.style.display = 'block';
+                    } else if (result.message.includes('Incorrect password')) {
+                        passwordError.textContent = result.message;
+                        passwordError.style.display = 'block';
+                    } else {
+                        emailError.textContent = result.message;
+                        emailError.style.display = 'block';
+                    }
+                    
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-right-to-bracket"></i> LOGIN';
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                emailError.textContent = 'Network error occurred. Please try again.';
+                emailError.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-right-to-bracket"></i> LOGIN';
+            }
         });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Login successful - redirect to department manager dashboard
-          loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
-          setTimeout(() => {
-            // Redirect to the appropriate dashboard based on department
-            const dashboardUrl = getDashboardUrl(result.manager.department);
-            window.location.href = dashboardUrl;
-          }, 1000);
-        } else {
-          // Login failed
-          if (result.message.includes('No manager found')) {
-            emailError.textContent = result.message;
-            emailError.style.display = 'block';
-          } else if (result.message.includes('Incorrect password')) {
-            passwordError.textContent = result.message;
-            passwordError.style.display = 'block';
-          } else {
-            emailError.textContent = result.message;
-            emailError.style.display = 'block';
-          }
-          
-          loginBtn.disabled = false;
-          loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> LOGIN';
+
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
         }
-        
-      } catch (error) {
-        console.error('Login error:', error);
-        emailError.textContent = 'Network error occurred. Please try again.';
-        emailError.style.display = 'block';
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> LOGIN';
-      }
-    });
 
-    function validateEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    }
-
-    function getDashboardUrl(department) {
-      // Map departments to specific dashboard URLs
-      const departmentDashboards = {
-        'Finance': 'FSM.ESM.FINANCE_DASHBOARD.html',
-        'IT': 'FSM.ESM.IT_DASHBOARD.html',
-        'Marketing': 'FSM.ESM.MARKETING_DASHBOARD.html',
-        'Security': 'FSM.ESM.SECURITY_DASHBOARD.html',
-        'Operations': 'FSM.ESM.OPERATIONS_DASHBOARD.html',
-        'Sales': 'FSM.ESM.SALES_DASHBOARD.html',
-        'Procurement': 'FSM.ESM.PROCUREMENT_DASHBOARD.html'
-      };
-      
-      return departmentDashboards[department] || 'FSM.ESM.DEPT_MANAGER_DASHBOARD.html';
-    }
-
-    // Accessibility - keyboard navigation
-    document.querySelectorAll('button, input').forEach(element => {
-      element.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.click();
+        function getDashboardUrl(department) {
+            const departmentDashboards = {
+                'Finance': 'FSM.ESM.FINANCE_DASHBOARD.html',
+                'IT': 'FSM.ESM.IT_DASHBOARD.html',
+                'Marketing': 'FSM.ESM.MARKETING_DASHBOARD.html',
+                'Security': 'FSM.ESM.SECURITY_DASHBOARD.html',
+                'Operations': 'FSM.ESM.OPERATIONS_DASHBOARD.html',
+                'Sales': 'FSM.ESM.SALES_DASHBOARD.html',
+                'Procurement': 'FSM.ESM.PROCUREMENT_DASHBOARD.html'
+            };
+            
+            return departmentDashboards[department] || 'FSM.ESM.DEPT_MANAGER_DASHBOARD.html';
         }
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>
