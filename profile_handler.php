@@ -4,13 +4,15 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 // Check if user is authenticated
-if (!isset($_SESSION['employee_id']) || empty($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'error' => 'Not authenticated']);
     exit;
 }
 
 // Database connection
-require_once 'db_connect.php'; // expects $db PDO
+require_once "db_connect.php";
+$database = new Database();
+$db = $database->getConnection();
 
 // -----------------------------
 // Utility / logging / notify
@@ -59,17 +61,17 @@ function notifyAdministrators($db, $message, $type = 'password_change') {
 // Returns associative array or false
 // -----------------------------
 function getEmployeeBySession($db) {
-    if (!isset($_SESSION['employee_id'])) return false;
-    $employee_id = $_SESSION['employee_id'];
+    if (!isset($_SESSION['user_id'])) return false;
+    $employee_id = $_SESSION['user_id'];
 
     // Try staff_profiles
-    $stmt = $db->prepare("SELECT id, employee_code, firstname, first_name, last_name, email, profile_photo, password_hash, password AS legacy_password FROM staff_profiles WHERE id = ?");
+    $stmt = $db->prepare("SELECT id, employee_code, firstname, lastname, email, profile_photo, password_hash, password AS legacy_password FROM staff_profiles WHERE employee_id = ?");
     $stmt->execute([$employee_id]);
     $emp = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($emp) return $emp;
 
     // Fallback to employees
-    $stmt = $db->prepare("SELECT id, id AS employee_code, first_name, last_name, email, profile_photo, password FROM employees WHERE id = ?");
+    $stmt = $db->prepare("SELECT employee_id, employee_code, first_name, last_name, email, profile_photo, password FROM employees WHERE employee_id = ?");
     $stmt->execute([$employee_id]);
     $emp = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($emp) {
@@ -91,7 +93,7 @@ function getEmployeeBySession($db) {
 // -----------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'change_password') {
 
-    if (!isset($_SESSION['employee_id'])) {
+    if (!isset($_SESSION['user_id'])) {
         echo json_encode(['success' => false, 'error' => 'Not authenticated']);
         exit;
     }
@@ -205,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if (!$updated) {
             // Fallback to employees table (legacy)
             try {
-                $stmt = $db->prepare("UPDATE employees SET password = ?, password_changed_at = NOW() WHERE id = ?");
+                $stmt = $db->prepare("UPDATE employees SET password = ?, password_changed_at = NOW() WHERE employee_id = ?");
                 $stmt->execute([$newHash, $employee_id]);
                 if ($stmt->rowCount() > 0) $updated = true;
             } catch (Exception $e) {
@@ -253,12 +255,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Photo upload handler (kept from original, adapted to support both tables)
 // -----------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
-    if (!isset($_SESSION['employee_id'])) {
+    if (!isset($_SESSION['user_id'])) {
         echo json_encode(['success' => false, 'error' => 'Not authenticated']);
         exit;
     }
 
-    $employee_id = $_SESSION['employee_id'];
+    $employee_id = $_SESSION['user_id'];
     $uploadDir = 'uploads/';
 
     $file = $_FILES['photo'];
@@ -286,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
             // Try update staff_profiles first
             $updated = false;
             try {
-                $stmt = $db->prepare("UPDATE staff_profiles SET profile_photo = ? WHERE id = ?");
+                $stmt = $db->prepare("UPDATE staff_profiles SET profile_photo = ? WHERE employee_id = ?");
                 $stmt->execute([$filepath, $employee_id]);
                 if ($stmt->rowCount() > 0) $updated = true;
             } catch (Exception $e) {
@@ -296,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
             if (!$updated) {
                 // fallback to employees table
                 try {
-                    $stmt = $db->prepare("UPDATE employees SET profile_photo = ? WHERE id = ?");
+                    $stmt = $db->prepare("UPDATE employees SET profile_photo = ? WHERE employee_id = ?");
                     $stmt->execute([$filepath, $employee_id]);
                     if ($stmt->rowCount() > 0) $updated = true;
                 } catch (Exception $e) {
@@ -305,11 +307,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
             }
 
             // Fetch name for logging
-            $stmt = $db->prepare("SELECT first_name, last_name FROM staff_profiles WHERE id = ?");
+            $stmt = $db->prepare("SELECT firstname, lastname FROM staff_profiles WHERE employee_id = ?");
             $stmt->execute([$employee_id]);
             $employee = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$employee) {
-                $stmt = $db->prepare("SELECT first_name, last_name FROM employees WHERE id = ?");
+                $stmt = $db->prepare("SELECT first_name, last_name FROM employees WHERE employee_id = ?");
                 $stmt->execute([$employee_id]);
                 $employee = $stmt->fetch(PDO::FETCH_ASSOC);
             }
@@ -348,13 +350,13 @@ exit;
 // -----------------------------
 function sendPasswordChangeConfirmation($db, $employeeCode) {
     // Get employee email and firstname
-    $stmt = $db->prepare("SELECT email, firstname, first_name FROM staff_profiles WHERE employee_code = ?");
+    $stmt = $db->prepare("SELECT email, firstname FROM staff_profiles WHERE employee_code = ?");
     $stmt->execute([$employeeCode]);
     $employee = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$employee) {
         // fallback to employees (employee_code may be id)
-        $stmt = $db->prepare("SELECT email, first_name FROM employees WHERE id = ?");
+        $stmt = $db->prepare("SELECT email, first_name FROM employees WHERE employee_id = ?");
         $stmt->execute([$employeeCode]);
         $employee = $stmt->fetch(PDO::FETCH_ASSOC);
     }

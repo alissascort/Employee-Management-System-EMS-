@@ -5,7 +5,7 @@ require_once 'db_connect.php';
 header('Content-Type: application/json');
 
 // Check if user is logged in
-if (!isset($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit;
 }
@@ -31,7 +31,7 @@ try {
     
     $stmt->execute([
         ':payroll_id' => $payrollId,
-        ':employee_id' => $_SESSION['employee_id']
+        ':employee_id' => $_SESSION['user_id']
     ]);
     
     $payslipData = $stmt->fetch(PDO::FETCH_ASSOC);

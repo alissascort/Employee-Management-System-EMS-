@@ -3,10 +3,12 @@ session_start();
 header('Content-Type: application/json');
 
 // Database connection
-require_once 'db_connect.php';
+require_once "db_connect.php";
+$database = new Database();
+$db = $database->getConnection();
 
 // Check authentication
-if (!isset($_SESSION['employee_id']) && !isset($_SESSION['admin_id'])) {
+if (!isset($_SESSION['user_id']) && !isset($_SESSION['admin_id'])) {
     echo json_encode(['success' => false, 'error' => 'Not authenticated']);
     exit;
 }
@@ -20,7 +22,7 @@ try {
     
     $query = "SELECT sl.*, e.first_name, e.last_name, e.email 
               FROM system_logs sl 
-              LEFT JOIN employees e ON sl.user_id = e.id 
+              LEFT JOIN employees e ON sl.user_id = e.employee_id 
               WHERE 1=1";
     $params = [];
     

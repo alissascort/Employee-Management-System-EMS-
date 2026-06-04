@@ -6,16 +6,31 @@
     <title>Employee Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
         :root {
+            --bg: #e8edf2;
+            --surface: #ecf0f3;
+            --white: #ffffff;
             --primary: #4361ee;
+            --primary-dark: #3a56d4;
             --secondary: #3f37c9;
             --accent: #4895ef;
             --dark: #1b263b;
-            --light: #f8f9fa;
-            --success: #4cc9f0;
-            --warning: #f72585;
+            --text: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border: #e0e5ec;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --purple: #9b59b6;
+            --neu-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+            --neu-shadow-sm: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
+            --neu-shadow-inset: inset 4px 4px 8px #d1d9e6, inset -4px -4px 8px #ffffff;
+            --neu-shadow-hover: 12px 12px 24px #d1d9e6, -12px -12px 24px #ffffff;
+            --radius: 16px;
+            --radius-sm: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         * {
@@ -26,36 +41,42 @@
         }
         
         body {
-            background-color: #f5f7fa;
-            color: var(--dark);
-            overflow-x: hidden;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
         }
         
-        /* Prevent background scroll when modal is open */
         body.modal-open {
             overflow: hidden;
         }
         
         .dashboard {
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
         
+        /* ========== SIDEBAR ========== */
         .sidebar {
-            width: 250px;
-            min-width: 250px;
-            max-width: 250px;
-            transition: width 0.3s;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            min-height: 100vh;
+            width: 260px;
+            min-width: 260px;
+            max-width: 260px;
+            height: 100vh;
+            background: var(--surface);
+            color: var(--text);
             display: flex;
             flex-direction: column;
+            box-shadow: var(--neu-shadow);
+            position: relative;
+            z-index: 100;
+            transition: var(--transition);
+            flex-shrink: 0;
         }
         .sidebar.collapsed {
-            width: 70px;
-            min-width: 70px;
-            max-width: 70px;
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
         }
         .sidebar.collapsed .sidebar-header h1 span,
         .sidebar.collapsed .sidebar-header p,
@@ -65,41 +86,79 @@
         }
         .sidebar.collapsed .menu-item {
             justify-content: center;
+            padding: 14px;
         }
         .sidebar.collapsed .menu-item i {
             margin-right: 0;
         }
+        
+        .sidebar-header {
+            padding: 25px 20px 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-header h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-header h1 i {
+            margin-right: 10px;
+        }
+        .sidebar-header p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
         .menu-item {
+            padding: 11px 20px;
+            margin: 2px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 24px;
-            font-size: 1rem;
-            color: #fff;
-            cursor: pointer;
-            border: none;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 400;
+            border-left: none;
             background: none;
-            transition: background 0.2s, color 0.2s;
-            border-left: 4px solid transparent;
         }
-        .menu-item.active, .menu-item:hover {
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            border-left: 4px solid var(--accent);
+        .menu-item:hover {
+            background: var(--white);
+            box-shadow: var(--neu-shadow-sm);
+        }
+        .menu-item.active {
+            background: var(--white);
+            box-shadow: var(--neu-shadow-inset);
+            color: var(--primary);
+            font-weight: 600;
+            border-left: none;
         }
         .menu-item i {
-            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
         }
         .menu-item .badge {
             margin-left: auto;
-            background: var(--accent);
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            background: var(--danger);
+            color: white;
+            padding: 2px 9px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            box-shadow: var(--neu-shadow-sm);
         }
 
-        /* Profile image */
+        /* Profile images */
         .user-info img, #profileImage, #headerProfileImage {
             border-radius: 50%;
             width: 40px;
@@ -108,60 +167,188 @@
             border: 2px solid var(--primary);
             background: #fff;
         }
-
-        /* Card styles */
+        
+        /* ========== HEADER ========== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--surface);
+            box-shadow: var(--neu-shadow-sm);
+            flex-shrink: 0;
+            z-index: 10;
+            margin: 15px 20px 0;
+            border-radius: var(--radius);
+            border-bottom: none;
+            position: sticky;
+            top: 0;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 14px 6px 6px;
+            border-radius: 30px;
+            transition: var(--transition);
+            background: var(--surface);
+            box-shadow: var(--neu-shadow-sm);
+        }
+        .user-info:hover {
+            box-shadow: var(--neu-shadow-inset);
+        }
+        
+        .sidebar-toggle {
+            background: var(--surface);
+            color: var(--primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: var(--neu-shadow-sm);
+            flex-shrink: 0;
+        }
+        .sidebar-toggle:hover {
+            box-shadow: var(--neu-shadow-inset);
+        }
+        #sidebarCollapse {
+            background: var(--surface);
+            color: var(--primary);
+            border: none;
+            height: 40px;
+            padding: 0 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--neu-shadow-sm);
+            transition: var(--transition);
+        }
+        #sidebarCollapse:hover {
+            box-shadow: var(--neu-shadow-inset);
+        }
+        
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            min-width: 0;
+            padding: 0;
+            
+            background: var(--bg);
+        }
+        .content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: #c1c9d4 transparent;
+        }
+        .content-wrapper::-webkit-scrollbar { width: 6px; }
+        .content-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .content-wrapper::-webkit-scrollbar-thumb { background: #c1c9d4; border-radius: 6px; }
+        
+        
+        
+        /* ========== CONTENT SECTIONS ========== */
+        .content-section {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ========== NEUROMORPHIC CARDS ========== */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
         .card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            padding: 24px 20px 18px 20px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--neu-shadow);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
             min-width: 180px;
             flex: 1 1 180px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            position: relative;
-            cursor: pointer;
-            transition: box-shadow 0.2s, transform 0.2s;
         }
         .card:hover {
-            box-shadow: 0 6px 18px rgba(67,97,238,0.10);
-            transform: translateY(-2px) scale(1.01);
+            box-shadow: var(--neu-shadow-hover);
+            transform: translateY(-2px);
+        }
+        .card:active {
+            box-shadow: var(--neu-shadow-inset);
+            transform: translateY(0);
         }
         .card-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
+            width: 100%;
+            justify-content: space-between;
         }
         .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dark);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
         .card-icon {
-            background: var(--accent);
-            color: #fff;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            background: var(--surface);
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
+            box-shadow: var(--neu-shadow-sm);
         }
         .card-value {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--dark);
             margin-bottom: 2px;
+            letter-spacing: -0.5px;
             transition: all 0.3s ease;
         }
         .card-value.updating {
@@ -169,965 +356,227 @@
             transform: scale(0.98);
         }
         .card-subtext {
-            font-size: 0.95rem;
-            color: #888;
+            font-size: 0.85rem;
+            color: var(--text-muted);
             margin-top: 2px;
         }
         .card-change {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             margin-top: 4px;
-        }
-        .card-change.positive { color: #4ade80; }
-        .card-change.negative { color: #f87171; }
-        
-
-
-        /* Hide all content sections except active */
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            transition: margin-left 0.3s;
-            margin-left: 0;
-        }
-        .main-content.expanded {
-            margin-left: -170px;
-        }
-        .sidebar.collapsed ~ .main-content {
-            margin-left: 70px;
-        }
-
-        
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .sidebar-header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
             display: flex;
             align-items: center;
+            gap: 4px;
         }
+        .card-change.positive { color: var(--success); }
+        .card-change.negative { color: var(--danger); }
         
-        .sidebar-header h1 i {
-            margin-right: 10px;
-        }
-        
-        .sidebar-header p {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-        
-        /* Enhanced toggle button styling */
-        #sidebarCollapse {
-            position: relative;
-            z-index: 50;
-            min-width: 140px;
-            height: 45px;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            margin-left: 0;
-        }
-        
-        #sidebarCollapse:hover {
-            transform: translateY(-2px);
-        }
-        
-        #sidebarCollapse:active {
-            transform: translateY(0);
-        }
-        
-        /* Visual indicator when sidebar is collapsed */
-        .sidebar.collapsed ~ .main-content #sidebarCollapse {
-            background-color: var(--warning) !important;
-            animation: pulse 2s infinite;
-        }
-        
-        .sidebar.collapsed ~ .main-content #sidebarCollapse:hover {
-            background-color: #e91e63 !important;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
-        }
-        
-        .toggle-sidebar {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .toggle-sidebar:hover {
-            transform: rotate(180deg);
-            background: var(--secondary);
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
-        
-        /* Content sections */
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .content-section.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Home Section */
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--primary);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .card-title {
-            font-size: 1rem;
-            color: var(--dark);
-            font-weight: 500;
-        }
-        
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(67, 97, 238, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-        
-        .card-value {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
-        
-        .card-change {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card-change.positive {
-            color: #4ade80;
-        }
-        
-        .card-change.negative {
-            color: #f87171;
-        }
-        
-        /* Modal styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            -webkit-backdrop-filter: blur(5px);
-            backdrop-filter: blur(5px);
-            background: rgba(0, 0, 0, 0.3);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 25px;
-            width: 80%;
-            max-width: 800px;
-            border-radius: 10px;
-            animation: slideIn 0.4s ease;
-            position: relative;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        
-        .close-btn {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: transparent;
-            font-size: 20px;
-            border: none;
-            cursor: pointer;
-        }
-        
-        /* Tables */
+        /* ========== TABLES ========== */
         .data-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
-        .data-table th, 
-        .data-table td {
+        .data-table th, .data-table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.84rem;
         }
-        
         .data-table th {
-            background-color: #f8f9fa;
-            font-weight: 500;
-            color: var(--dark);
+            background: var(--surface);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .data-table tr:hover td {
+            background: var(--white);
         }
         
-        .data-table tr:hover {
-            background-color: #f5f7fa;
-        }
-        
-        /* Forms */
+        /* ========== FORMS ========== */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
-        
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--text);
         }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
             font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background: var(--surface);
+            box-shadow: var(--neu-shadow-inset);
+            transition: var(--transition);
         }
-        
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            box-shadow: var(--neu-shadow-sm);
+            background: var(--white);
         }
-        
         .form-row {
             display: flex;
             gap: 20px;
         }
-        
         .form-row .form-group {
             flex: 1;
         }
         
-        /* Password form - vertical layout */
-        .password-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 600px;
-        }
-        
-        .password-form .form-group {
-            width: 100%;
-        }
-        
-        .password-form .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            font-size: 1rem;
-        }
-        
-        .password-form .btn {
-            align-self: flex-start;
-            margin-top: 10px;
-        }
-        
-        /* Password eye icon styling */
-        .password-eye {
-            transition: color 0.3s ease;
-        }
-        
-        .password-eye:hover {
-            color: var(--primary) !important;
-        }
-        
-        /* Password input container */
-        .password-form .form-group {
-            position: relative;
-        }
-        
-        .password-form .form-group input {
-            padding-right: 40px;
-        }
-        
-        /* Recent activities styling */
-        .activities-list {
-            margin-top: 15px;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            background: #f8f9fa;
-            margin-bottom: 10px;
-            border-left: 4px solid #4CAF50;
-        }
-        
-        .activity-icon {
-            font-size: 1.2rem;
-            margin-top: 2px;
-        }
-        
-        .activity-content {
-            flex: 1;
-        }
-        
-        .activity-message {
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
-        }
-        
-        .activity-time {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        /* Buttons */
+        /* ========== BUTTONS ========== */
         .btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
+            font-size: 0.82rem;
             font-weight: 500;
-            transition: all 0.3s;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Poppins', sans-serif;
+            background: var(--surface);
+            box-shadow: var(--neu-shadow-sm);
+            color: var(--text);
         }
-        
+        .btn:hover { box-shadow: var(--neu-shadow-hover); }
+        .btn:active { box-shadow: var(--neu-shadow-inset); }
         .btn-primary {
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
+            box-shadow: 4px 4px 8px rgba(67,97,238,0.3), -4px -4px 8px rgba(255,255,255,0.1);
         }
-        
-        .btn-primary:hover {
-            background-color: var(--secondary);
-        }
-        
+        .btn-primary:hover { background: var(--primary-dark); }
         .btn-info {
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
             display: flex;
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
             font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            box-shadow: var(--neu-shadow-sm);
+            border-radius: var(--radius-sm);
         }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; border-radius: 8px; }
         
-        .btn-info:hover {
-            background-color: var(--secondary);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            transform: translateY(-1px);
-        }
-        
-        .btn-info i {
-            font-size: 16px;
-        }
-        
-        .btn-info span {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .btn-danger {
-            background-color: #f44336;
-            color: white;
-        }
-        
-        /* Status badges */
+        /* ========== STATUS BADGES ========== */
         .status-badge {
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            box-shadow: var(--neu-shadow-sm);
         }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
         
-        .status-pending {
-            background-color: #fef3c7;
-            color: #d97706;
-        }
-        
-        .status-approved {
-            background-color: #dcfce7;
-            color: #16a34a;
-        }
-        
-        .status-rejected {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
-        
-        /* Profile section - New Layout */
-        .profile-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--dark-color);
-            margin-bottom: 30px;
-            text-align: left;
+        /* ========== MODALS ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-        }
-        
-        .profile-container {
-            display: flex;
-            flex-direction: row;
-            gap: 60px;
-            align-items: flex-start;
-        }
-        
-        .profile-photo-section {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 25px;
-            width: 100%;
-            max-width: 400px;
-            margin: 0;
-        }
-        
-        .profile-image-large {
-            width: 300px !important;
-            height: 300px !important;
-            border-radius: 50% !important;
-            object-fit: cover !important;
-            border: 6px solid var(--primary) !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
-            max-width: none !important;
-            max-height: none !important;
-        }
-        
-        .photo-actions {
-            display: flex;
-            flex-direction: column;
+            height: 100%;
+            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            z-index: 9999;
         }
-        
-        .photo-actions .btn {
-            min-width: 280px;
-            padding: 14px 28px;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        
-        .profile-details-section {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            flex: 1;
-        }
-        
-        .employee-info {
-            padding: 0;
-        }
-        
-        .employee-info h3 {
-            color: var(--dark-color);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .info-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .info-item label {
-            font-weight: 600;
-            color: var(--dark-color);
-            font-size: 0.9rem;
-            min-width: 120px;
-        }
-        
-        .info-item span {
-            color: #333;
-            font-size: 1rem;
-            font-weight: 500;
-            flex: 1;
-        }
-        
-        .password-section {
-            padding: 0;
-        }
-        
-        .password-section h3 {
-            color: var(--dark-color);
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .profile-info h2 {
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-        
-        .profile-info p {
-            margin-bottom: 5px;
-        }
-        
-        .profile-info strong {
-            font-weight: 500;
-            color: var(--dark);
-        }
-        
-        /* ===== ATTENDANCE SURF SECTION ===== */
-        .attendance-container {
-            display: flex;
-            gap: 30px;
-            margin-top: 20px;
-        }
-
-        .attendance-status {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .status-card {
-            background: white;
-            border-radius: 10px;
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 20px 20px 60px rgba(0,0,0,0.2), -20px -20px 60px rgba(255,255,255,0.1);
+            animation: modalSlideUp 0.3s ease;
+            position: relative;
             padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            text-align: center;
-            border-left: 5px solid var(--primary);
         }
-
-        .status-card i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 15px;
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        .status-card h3 {
-            margin-bottom: 10px;
-            color: var(--dark);
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
-
-        .status-card p {
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: var(--surface);
             font-size: 1.2rem;
-            font-weight: 500;
-            margin: 10px 0;
-        }
-
-        .status-card div {
-            margin: 8px 0;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .current-time {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            text-align: center;
-            border-left: 5px solid var(--accent);
-        }
-
-        .current-time i {
-            font-size: 2rem;
-            color: var(--accent);
-            margin-bottom: 15px;
-        }
-
-        #liveClock {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        #currentDate {
-            font-size: 1.1rem;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        #timeRemaining {
-            font-size: 0.9rem;
-            color: var(--warning);
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        #attendancePolicy {
-            margin-top: 20px;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        #attendancePolicy h4 {
-            color: var(--dark);
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        #attendancePolicy ul {
-            padding-left: 20px;
-            margin-top: 10px;
-        }
-
-        #attendancePolicy li {
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .attendance-actions {
-            flex: 1;
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--secondary);
-        }
-
-        .attendance-actions h3 {
-            margin-bottom: 20px;
-            color: var(--dark);
-            text-align: center;
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .attendance-btn {
-            padding: 15px;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 1rem;
+            box-shadow: var(--neu-shadow-sm);
+            transition: var(--transition);
+            z-index: 10;
         }
-
-        .attendance-btn i {
-            font-size: 1.2rem;
+        .close-btn:hover {
+            box-shadow: var(--neu-shadow-inset);
+            color: var(--danger);
         }
-
-        .attendance-btn.present {
-            background-color: #4ade80;
-            color: white;
-        }
-
-        .attendance-btn.present:hover {
-            background-color: #22c55e;
-        }
-
-        .attendance-btn.present-late {
-            background-color: #fbbf24;
-            color: white;
-        }
-
-        .attendance-btn.present-late:hover {
-            background-color: #f59e0b;
-        }
-
-        .attendance-btn.late {
-            background-color: #f87171;
-            color: white;
-        }
-
-        .attendance-btn.late:hover {
-            background-color: #ef4444;
-        }
-
-        .attendance-btn.absent {
-            background-color: #64748b;
-            color: white;
-        }
-
-        .attendance-btn.absent:hover {
-            background-color: #475569;
-        }
-
-        .attendance-btn.checkout {
-            background-color: var(--primary);
-            color: white;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .attendance-btn.checkout:hover {
-            background-color: var(--secondary);
-        }
-
-        .attendance-btn:disabled {
-            background-color: #e2e8f0 !important;
-            color: #94a3b8 !important;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        #attendanceNote {
-            margin-top: 15px;
-        }
-
-        #attendanceNote label {
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        #attendanceReason {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        .notice {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            display: block;
-        }
-
-        /* Status indicators */
-        .status-present {
-            color: #4ade80;
-        }
-
-        .status-present-late {
-            color: #fbbf24;
-        }
-
-        .status-late {
-            color: #f87171;
-        }
-
-        .status-absent {
-            color: #64748b;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .attendance-container {
-                flex-direction: column;
-            }
-            
-            .action-buttons {
-                grid-template-columns: 1fr;
-            }
-            
-            .status-card, .current-time, .attendance-actions {
-                padding: 20px;
-            }
-            
-            #liveClock {
-                font-size: 2rem;
-            }
-        }
-
-        /* Animation for status changes */
-        @keyframes pulse-status {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .status-updated {
-            animation: pulse-status 0.5s ease;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                height: 100vh;
-                transform: translateX(-100%);
-                z-index: 100;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .cards-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .cards-container .card:nth-child(6) {
-                grid-column: 1 / 3;
-            }
-            
-            .profile-section {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                width: 95%;
-            }
-        }
-        /* Notification styles */
+        
+        /* ========== NOTIFICATION ========== */
         .notification-wrapper {
             position: relative;
+            z-index: 1001;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-right: 20px;
+            margin-right: 15px;
         }
-        
         .notification-bell {
-            background: transparent;
+            background: var(--surface);
             border: none;
-            position: relative;
-            font-size: 1.6rem;
-            color: var(--primary);
-            cursor: pointer;
-            outline: none;
-            transition: color 0.2s;
-            padding: 8px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text);
+            box-shadow: var(--neu-shadow-sm);
+            transition: var(--transition);
+            position: relative;
         }
-        
-        .notification-bell:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-        }
-        
-        .notification-bell:active {
-            animation: bell-pop 0.3s;
-        }
-        
-        @keyframes bell-pop {
-            0% { transform: scale(1);}
-            50% { transform: scale(1.2);}
-            100% { transform: scale(1);}
-        }
-        
+        .notification-bell:hover { box-shadow: var(--neu-shadow-inset); }
         .notification-dot {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 12px;
-            height: 12px;
-            background: #e53935;
+            top: 6px;
+            right: 6px;
+            width: 9px;
+            height: 9px;
+            background: var(--danger);
             border-radius: 50%;
-            border: 2px solid #fff;
+            border: 2px solid var(--surface);
             display: none;
-            z-index: 2;
-            animation: pulse-dot 1.5s infinite;
         }
-        
-        @keyframes pulse-dot {
-            0% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(229, 57, 53, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
-        }
-        
         .notification-dropdown {
             display: none;
             position: absolute;
@@ -1136,97 +585,68 @@
             width: 350px;
             max-height: 500px;
             overflow-y: auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--neu-shadow);
             z-index: 1000;
-            animation: fadeIn 0.2s ease-out;
-            border: 1px solid #eee;
+            border: 1px solid var(--border);
         }
-        
         .dropdown-header {
             padding: 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #f8f9fa;
+            background: var(--surface);
             position: sticky;
             top: 0;
             z-index: 1;
         }
-        
         .dropdown-header h3 {
-            font-size: 16px;
+            font-size: 0.9rem;
             color: var(--dark);
             font-weight: 600;
             margin: 0;
         }
-        
         .dropdown-header button {
             background: none;
             border: none;
             color: var(--primary);
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 0.8rem;
         }
-        
-        .dropdown-header button:hover {
-            text-decoration: underline;
-        }
-        
-        .dropdown-list {
-            padding: 0;
-        }
-        
+        .dropdown-list { padding: 0; }
         .dropdown-item {
             padding: 15px;
-            border-bottom: 1px solid #f5f5f5;
-            transition: background-color 0.2s;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
+            font-size: 0.85rem;
         }
-        
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
-        
+        .dropdown-item:hover { background: var(--white); }
         .dropdown-item .notification-message {
-            color: #333;
+            color: var(--text);
             margin-bottom: 5px;
-            font-size: 14px;
         }
-        
         .dropdown-item .notification-time {
-            color: #888;
-            font-size: 12px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
         }
-        
         .dropdown-empty {
             padding: 20px;
             text-align: center;
-            color: #888;
-            font-size: 14px;
+            color: var(--text-muted);
         }
-        
         .dropdown-footer {
             padding: 10px;
             text-align: center;
-            border-top: 1px solid #eee;
-            background-color: #f8f9fa;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
         }
-        
         .dropdown-footer a {
             color: var(--primary);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 0.8rem;
         }
-        
-        .dropdown-footer a:hover {
-            text-decoration: underline;
-        }
-        
         .blur-bg {
             position: fixed;
             top: 0;
@@ -1234,360 +654,248 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
-            z-index: 999;
+            z-index: 998;
             display: none;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
+        
+        /* ========== NOTICES ========== */
+        .notice {
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            margin: 10px 0;
+            font-size: 0.85rem;
         }
-        .header-right {
+        .notice.warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .notice.danger { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .notice.success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        
+        /* ========== PASSWORD ========== */
+        .password-form {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 15px;
+            width: 100%;
+            max-width: 600px;
         }
-        /* Payroll Table Styles */
-#payrollTable th:nth-child(2),
-#payrollTable th:nth-child(3),
-#payrollTable th:nth-child(4),
-#payrollTable th:nth-child(5),
-#payrollTable td:nth-child(2),
-#payrollTable td:nth-child(3),
-#payrollTable td:nth-child(4),
-#payrollTable td:nth-child(5) {
-    text-align: right;
-}
-
-.btn-sm {
-    padding: 5px 10px;
-    font-size: 0.8rem;
-}
-
-.view-payslip {
-    background-color: var(--accent);
-    color: white;
-}
-
-.view-payslip:hover {
-    background-color: var(--secondary);
-}
-
-#payrollSummary {
-    background: rgba(67, 97, 238, 0.05);
-    border-left: 4px solid var(--primary);
-}
-
-        #payrollSummary h3 {
+        .password-form .form-group { width: 100%; position: relative; }
+        .password-form .form-group input { padding-right: 45px !important; width: 100%; box-sizing: border-box; }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+        .password-toggle i {
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        .password-eye { transition: color 0.3s ease; cursor: pointer; }
+        .password-eye:hover { color: var(--primary) !important; }
+        .password-strength { font-weight: 500; margin-top: 5px; font-size: 12px; }
+        .strength-weak { color: #e74c3c; }
+        .strength-medium { color: #f39c12; }
+        .strength-strong { color: #27ae60; }
+        
+        /* ========== PROFILE ========== */
+        .profile-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+        .profile-container {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .profile-photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .profile-image-large {
+            width: 200px !important;
+            height: 200px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 5px solid var(--primary) !important;
+            box-shadow: var(--neu-shadow) !important;
+        }
+        .profile-details-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex: 1;
+        }
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-item label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.85rem;
+            min-width: 130px;
+        }
+        .info-item span {
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex: 1;
+        }
+        .activities-list { margin-top: 15px; }
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            margin-bottom: 10px;
+            box-shadow: var(--neu-shadow-sm);
+        }
+        .activity-icon { font-size: 1.1rem; margin-top: 2px; }
+        .activity-content { flex: 1; }
+        .activity-message { font-weight: 500; color: var(--text); margin-bottom: 4px; }
+        .activity-time { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* ========== ATTENDANCE ========== */
+        .attendance-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .attendance-status {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .status-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--neu-shadow);
+            text-align: center;
+        }
+        .status-card i {
+            font-size: 2.5rem;
             color: var(--primary);
             margin-bottom: 15px;
         }
-
-.dashboard.sidebar-collapsed .sidebar {
-    width: 70px;
-    min-width: 70px;
-    max-width: 70px;
-}
-.dashboard.sidebar-collapsed .sidebar .sidebar-header h1 span,
-.dashboard.sidebar-collapsed .sidebar .sidebar-header p,
-.dashboard.sidebar-collapsed .sidebar .menu-item span,
-.dashboard.sidebar-collapsed .sidebar .menu-item .badge {
-    display: none;
-}
-.dashboard.sidebar-collapsed .sidebar .menu-item {
-    justify-content: center;
-}
-.dashboard.sidebar-collapsed .sidebar .menu-item i {
-    margin-right: 0;
-}
-.dashboard.sidebar-collapsed .main-content {
-    margin-left: 70px;
-}
-
-        /* Enhanced responsive design for all screen sizes */
-        @media (min-width: 1600px) {
-            .cards-container {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 25px;
-            }
-            .card {
-                min-width: 200px;
-                padding: 28px 24px 22px 24px;
-            }
+        .status-card h3 { margin-bottom: 10px; color: var(--dark); }
+        .status-card p { font-size: 1.1rem; font-weight: 500; margin: 10px 0; }
+        .current-time {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--neu-shadow);
+            text-align: center;
+        }
+        .current-time i { font-size: 2rem; color: var(--accent); margin-bottom: 15px; }
+        #liveClock { font-size: 2.5rem; font-weight: 600; color: var(--dark); }
+        #currentDate { font-size: 1rem; color: var(--text-muted); margin-top: 5px; }
+        #timeRemaining { font-size: 0.85rem; color: var(--warning); margin-top: 15px; font-weight: 500; }
+        .attendance-actions {
+            flex: 1;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--neu-shadow);
+        }
+        .attendance-actions h3 { margin-bottom: 20px; color: var(--dark); text-align: center; }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .attendance-btn {
+            padding: 15px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: var(--neu-shadow-sm);
+        }
+        .attendance-btn:hover:not(:disabled) { box-shadow: var(--neu-shadow-hover); transform: translateY(-2px); }
+        .attendance-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .attendance-btn.present { background: var(--success); color: white; }
+        .attendance-btn.present-late { background: var(--warning); color: white; }
+        .attendance-btn.late { background: var(--danger); color: white; }
+        .attendance-btn.absent { background: #64748b; color: white; }
+        .attendance-btn.checkout { background: var(--primary); color: white; width: 100%; margin-top: 20px; }
+        .attendance-btn.checkout:hover:not(:disabled) { background: var(--primary-dark); }
+        
+        /* ========== PAGINATION ========== */
+        .pagination-controls {
+            background: var(--surface);
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--neu-shadow-sm);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pagination-footer {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 10px;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--neu-shadow-sm);
         }
         
-        @media (max-width: 1599px) and (min-width: 1400px) {
-            .cards-container {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 20px;
-            }
-            .card {
-                min-width: 180px;
-                padding: 24px 20px 18px 20px;
-            }
-        }
-        
-        @media (max-width: 1399px) and (min-width: 1200px) {
-            .cards-container {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
-            .card {
-                min-width: 200px;
-                padding: 24px 20px 18px 20px;
-            }
-        }
-        
-        @media (max-width: 1199px) and (min-width: 1000px) {
-            .cards-container {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 18px;
-            }
-            .card {
-                min-width: 220px;
-                padding: 22px 18px 16px 18px;
-            }
-        }
-        
-        @media (max-width: 999px) and (min-width: 768px) {
-            .cards-container {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 15px;
-            }
-            .card {
-                min-width: 200px;
-                padding: 20px 16px 14px 16px;
-            }
-            .card-title {
-                font-size: 0.9rem;
-            }
-            .card-value {
-                font-size: 1.8rem;
-            }
-        }
-        
-        @media (max-width: 767px) and (min-width: 600px) {
-            .cards-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            .card {
-                min-width: 180px;
-                padding: 18px 14px 12px 14px;
-            }
-            .card-title {
-                font-size: 0.85rem;
-            }
-            .card-value {
-                font-size: 1.6rem;
-            }
-            .card-subtext {
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (max-width: 599px) {
-            .cards-container {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .card {
-                min-width: auto;
-                padding: 16px 12px 10px 12px;
-            }
-            .card-title {
-                font-size: 0.8rem;
-            }
-            .card-value {
-                font-size: 1.5rem;
-            }
-            .card-subtext {
-                font-size: 0.8rem;
-            }
-            .card-change {
-                font-size: 0.75rem;
-            }
-        }
-        
-        /* Sidebar responsive behavior */
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 900px) {
             .sidebar {
                 position: fixed;
-                left: -250px;
+                left: -260px;
                 top: 0;
                 height: 100vh;
-                z-index: 100;
-                transition: left 0.3s ease;
+                z-index: 200;
             }
-            .sidebar.open {
-                left: 0;
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
+            .sidebar.open { left: 0; }
+            .main-content { margin-left: 0 !important; }
+            .cards-container { grid-template-columns: repeat(2, 1fr); }
+            .profile-container { flex-direction: column; }
+            .attendance-container { flex-direction: column; }
+            .action-buttons { grid-template-columns: 1fr; }
+            .modal-content { width: 95%; }
         }
-        
-        /* Smooth transitions for all responsive changes */
-        .cards-container {
-            transition: all 0.3s ease;
+        @media (max-width: 480px) {
+            .cards-container { grid-template-columns: 1fr; }
         }
-        
-        .card {
-            transition: all 0.3s ease;
-        }
- /* Enhanced Pagination Styles - Clean Layout */
-.pagination-controls {
-    background: #f8f9fa;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.pagination-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pagination-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pagination-buttons .btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 120px;
-    justify-content: center;
-}
-
-.pagination-buttons .btn:disabled {
-    background-color: #e9ecef !important;
-    color: #6c757d !important;
-    cursor: not-allowed;
-    opacity: 0.6;
-    border: 1px solid #dee2e6;
-}
-
-.pagination-buttons .btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.pagination-footer {
-    margin-top: 20px;
-    text-align: center;
-    color: #666;
-    font-size: 0.9rem;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-}
-
-/* Remove the pagination info styles since we're not using it */
-.pagination-info {
-    display: none;
-}
-
-/* Responsive pagination */
-@media (max-width: 768px) {
-    .pagination-controls {
-        flex-direction: column;
-        gap: 10px;
-    }
     
-    .pagination-left, .pagination-right {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .pagination-buttons .btn {
-        min-width: 140px;
-        padding: 12px 20px;
-    }
-}
-/* Password strength indicators */
-.password-strength { font-weight: 500; }
-.strength-weak { color: #e74c3c; }
-.strength-medium { color: #f39c12; }
-.strength-strong { color: #27ae60; }
-
-/* Password toggle */
-.password-toggle { 
-    position: absolute; 
-    right: 10px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    cursor: pointer; 
-    color: #666; 
-}
-.password-form .form-group { position: relative; }
-.password-form .form-group input { padding-right: 35px; }
-
-/* Notices */
-.notice { 
-    padding: 10px; 
-    border-radius: 5px; 
-    margin: 10px 0; 
-}
-.notice.warning { 
-    background: #fff3cd; 
-    border: 1px solid #ffeaa7; 
-    color: #856404; 
-}
-.notice.danger { 
-    background: #f8d7da; 
-    border: 1px solid #f5c6cb; 
-    color: #721c24; 
-}
-.notice.success { 
-    background: #d4edda; 
-    border: 1px solid #c3e6cb; 
-    color: #155724; 
-}
-/* Fix for attendance buttons */
-.attendance-btn:not(:disabled) {
-    cursor: pointer !important;
-    opacity: 1 !important;
-    transition: all 0.3s ease !important;
-}
-
-.attendance-btn:not(:disabled):hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-}
-
-.attendance-btn:disabled {
-    cursor: not-allowed !important;
-    opacity: 0.6 !important;
-    pointer-events: none !important;
-}
-
-/* Make check-out button more visible */
-#checkOutBtn:not(:disabled) {
-    background: linear-gradient(135deg, #4361ee, #3f37c9) !important;
-    font-weight: 600 !important;
-    font-size: 1.1rem !important;
-    padding: 16px !important;
-}
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: #c1c9d4; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -1596,23 +904,80 @@
 </audio>
     <div class="dashboard">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
+                <img src="FSM.LOGO.JPG" alt="Logo" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);margin-bottom:10px;box-shadow:var(--neu-shadow-sm);">
                 <h1><i class="fas fa-user-tie"></i> <span>Employee Portal</span></h1>
                 <p>Welcome, <span id="sidebarUserNameSpan">Employee</span></p>
             </div>
+            <div class="sidebar-nav" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 0;">
             <div class="menu-item active" data-section="home-section"><i class="fas fa-home"></i> <span>Home</span></div>
             <div class="menu-item" data-section="profile-section"><i class="fas fa-user"></i> <span>My Profile</span></div>
             <div class="menu-item" data-section="leave-history-section"><i class="fas fa-calendar-alt"></i> <span>Leave History</span></div>
             <div class="menu-item" data-section="time-book-section"><i class="fas fa-clock"></i> <span>Time Book</span></div>
             <div class="menu-item" data-section="payroll-section"><i class="fas fa-money-bill-wave"></i> <span>Payroll</span></div>
             <div class="menu-item" data-section="attendance-surf-section"><i class="fas fa-user-check"></i> <span>Attendance Surf</span></div>
+            <div class="menu-item" data-section="tasks-section"><i class="fas fa-tasks"></i> <span>My Tasks</span></div>
+            <div class="menu-item" data-section="announcements-section"><i class="fas fa-bullhorn"></i> <span>Announcements</span></div>
+            <div class="menu-item" data-section="documents-section"><i class="fas fa-folder-open"></i> <span>Documents</span></div>
             <div class="menu-item" onclick="window.location.href='Ticket_Management_System.html'" data-title="Ticket Management">
                 <i class="fas fa-ticket-alt"></i>
                 <span>Ticket Management</span>
                 <span class="badge" id="ticketsBadge">0</span>
             </div>
+            
+            <!-- Department-Specific Section (DYNAMIC) -->
+            <div id="deptSection" style="display:none;">
+                <div class="nav-section-title" id="deptSectionTitle">Department Tools</div>
+                
+                <!-- IT Tools -->
+                <div class="menu-item dept-menu-item" id="menu-it-tickets" style="display:none;" data-section="it-tickets-section"><i class="fas fa-ticket-alt"></i> <span>IT Tickets</span></div>
+                <div class="menu-item dept-menu-item" id="menu-it-assets" style="display:none;" data-section="it-assets-section"><i class="fas fa-laptop"></i> <span>Asset Tracker</span></div>
+                <div class="menu-item dept-menu-item" id="menu-it-status" style="display:none;" data-section="it-status-section"><i class="fas fa-server"></i> <span>System Status</span></div>
+                <div class="menu-item dept-menu-item" id="menu-it-knowledge" style="display:none;" data-section="it-knowledge-section"><i class="fas fa-book"></i> <span>Knowledge Base</span></div>
+                
+                <!-- Finance Tools -->
+                <div class="menu-item dept-menu-item" id="menu-finance-expenses" style="display:none;" data-section="finance-expenses-section"><i class="fas fa-receipt"></i> <span>Expense Claims</span></div>
+                <div class="menu-item dept-menu-item" id="menu-finance-budget" style="display:none;" data-section="finance-budget-section"><i class="fas fa-chart-pie"></i> <span>Budget View</span></div>
+                <div class="menu-item dept-menu-item" id="menu-finance-invoices" style="display:none;" data-section="finance-invoices-section"><i class="fas fa-file-invoice"></i> <span>Invoice Tracking</span></div>
+                <div class="menu-item dept-menu-item" id="menu-finance-pettycash" style="display:none;" data-section="finance-pettycash-section"><i class="fas fa-coins"></i> <span>Petty Cash</span></div>
+                
+                <!-- Sales Tools -->
+                <div class="menu-item dept-menu-item" id="menu-sales-leads" style="display:none;" data-section="sales-leads-section"><i class="fas fa-user-plus"></i> <span>Lead Management</span></div>
+                <div class="menu-item dept-menu-item" id="menu-sales-pipeline" style="display:none;" data-section="sales-pipeline-section"><i class="fas fa-funnel-dollar"></i> <span>Sales Pipeline</span></div>
+                <div class="menu-item dept-menu-item" id="menu-sales-clients" style="display:none;" data-section="sales-clients-section"><i class="fas fa-address-book"></i> <span>Client Database</span></div>
+                
+                <!-- Marketing Tools -->
+                <div class="menu-item dept-menu-item" id="menu-marketing-campaigns" style="display:none;" data-section="marketing-campaigns-section"><i class="fas fa-bullhorn"></i> <span>Campaign Tracker</span></div>
+                <div class="menu-item dept-menu-item" id="menu-marketing-calendar" style="display:none;" data-section="marketing-calendar-section"><i class="fas fa-calendar-week"></i> <span>Content Calendar</span></div>
+                <div class="menu-item dept-menu-item" id="menu-marketing-social" style="display:none;" data-section="marketing-social-section"><i class="fas fa-hashtag"></i> <span>Social Media</span></div>
+                <div class="menu-item dept-menu-item" id="menu-marketing-analytics" style="display:none;" data-section="marketing-analytics-section"><i class="fas fa-chart-bar"></i> <span>Analytics</span></div>
+                
+                <!-- Operations Tools -->
+                <div class="menu-item dept-menu-item" id="menu-ops-inventory" style="display:none;" data-section="ops-inventory-section"><i class="fas fa-boxes"></i> <span>Inventory</span></div>
+                <div class="menu-item dept-menu-item" id="menu-ops-logistics" style="display:none;" data-section="ops-logistics-section"><i class="fas fa-truck"></i> <span>Logistics</span></div>
+                <div class="menu-item dept-menu-item" id="menu-ops-vendors" style="display:none;" data-section="ops-vendors-section"><i class="fas fa-handshake"></i> <span>Vendors</span></div>
+                
+                <!-- Procurement Tools -->
+                <div class="menu-item dept-menu-item" id="menu-proc-purchase-orders" style="display:none;" data-section="proc-purchase-orders-section"><i class="fas fa-file-signature"></i> <span>Purchase Orders</span></div>
+                <div class="menu-item dept-menu-item" id="menu-proc-suppliers" style="display:none;" data-section="proc-suppliers-section"><i class="fas fa-truck-loading"></i> <span>Suppliers</span></div>
+                <div class="menu-item dept-menu-item" id="menu-proc-orders" style="display:none;" data-section="proc-orders-section"><i class="fas fa-clipboard-list"></i> <span>Order Tracking</span></div>
+                
+                <!-- Security Tools -->
+                <div class="menu-item dept-menu-item" id="menu-sec-incidents" style="display:none;" data-section="sec-incidents-section"><i class="fas fa-exclamation-triangle"></i> <span>Incident Reports</span></div>
+                <div class="menu-item dept-menu-item" id="menu-sec-patrol" style="display:none;" data-section="sec-patrol-section"><i class="fas fa-route"></i> <span>Patrol Logs</span></div>
+                <div class="menu-item dept-menu-item" id="menu-sec-visitors" style="display:none;" data-section="sec-visitors-section"><i class="fas fa-id-badge"></i> <span>Visitor Mgmt</span></div>
+                <div class="menu-item dept-menu-item" id="menu-sec-access" style="display:none;" data-section="sec-access-section"><i class="fas fa-door-open"></i> <span>Access Logs</span></div>
+                
+                <!-- HR Tools -->
+                <div class="menu-item dept-menu-item" id="menu-hr-records" style="display:none;" data-section="hr-records-section"><i class="fas fa-folder-open"></i> <span>Employee Records</span></div>
+                <div class="menu-item dept-menu-item" id="menu-hr-recruitment" style="display:none;" data-section="hr-recruitment-section"><i class="fas fa-user-plus"></i> <span>Recruitment</span></div>
+                <div class="menu-item dept-menu-item" id="menu-hr-onboarding" style="display:none;" data-section="hr-onboarding-section"><i class="fas fa-user-check"></i> <span>Onboarding</span></div>
+                <div class="menu-item dept-menu-item" id="menu-hr-reviews" style="display:none;" data-section="hr-reviews-section"><i class="fas fa-star"></i> <span>Reviews</span></div>
+            </div>
+            
             <div class="menu-item" data-section="logout"><i class="fas fa-sign-out-alt"></i> <span>Log out</span></div>
+            </div>
         </div>
 
        
@@ -1620,8 +985,8 @@
         <div class="main-content">
             <!-- Header -->
             <div class="header">
-                <button id="sidebarCollapse" class="btn btn-primary">
-                    <i class="fas fa-bars"></i> Toggle Sidebar
+                <button id="sidebarCollapse" class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+                    <i class="fas fa-bars"></i>
                 </button>                
                 <div class="header-right">
                     <!-- Notification Bell -->
@@ -1655,6 +1020,8 @@
                 </div>
             </div>
 
+            <div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;scrollbar-width:thin;scrollbar-color:#c1c9d4 transparent;">
+            <div class="content-wrapper" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;scrollbar-width:thin;scrollbar-color:#c1c9d4 transparent;">
             <!-- Dashboard Overview Section -->
             <div class="content-section active" id="home-section">
                 <div class="cards-container">
@@ -1712,6 +1079,90 @@
                         </div>
                         <div class="card-value">0</div>
                         <div class="card-change positive"><i class="fas fa-arrow-up"></i> 5 this week</div>
+                    </div>
+                    
+                    <!-- IT Department Cards -->
+                    <div class="card dept-card" id="cardITTickets" style="display:none;">
+                        <div class="card-header"><div class="card-title">Open Tickets</div><div class="card-icon"><i class="fas fa-ticket-alt"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">Assigned to you</div>
+                    </div>
+                    <div class="card dept-card" id="cardSystemStatus" style="display:none;">
+                        <div class="card-header"><div class="card-title">System Uptime</div><div class="card-icon"><i class="fas fa-server"></i></div></div>
+                        <div class="card-value">99.9%</div><div class="card-change positive">30 days</div>
+                    </div>
+                    
+                    <!-- Finance Department Cards -->
+                    <div class="card dept-card" id="cardPendingExpenses" style="display:none;">
+                        <div class="card-header"><div class="card-title">Pending Expenses</div><div class="card-icon"><i class="fas fa-receipt"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">Awaiting approval</div>
+                    </div>
+                    <div class="card dept-card" id="cardBudgetRemaining" style="display:none;">
+                        <div class="card-header"><div class="card-title">Budget Remaining</div><div class="card-icon"><i class="fas fa-chart-pie"></i></div></div>
+                        <div class="card-value">Tsh.0</div><div class="card-change positive">Q2 2026</div>
+                    </div>
+                    
+                    <!-- Sales Department Cards -->
+                    <div class="card dept-card" id="cardMyLeads" style="display:none;">
+                        <div class="card-header"><div class="card-title">My Leads</div><div class="card-icon"><i class="fas fa-user-plus"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">Active leads</div>
+                    </div>
+                    <div class="card dept-card" id="cardPipelineValue" style="display:none;">
+                        <div class="card-header"><div class="card-title">Pipeline Value</div><div class="card-icon"><i class="fas fa-funnel-dollar"></i></div></div>
+                        <div class="card-value">Tsh.0</div><div class="card-change positive">This quarter</div>
+                    </div>
+                    <div class="card dept-card" id="cardMonthlySales" style="display:none;">
+                        <div class="card-header"><div class="card-title">Monthly Sales</div><div class="card-icon"><i class="fas fa-chart-line"></i></div></div>
+                        <div class="card-value">Tsh.0</div><div class="card-change positive">June 2026</div>
+                    </div>
+                    
+                    <!-- Marketing Department Cards -->
+                    <div class="card dept-card" id="cardActiveCampaigns" style="display:none;">
+                        <div class="card-header"><div class="card-title">Active Campaigns</div><div class="card-icon"><i class="fas fa-bullhorn"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">Running now</div>
+                    </div>
+                    <div class="card dept-card" id="cardContentDue" style="display:none;">
+                        <div class="card-header"><div class="card-title">Content Due</div><div class="card-icon"><i class="fas fa-calendar-week"></i></div></div>
+                        <div class="card-value">0</div><div class="card-change negative">This week</div>
+                    </div>
+                    
+                    <!-- Operations Department Cards -->
+                    <div class="card dept-card" id="cardInventoryCount" style="display:none;">
+                        <div class="card-header"><div class="card-title">Inventory Items</div><div class="card-icon"><i class="fas fa-boxes"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext"><i class="fas fa-arrow-right"></i> View inventory</div>
+                    </div>
+                    <div class="card dept-card" id="cardShipmentsToday" style="display:none;">
+                        <div class="card-header"><div class="card-title">Shipments Today</div><div class="card-icon"><i class="fas fa-truck"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext"><i class="fas fa-arrow-right"></i> View shipments</div>
+                    </div>
+                    
+                    <!-- Procurement Department Cards -->
+                    <div class="card dept-card" id="cardPendingPOs" style="display:none;">
+                        <div class="card-header"><div class="card-title">Pending POs</div><div class="card-icon"><i class="fas fa-file-signature"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">Awaiting approval</div>
+                    </div>
+                    <div class="card dept-card" id="cardOrdersThisMonth" style="display:none;">
+                        <div class="card-header"><div class="card-title">Orders This Month</div><div class="card-icon"><i class="fas fa-shopping-cart"></i></div></div>
+                        <div class="card-value">0</div><div class="card-change positive">June 2026</div>
+                    </div>
+                    
+                    <!-- Security Department Cards -->
+                    <div class="card dept-card" id="cardIncidentsToday" style="display:none;">
+                        <div class="card-header"><div class="card-title">Incidents Today</div><div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div></div>
+                        <div class="card-value">0</div><div class="card-change negative">Active</div>
+                    </div>
+                    <div class="card dept-card" id="cardPatrolStatus" style="display:none;">
+                        <div class="card-header"><div class="card-title">Patrol Status</div><div class="card-icon"><i class="fas fa-route"></i></div></div>
+                        <div class="card-value">--</div><div class="card-subtext">Current shift</div>
+                    </div>
+                    
+                    <!-- HR Department Cards -->
+                    <div class="card dept-card" id="cardNewHires" style="display:none;">
+                        <div class="card-header"><div class="card-title">New Hires</div><div class="card-icon"><i class="fas fa-user-plus"></i></div></div>
+                        <div class="card-value">0</div><div class="card-subtext">This month</div>
+                    </div>
+                    <div class="card dept-card" id="cardPendingReviews" style="display:none;">
+                        <div class="card-header"><div class="card-title">Pending Reviews</div><div class="card-icon"><i class="fas fa-star"></i></div></div>
+                        <div class="card-value">0</div><div class="card-change negative">Due this week</div>
                     </div>
                 </div>
                 
@@ -1786,33 +1237,20 @@
         <div class="form-group">
             <label for="currentPassword">Current Password</label>
             <input type="password" id="currentPassword" required>
-            <div class="password-toggle">
-                <i class="fas fa-eye password-eye" onclick="togglePassword('currentPassword')"></i>
-            </div>
+            <span class="password-toggle" onclick="togglePassword('currentPassword')"><i class="fas fa-eye password-eye"></i></span>
         </div>
         
         <div class="form-group">
             <label for="newPassword">New Password</label>
             <input type="password" id="newPassword" required oninput="checkPasswordStrength()">
-            <div class="password-toggle">
-                <i class="fas fa-eye password-eye" onclick="togglePassword('newPassword')"></i>
-            </div>
+            <span class="password-toggle" onclick="togglePassword('newPassword')"><i class="fas fa-eye password-eye"></i></span>
             <div id="passwordStrength" class="password-strength" style="margin-top: 5px; font-size: 12px;"></div>
-            <div id="passwordRequirements" style="font-size: 11px; color: #666; margin-top: 5px;">
-                • At least 8 characters<br>
-                • One uppercase letter<br>
-                • One lowercase letter<br>
-                • One number<br>
-                • One special character
-            </div>
         </div>
        
         <div class="form-group">
             <label for="confirmPassword">Confirm New Password</label>
             <input type="password" id="confirmPassword" required oninput="checkPasswordMatch()">
-            <div class="password-toggle">
-                <i class="fas fa-eye password-eye" onclick="togglePassword('confirmPassword')"></i>
-            </div>
+            <span class="password-toggle" onclick="togglePassword('confirmPassword')"><i class="fas fa-eye password-eye"></i></span>
             <div id="passwordMatch" style="font-size: 12px; margin-top: 5px;"></div>
         </div>
         
@@ -1955,6 +1393,72 @@
                 </div>
             </div>
 
+            <!-- Announcements Section -->
+            <div class="content-section" id="announcements-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-bullhorn"></i> Company Announcements</h2>
+                    <div style="display:flex;gap:10px;">
+                        <select id="announceFilter" style="padding:8px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" onchange="filterAnnouncements()">
+                            <option value="">All Departments</option>
+                            <option value="All">Company Wide</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                            <option value="Security">Security</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="announcementsContainer" style="display:flex;flex-direction:column;gap:15px;">
+                    <div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Loading announcements...</div>
+                </div>
+            </div>
+            
+            <!-- Documents Section -->
+            <div class="content-section" id="documents-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-folder-open"></i> My Documents</h2>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-sm" onclick="loadDocumentRequests()" title="View Request History">
+                            <i class="fas fa-history"></i> Request History
+                        </button>
+                        <button class="btn btn-primary" onclick="requestDocument()"><i class="fas fa-plus"></i> Request Document</button>
+                    </div>
+                </div>
+                <div id="docRequestsContainer" style="display:none;margin-bottom:20px;"></div>
+                <div style="display:flex;gap:15px;margin-bottom:25px;flex-wrap:wrap;align-items:center;">
+                    <input type="text" id="docSearch" placeholder="🔍 Search documents..." style="flex:1;min-width:200px;padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" oninput="filterDocuments()">
+                    <select id="docCategory" style="padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" onchange="filterDocuments()">
+                        <option value="">All Categories</option>
+                        <option value="HR">HR Documents</option>
+                        <option value="Policy">Policies</option>
+                        <option value="Tax">Tax Forms</option>
+                        <option value="Training">Training</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table">
+                    <thead><tr><th>Document</th><th>Category</th><th>Uploaded</th><th>Size</th><th>Actions</th></tr></thead>
+                    <tbody id="documentsTableBody">
+                        <tr><td colspan="5" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading documents...</td></tr>
+                    </tbody>
+                </table>
+                </div></div>
+            </div>
+            
+            <!-- Tasks Section -->
+            <div class="content-section" id="tasks-section">
+                <div class="section-header" style="margin-bottom:25px;"><h2><i class="fas fa-tasks"></i> My Tasks</h2></div>
+                <div style="display:flex;gap:15px;margin-bottom:25px;">
+                    <button class="btn btn-primary btn-sm filter-btn active" onclick="filterTasks('all',this)">All</button>
+                    <button class="btn btn-sm filter-btn" onclick="filterTasks('pending',this)">Pending</button>
+                    <button class="btn btn-sm filter-btn" onclick="filterTasks('in-progress',this)">In Progress</button>
+                    <button class="btn btn-sm filter-btn" onclick="filterTasks('completed',this)">Completed</button>
+                </div>
+                <div id="tasksContainer"></div>
+            </div>
+            
             <!-- Attendance Surf Section -->
             <div class="content-section" id="attendance-surf-section">
                 <h2>Employee Attendance Surf</h2>
@@ -2023,10 +1527,407 @@
                     </div>
                 </div>
             </div>
+        
+            <!-- ===== IT TICKETS SECTION ===== -->
+            <div class="content-section dept-content-section" id="it-tickets-section">
+                <h2>IT Ticket Management</h2>
+                <div style="display:flex;gap:10px;margin-bottom:20px;">
+                    <button class="btn btn-primary" onclick="openTicketModal()"><i class="fas fa-plus"></i> New Ticket</button>
+                    <button class="btn" onclick="loadITTickets()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <table class="data-table"><thead><tr><th>Ticket ID</th><th>Subject</th><th>Priority</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody id="itTicketsTableBody"><tr><td colspan="6">Loading tickets...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== IT ASSETS SECTION ===== -->
+            <div class="content-section dept-content-section" id="it-assets-section">
+                <h2>Asset Tracker</h2>
+                <table class="data-table"><thead><tr><th>Asset Tag</th><th>Name</th><th>Type</th><th>Assigned To</th><th>Status</th></tr></thead><tbody id="itAssetsTableBody"><tr><td colspan="5">Loading assets...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== IT SYSTEM STATUS ===== -->
+            <div class="content-section dept-content-section" id="it-status-section">
+                <h2>System Status Monitor</h2>
+                <div id="systemStatusContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;"></div>
+            </div>
+            
+            <!-- ===== IT KNOWLEDGE BASE ===== -->
+            <div class="content-section dept-content-section" id="it-knowledge-section">
+                <h2>Knowledge Base</h2>
+                <div style="display:flex;gap:10px;margin-bottom:20px;"><input type="text" id="kbSearch" placeholder="Search articles..." style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);"></div>
+                <div id="kbArticlesContainer"></div>
+            </div>
+            
+            <!-- ===== FINANCE EXPENSES ===== -->
+            <div class="content-section dept-content-section" id="finance-expenses-section">
+                <h2>Expense Claims</h2>
+                <button class="btn btn-primary" style="margin-bottom:20px;" onclick="openExpenseModal()"><i class="fas fa-plus"></i> New Expense</button>
+                <table class="data-table"><thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Description</th><th>Status</th></tr></thead><tbody id="expensesTableBody"><tr><td colspan="5">Loading expenses...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== FINANCE BUDGET ===== -->
+            <div class="content-section dept-content-section" id="finance-budget-section">
+                <h2>Budget Overview</h2>
+                <div id="budgetOverviewContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;"></div>
+            </div>
+            
+            <!-- ===== FINANCE INVOICES ===== -->
+            <div class="content-section dept-content-section" id="finance-invoices-section">
+                <h2>Invoice Tracking</h2>
+                <table class="data-table"><thead><tr><th>Invoice #</th><th>Client</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="invoicesTableBody"><tr><td colspan="5">Loading invoices...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== FINANCE PETTY CASH ===== -->
+            <div class="content-section dept-content-section" id="finance-pettycash-section">
+                <h2>Petty Cash Management</h2>
+                <button class="btn btn-primary" style="margin-bottom:20px;"><i class="fas fa-plus"></i> Record Transaction</button>
+                <table class="data-table"><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Type</th><th>Balance</th></tr></thead><tbody id="pettyCashTableBody"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== SALES LEADS ===== -->
+            <div class="content-section dept-content-section" id="sales-leads-section">
+                <h2>Lead Management</h2>
+                <button class="btn btn-primary" style="margin-bottom:20px;" onclick="openLeadModal()"><i class="fas fa-plus"></i> New Lead</button>
+                <table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Source</th><th>Stage</th><th>Value</th><th>Actions</th></tr></thead><tbody id="leadsTableBody"><tr><td colspan="6">Loading leads...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== SALES PIPELINE ===== -->
+            <div class="content-section dept-content-section" id="sales-pipeline-section">
+                <h2>Sales Pipeline</h2>
+                <div id="pipelineContainer" style="display:flex;gap:20px;overflow-x:auto;"></div>
+            </div>
+            
+            <!-- ===== SALES CLIENTS ===== -->
+            <div class="content-section dept-content-section" id="sales-clients-section">
+                <h2>Client Database</h2>
+                <div style="display:flex;gap:10px;margin-bottom:20px;"><input type="text" id="clientSearch" placeholder="Search clients..." style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);"></div>
+                <table class="data-table"><thead><tr><th>Client</th><th>Company</th><th>Contact</th><th>Status</th><th>Last Contact</th></tr></thead><tbody id="clientsTableBody"><tr><td colspan="5">Loading clients...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== MARKETING CAMPAIGNS ===== -->
+            <div class="content-section dept-content-section" id="marketing-campaigns-section">
+                <h2>Campaign Tracker</h2>
+                <div id="campaignsContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;"></div>
+            </div>
+            
+            <!-- ===== MARKETING CALENDAR ===== -->
+            <div class="content-section dept-content-section" id="marketing-calendar-section">
+                <h2>Content Calendar</h2>
+                <div id="contentCalendarContainer"></div>
+            </div>
+            
+            <!-- ===== MARKETING SOCIAL ===== -->
+            <div class="content-section dept-content-section" id="marketing-social-section">
+                <h2>Social Media Schedule</h2>
+                <table class="data-table"><thead><tr><th>Platform</th><th>Content</th><th>Scheduled</th><th>Status</th></tr></thead><tbody id="socialTableBody"><tr><td colspan="4">Loading...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== MARKETING ANALYTICS ===== -->
+            <div class="content-section dept-content-section" id="marketing-analytics-section">
+                <h2>Marketing Analytics</h2>
+                <div id="analyticsContainer" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;"></div>
+            </div>
+            
+            <!-- ===== OPERATIONS INVENTORY ===== -->
+            <div class="content-section dept-content-section" id="ops-inventory-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-boxes"></i> Inventory Management</h2>
+                    <button class="btn btn-primary" onclick="openInventoryModal()"><i class="fas fa-plus"></i> Add New Item</button>
+                </div>
+                <div style="display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+                    <input type="text" id="invSearch" placeholder="🔍 Search items..." style="flex:1;min-width:200px;padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" oninput="filterInventory()">
+                    <select id="invCategory" style="padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" onchange="filterInventory()">
+                        <option value="">All Categories</option>
+                        <option value="IT Equipment">IT Equipment</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Stationery">Stationery</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="invStatus" style="padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;" onchange="filterInventory()">
+                        <option value="">All Status</option>
+                        <option value="In Stock">In Stock</option>
+                        <option value="Low Stock">Low Stock</option>
+                        <option value="Out of Stock">Out of Stock</option>
+                    </select>
+                    <button class="btn" onclick="exportInventory()"><i class="fas fa-download"></i> Export</button>
+                </div>
+                <div id="invLowStockAlert" style="display:none;padding:12px 16px;margin-bottom:15px;background:#fff3cd;border-radius:var(--radius-sm);color:#856404;font-weight:500;">
+                    ⚠ <span id="invLowStockCount">0</span> items below minimum quantity
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>Item Code</th><th>Name</th><th>Category</th><th>Quantity</th><th>Min Qty</th><th>Location</th><th>Last Updated</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="inventoryTableBody"><tr><td colspan="9" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading inventory...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== OPERATIONS LOGISTICS ===== -->
+            <div class="content-section dept-content-section" id="ops-logistics-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-truck"></i> Logistics Tracking</h2>
+                    <button class="btn btn-primary" onclick="openShipmentModal()"><i class="fas fa-plus"></i> New Shipment</button>
+                </div>
+                <div style="display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+                    <input type="text" id="logSearch" placeholder="🔍 Search shipments..." style="flex:1;min-width:200px;padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;">
+                    <select id="logStatus" style="padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;">
+                        <option value="">All Status</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Delayed">Delayed</option>
+                    </select>
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>Shipment ID</th><th>Origin</th><th>Destination</th><th>Carrier</th><th>Status</th><th>ETA</th><th>Tracking</th></tr></thead>
+                <tbody id="logisticsTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading shipments...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== OPERATIONS VENDORS ===== -->
+            <div class="content-section dept-content-section" id="ops-vendors-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-handshake"></i> Vendor Contacts</h2>
+                    <button class="btn btn-primary" onclick="openVendorModal()"><i class="fas fa-plus"></i> Add Vendor</button>
+                </div>
+                <div style="display:flex;gap:15px;margin-bottom:20px;align-items:center;">
+                    <input type="text" id="venSearch" placeholder="🔍 Search vendors..." style="flex:1;padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;">
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>Vendor Name</th><th>Category</th><th>Contact Person</th><th>Phone</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="vendorsTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading vendors...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== PROCUREMENT POs ===== -->
+            <div class="content-section dept-content-section" id="proc-purchase-orders-section">
+                <div class="section-header" style="margin-bottom:25px;">
+                    <h2><i class="fas fa-file-signature"></i> Purchase Orders</h2>
+                    <button class="btn btn-primary" onclick="openPOModal()"><i class="fas fa-plus"></i> New PO</button>
+                </div>
+                <div style="display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+                    <input type="text" id="poSearch" placeholder="🔍 Search POs..." style="flex:1;min-width:200px;padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;">
+                    <select id="poStatus" style="padding:10px 14px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);font-family:'Poppins',sans-serif;">
+                        <option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Shipped">Shipped</option><option value="Received">Received</option>
+                    </select>
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>PO Number</th><th>Supplier</th><th>Amount</th><th>Order Date</th><th>Delivery Date</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="poTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading POs...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== PROCUREMENT SUPPLIERS ===== -->
+            <div class="content-section dept-content-section" id="proc-suppliers-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-truck-loading"></i> Supplier Database</h2>
+                    <button class="btn btn-primary" onclick="openSupplierModal()"><i class="fas fa-plus"></i> Add Supplier</button>
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>Supplier</th><th>Category</th><th>Contact</th><th>Email</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="suppliersTableBody"><tr><td colspan="7" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading suppliers...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== PROCUREMENT ORDERS ===== -->
+            <div class="content-section dept-content-section" id="proc-orders-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Order Tracking</h2>
+                </div>
+                <div class="chart-container"><div class="table-wrapper">
+                <table class="employees-table"><thead><tr><th>Order ID</th><th>Items</th><th>Quantity</th><th>Order Date</th><th>Delivery Date</th><th>Status</th></tr></thead>
+                <tbody id="ordersTableBody"><tr><td colspan="6" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading orders...</td></tr></tbody></table>
+                </div></div>
+            </div>
+            
+            <!-- ===== SECURITY INCIDENTS ===== -->
+            <div class="content-section dept-content-section" id="sec-incidents-section">
+                <h2>Incident Reports</h2>
+                <button class="btn btn-primary" style="margin-bottom:20px;"><i class="fas fa-plus"></i> Report Incident</button>
+                <table class="data-table"><thead><tr><th>Incident ID</th><th>Type</th><th>Location</th><th>Date/Time</th><th>Status</th></tr></thead><tbody id="incidentsTableBody"><tr><td colspan="5">Loading incidents...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== SECURITY PATROL ===== -->
+            <div class="content-section dept-content-section" id="sec-patrol-section">
+                <h2>Patrol Logs</h2>
+                <table class="data-table"><thead><tr><th>Date</th><th>Officer</th><th>Route</th><th>Checkpoints</th><th>Notes</th></tr></thead><tbody id="patrolTableBody"><tr><td colspan="5">Loading patrol logs...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== SECURITY VISITORS ===== -->
+            <div class="content-section dept-content-section" id="sec-visitors-section">
+                <h2>Visitor Management</h2>
+                <button class="btn btn-primary" style="margin-bottom:20px;"><i class="fas fa-plus"></i> Register Visitor</button>
+                <table class="data-table"><thead><tr><th>Visitor</th><th>Host</th><th>Purpose</th><th>Check In</th><th>Status</th></tr></thead><tbody id="visitorsTableBody"><tr><td colspan="5">Loading visitors...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== SECURITY ACCESS LOGS ===== -->
+            <div class="content-section dept-content-section" id="sec-access-section">
+                <h2>Access Control Logs</h2>
+                <table class="data-table"><thead><tr><th>Date/Time</th><th>Person</th><th>Entry Point</th><th>Access Type</th><th>Status</th></tr></thead><tbody id="accessTableBody"><tr><td colspan="5">Loading access logs...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== HR RECORDS ===== -->
+            <div class="content-section dept-content-section" id="hr-records-section">
+                <h2>Employee Records</h2>
+                <div style="display:flex;gap:10px;margin-bottom:20px;"><input type="text" id="hrSearch" placeholder="Search employees..." style="flex:1;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--surface);box-shadow:var(--neu-shadow-inset);"></div>
+                <table class="data-table"><thead><tr><th>Employee</th><th>Department</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead><tbody id="hrRecordsTableBody"><tr><td colspan="5">Loading records...</td></tr></tbody></table>
+            </div>
+            
+            <!-- ===== HR RECRUITMENT ===== -->
+            <div class="content-section dept-content-section" id="hr-recruitment-section">
+                <h2>Recruitment Pipeline</h2>
+                <div id="recruitmentContainer" style="display:flex;gap:20px;overflow-x:auto;"></div>
+            </div>
+            
+            <!-- ===== HR ONBOARDING ===== -->
+            <div class="content-section dept-content-section" id="hr-onboarding-section">
+                <h2>Onboarding Tasks</h2>
+                <div id="onboardingContainer"></div>
+            </div>
+            
+            <!-- ===== HR REVIEWS ===== -->
+            <div class="content-section dept-content-section" id="hr-reviews-section">
+                <h2>Performance Reviews</h2>
+                <table class="data-table"><thead><tr><th>Employee</th><th>Review Date</th><th>Score</th><th>Status</th><th>Actions</th></tr></thead><tbody id="reviewsTableBody"><tr><td colspan="5">Loading reviews...</td></tr></tbody></table>
+            </div>
+
+            </div>
+            </div>
         </div>
     </div>
 
-    <!-- Leave Requests Modal -->
+    <!-- ===== INVENTORY ADD MODAL ===== -->
+<div id="inventoryModal" class="modal-overlay">
+    <div class="modal-content" style="max-width:600px;">
+        <button class="close-btn" onclick="closeModal('inventoryModal')">&times;</button>
+        <h2><i class="fas fa-boxes"></i> Add Inventory Item</h2>
+        <div class="form-row" style="margin-top:20px;">
+            <div class="form-group"><label>Item Name *</label><input type="text" id="invItemName" placeholder="Enter item name"></div>
+            <div class="form-group"><label>Item Code</label><input type="text" id="invItemCode" placeholder="Auto-generated"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Category *</label><select id="invItemCategory"><option value="">Select</option><option>IT Equipment</option><option>Office Supplies</option><option>Furniture</option><option>Stationery</option><option>Other</option></select></div>
+            <div class="form-group"><label>Quantity *</label><input type="number" id="invItemQty" placeholder="0" min="1"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Minimum Quantity</label><input type="number" id="invItemMinQty" placeholder="0" min="0"></div>
+            <div class="form-group"><label>Location</label><input type="text" id="invItemLocation" placeholder="e.g., Room A, Shelf B"></div>
+        </div>
+        <div class="form-group"><label>Notes</label><textarea id="invItemNotes" rows="2" placeholder="Optional notes"></textarea></div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+            <button class="btn" onclick="closeModal('inventoryModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveInventoryItem()"><i class="fas fa-save"></i> Save Item</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SHIPMENT ADD MODAL ===== -->
+<div id="shipmentModal" class="modal-overlay">
+    <div class="modal-content" style="max-width:600px;">
+        <button class="close-btn" onclick="closeModal('shipmentModal')">&times;</button>
+        <h2><i class="fas fa-truck"></i> New Shipment</h2>
+        <div class="form-row" style="margin-top:20px;">
+            <div class="form-group"><label>Origin *</label><input type="text" id="shipOrigin" placeholder="Origin location"></div>
+            <div class="form-group"><label>Destination *</label><input type="text" id="shipDestination" placeholder="Destination"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Carrier</label><input type="text" id="shipCarrier" placeholder="Shipping company"></div>
+            <div class="form-group"><label>ETA</label><input type="date" id="shipETA"></div>
+        </div>
+        <div class="form-group"><label>Tracking Number</label><input type="text" id="shipTracking" placeholder="Tracking ID"></div>
+        <div class="form-group"><label>Items</label><textarea id="shipItems" rows="2" placeholder="List items in shipment"></textarea></div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+            <button class="btn" onclick="closeModal('shipmentModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveShipment()"><i class="fas fa-save"></i> Save Shipment</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== VENDOR ADD MODAL ===== -->
+<div id="vendorModal" class="modal-overlay">
+    <div class="modal-content" style="max-width:600px;">
+        <button class="close-btn" onclick="closeModal('vendorModal')">&times;</button>
+        <h2><i class="fas fa-handshake"></i> Add Vendor</h2>
+        <div class="form-row" style="margin-top:20px;">
+            <div class="form-group"><label>Vendor Name *</label><input type="text" id="venName" placeholder="Company name"></div>
+            <div class="form-group"><label>Category *</label><select id="venCategory"><option value="">Select</option><option>IT</option><option>Office</option><option>Logistics</option><option>Other</option></select></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Contact Person</label><input type="text" id="venContact" placeholder="Full name"></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="venPhone" placeholder="+255..."></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email" id="venEmail" placeholder="vendor@company.com"></div>
+        <div class="form-group"><label>Address</label><textarea id="venAddress" rows="2" placeholder="Physical address"></textarea></div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+            <button class="btn" onclick="closeModal('vendorModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveVendor()"><i class="fas fa-save"></i> Save Vendor</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PO ADD MODAL ===== -->
+<div id="poModal" class="modal-overlay">
+    <div class="modal-content" style="max-width:600px;">
+        <button class="close-btn" onclick="closeModal('poModal')">&times;</button>
+        <h2><i class="fas fa-file-signature"></i> New Purchase Order</h2>
+        <div class="form-row" style="margin-top:20px;">
+            <div class="form-group"><label>Supplier *</label><select id="poSupplier"><option value="">Select Supplier</option></select></div>
+            <div class="form-group"><label>Amount (Tsh.) *</label><input type="number" id="poAmount" placeholder="0" min="0"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Order Date</label><input type="date" id="poOrderDate"></div>
+            <div class="form-group"><label>Delivery Date</label><input type="date" id="poDeliveryDate"></div>
+        </div>
+        <div class="form-group"><label>Items Description</label><textarea id="poItems" rows="2" placeholder="List items being ordered"></textarea></div>
+        <div class="form-group"><label>Notes</label><textarea id="poNotes" rows="2" placeholder="Additional notes"></textarea></div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+            <button class="btn" onclick="closeModal('poModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="savePO()"><i class="fas fa-save"></i> Create PO</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== REQUEST DOCUMENT MODAL ===== -->
+<div id="requestDocumentModal" class="modal-overlay">
+    <div class="modal-content" style="max-width:550px;">
+        <button class="close-btn" onclick="closeModal('requestDocumentModal')">&times;</button>
+        <h2><i class="fas fa-file-alt"></i> Request Document</h2>
+        <p style="color:var(--text-muted);margin-bottom:20px;">Submit a request to HR for documents you need.</p>
+        <div class="form-group">
+            <label>Document Type *</label>
+            <select id="reqDocType" required>
+                <option value="">Select document type...</option>
+                <option value="Employment Contract">Employment Contract</option>
+                <option value="Tax Form">Tax Form (PAYE/SDL)</option>
+                <option value="Policy Document">Policy Document</option>
+                <option value="Training Certificate">Training Certificate</option>
+                <option value="Salary Slip">Salary Slip (Additional)</option>
+                <option value="ID Card">Company ID Card</option>
+                <option value="NSSF Statement">NSSF Statement</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Reason for Request *</label>
+            <textarea id="reqDocReason" rows="3" placeholder="Please explain why you need this document..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Urgency</label>
+            <select id="reqDocUrgency">
+                <option value="normal">Normal (3-5 working days)</option>
+                <option value="urgent">Urgent (1-2 working days)</option>
+                <option value="immediate">Immediate (Same day if possible)</option>
+            </select>
+        </div>
+        <div id="reqDocNotice" class="notice" style="display:none;"></div>
+        <div class="modal-footer" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+            <button class="btn" onclick="closeModal('requestDocumentModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitDocumentRequest()">
+                <i class="fas fa-paper-plane"></i> Submit Request
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Requests Modal -->
     <div id="leaveRequestsModal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('leaveRequestsModal')" title="Close modal">×</button>
@@ -2225,7 +2126,7 @@
         </div>
     </div>
 </div>
-
+      
     <script>
         // ========================================
         // EMPLOYEE DASHBOARD JAVASCRIPT
@@ -2275,6 +2176,7 @@
                 
                 // Load section-specific data
                 loadSectionData(sectionId);
+                loadDeptSectionData(sectionId);
             }
             
             // Update active menu item
@@ -2305,6 +2207,7 @@
                         populateProfileData(currentEmployeeData);
                     } else {
                         loadEmployeeSession();
+    setupNotifications();
                     }
                     
                     // Setup profile functionality
@@ -2329,6 +2232,15 @@
                     break;
                 case 'ticket-management-section':
                     console.log('Tickets section loaded');
+                    break;
+                case 'tasks-section':
+                    loadTasksSection();
+                    break;
+                case 'announcements-section':
+                    loadAnnouncements();
+                    break;
+                case 'documents-section':
+                    loadDocuments();
                     break;
                 default:
                     console.log('No specific data loading for section:', sectionId);
@@ -2393,6 +2305,23 @@
                     case 'cardFinishedTasks':
                         if (typeof window.showFinishedTasks === 'function') window.showFinishedTasks();
                         break;
+                    case 'cardInventoryCount': showSection('ops-inventory-section'); break;
+                    case 'cardShipmentsToday': showSection('ops-logistics-section'); break;
+                    case 'cardPendingPOs': showSection('proc-purchase-orders-section'); break;
+                    case 'cardOrdersThisMonth': showSection('proc-orders-section'); break;
+                    case 'cardITTickets': showSection('it-tickets-section'); break;
+                    case 'cardSystemStatus': showSection('it-status-section'); break;
+                    case 'cardMyLeads': showSection('sales-leads-section'); break;
+                    case 'cardPipelineValue': showSection('sales-pipeline-section'); break;
+                    case 'cardMonthlySales': showSection('sales-pipeline-section'); break;
+                    case 'cardActiveCampaigns': showSection('marketing-campaigns-section'); break;
+                    case 'cardContentDue': showSection('marketing-calendar-section'); break;
+                    case 'cardPendingExpenses': showSection('finance-expenses-section'); break;
+                    case 'cardBudgetRemaining': showSection('finance-budget-section'); break;
+                    case 'cardIncidentsToday': showSection('sec-incidents-section'); break;
+                    case 'cardPatrolStatus': showSection('sec-patrol-section'); break;
+                    case 'cardNewHires': showSection('hr-recruitment-section'); break;
+                    case 'cardPendingReviews': showSection('hr-reviews-section'); break;
                 }
             }, { passive: true });
 
@@ -2775,6 +2704,7 @@
         
         // Notifications setup
         function setupNotifications() {
+            notifications = []; unreadCount = 0;
             const bell = document.getElementById('notificationBell');
             const dropdown = document.getElementById('notificationDropdown');
             const blurBg = document.getElementById('blurBg');
@@ -3042,9 +2972,57 @@
             // Implementation for loading attendance data
         }
         
-        function fetchNotifications() {
-            console.log('Fetching notifications...');
-            // Implementation for fetching notifications
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('get_notifications.php?read=all', { credentials: 'include' });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                if (data.success) {
+                    notifications = data.notifications.map(n => ({
+                        id: n.id, message: n.message, time: formatTimeAgo(n.created_at),
+                        read: n.is_read == 1, type: n.type
+                    }));
+                    unreadCount = notifications.filter(n => !n.read).length;
+                    updateNotificationUI();
+                    if (dot) dot.style.display = unreadCount > 0 ? 'block' : 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                notifications = []; unreadCount = 0; updateNotificationUI();
+                if (dot) dot.style.display = 'none';
+            }
+        }
+        function formatTimeAgo(createdAt) {
+            const now = new Date(), created = new Date(createdAt);
+            const diffMins = Math.floor((now - created) / 60000);
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return diffMins + ' min ago';
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) return diffHours + ' hour' + (diffHours > 1 ? 's' : '') + ' ago';
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 7) return diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago';
+            return created.toLocaleDateString();
+        }
+        function updateNotificationUI() {
+            notificationList.innerHTML = '';
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<div class="dropdown-empty">No notifications</div>';
+                dot.style.display = 'none';
+            } else {
+                notifications.forEach(n => {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item' + (n.read ? '' : ' unread');
+                    item.innerHTML = '<div class="notification-message">' + n.message + '</div><div class="notification-time">' + n.time + '</div>';
+                    item.addEventListener('click', async function() {
+                        if (!n.read) {
+                            const r = await fetch('mark_notification_read.php', { method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'include', body: JSON.stringify({id: n.id}) });
+                            const d = await r.json();
+                            if (d.success) { n.read = true; unreadCount--; updateNotificationUI(); }
+                        }
+                    });
+                    notificationList.appendChild(item);
+                });
+            }
         }
         
         function fetchAndRenderLeaveRequestsModal() {
@@ -3078,6 +3056,92 @@
         }
         
         // Session management
+
+        // ===== DEPARTMENT CONFIGURATION =====
+        const DEPT_CONFIG = {
+            "Information Technology": { label: "IT Tools", icon: "fa-laptop-code", sections: ["it-tickets","it-assets","it-status","it-knowledge"], cards: ["cardITTickets","cardSystemStatus"] },
+            "Finance": { label: "Finance Tools", icon: "fa-coins", sections: ["finance-expenses","finance-budget","finance-invoices","finance-pettycash"], cards: ["cardPendingExpenses","cardBudgetRemaining"] },
+            "Sales": { label: "Sales Tools", icon: "fa-chart-line", sections: ["sales-leads","sales-pipeline","sales-clients"], cards: ["cardMyLeads","cardPipelineValue","cardMonthlySales"] },
+            "Marketing": { label: "Marketing Tools", icon: "fa-bullhorn", sections: ["marketing-campaigns","marketing-calendar","marketing-social","marketing-analytics"], cards: ["cardActiveCampaigns","cardContentDue"] },
+            "Operations": { label: "Operations Tools", icon: "fa-cogs", sections: ["ops-inventory","ops-logistics","ops-vendors"], cards: ["cardInventoryCount","cardShipmentsToday"] },
+            "Procurement": { label: "Procurement Tools", icon: "fa-shopping-cart", sections: ["proc-purchase-orders","proc-suppliers","proc-orders"], cards: ["cardPendingPOs","cardOrdersThisMonth"] },
+            "Security": { label: "Security Tools", icon: "fa-shield-alt", sections: ["sec-incidents","sec-patrol","sec-visitors","sec-access"], cards: ["cardIncidentsToday","cardPatrolStatus"] },
+            "Human Resources": { label: "HR Tools", icon: "fa-users", sections: ["hr-records","hr-recruitment","hr-onboarding","hr-reviews"], cards: ["cardNewHires","cardPendingReviews"] }
+        };
+        let currentDeptConfig = null;
+        function applyDepartmentConfig(department) {
+            currentDeptConfig = DEPT_CONFIG[department];
+            document.querySelectorAll(".dept-menu-item").forEach(el => el.style.display = "none");
+            document.querySelectorAll(".dept-card").forEach(el => el.style.display = "none");
+            document.querySelectorAll(".dept-content-section").forEach(el => { el.style.display = "none"; el.classList.remove("active"); });
+            if (currentDeptConfig) {
+                const deptSection = document.getElementById("deptSection");
+                const deptTitle = document.getElementById("deptSectionTitle");
+                if (deptSection) deptSection.style.display = "block";
+                if (deptTitle) deptTitle.innerHTML = "<i class=\"fas " + currentDeptConfig.icon + "\"></i> " + currentDeptConfig.label;
+                currentDeptConfig.sections.forEach(s => { const m = document.getElementById("menu-" + s); if (m) m.style.display = "flex"; });
+                if (currentDeptConfig.cards) currentDeptConfig.cards.forEach(c => { const card = document.getElementById(c); if (card) card.style.display = "flex"; });
+            } else {
+                const deptSection = document.getElementById("deptSection");
+                if (deptSection) deptSection.style.display = "none";
+            }
+        }
+        function loadDeptSectionData(sectionId) {
+            const loaders = {
+                "it-tickets-section": () => loadDeptTable("get_it_tickets.php", "itTicketsTableBody"),
+                "it-assets-section": () => loadDeptTable("get_it_assets.php", "itAssetsTableBody"),
+                "it-status-section": () => loadSystemStatus(),
+                "it-knowledge-section": () => loadKnowledgeBase(),
+                "finance-expenses-section": () => loadDeptTable("get_expenses.php", "expensesTableBody"),
+                "finance-budget-section": () => loadBudgetOverview(),
+                "finance-invoices-section": () => loadDeptTable("get_invoices.php", "invoicesTableBody"),
+                "finance-pettycash-section": () => loadDeptTable("get_petty_cash.php", "pettyCashTableBody"),
+                "sales-leads-section": () => loadDeptTable("get_leads.php", "leadsTableBody"),
+                "sales-pipeline-section": () => loadPipeline(),
+                "sales-clients-section": () => loadDeptTable("get_clients.php", "clientsTableBody"),
+                "marketing-campaigns-section": () => loadCampaigns(),
+                "marketing-calendar-section": () => loadContentCalendar(),
+                "marketing-social-section": () => loadDeptTable("get_social_schedule.php", "socialTableBody"),
+                "marketing-analytics-section": () => loadMarketingAnalytics(),
+                "ops-inventory-section": () => loadDeptTable("get_inventory.php", "inventoryTableBody"),
+                "ops-logistics-section": () => loadDeptTable("get_logistics.php", "logisticsTableBody"),
+                "ops-vendors-section": () => loadDeptTable("get_vendors.php", "vendorsTableBody"),
+                "proc-purchase-orders-section": () => loadDeptTable("get_purchase_orders.php", "poTableBody"),
+                "proc-suppliers-section": () => loadDeptTable("get_suppliers.php", "suppliersTableBody"),
+                "proc-orders-section": () => loadDeptTable("get_orders.php", "ordersTableBody"),
+                "sec-incidents-section": () => loadDeptTable("get_incidents.php", "incidentsTableBody"),
+                "sec-patrol-section": () => loadDeptTable("get_patrol_logs.php", "patrolTableBody"),
+                "sec-visitors-section": () => loadDeptTable("get_visitors.php", "visitorsTableBody"),
+                "sec-access-section": () => loadDeptTable("get_access_logs.php", "accessTableBody"),
+                "hr-records-section": () => loadDeptTable("get_hr_records.php", "hrRecordsTableBody"),
+                "hr-recruitment-section": () => loadRecruitment(),
+                "hr-onboarding-section": () => loadOnboarding(),
+                "hr-reviews-section": () => loadDeptTable("get_reviews.php", "reviewsTableBody")
+            };
+            if (loaders[sectionId]) loaders[sectionId]();
+        }
+        function loadDeptTable(url, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            if (!tbody) return;
+            const colCount = tbody.closest("table")?.querySelector("thead tr")?.children.length || 5;
+            tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading data...</td></tr>`;
+            fetch(url, { credentials: "include" }).then(r => r.json()).then(d => {
+                if (d.success && d.data && d.data.length > 0) {
+                    tbody.innerHTML = d.data.map(row => "<tr>" + Object.values(row).map(v => "<td>" + (v ?? "N/A") + "</td>").join("") + "</tr>").join("");
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:40px;"><i class="fas fa-inbox"></i> No records found.</td></tr>`;
+                }
+            }).catch(() => { tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:40px;">Error loading data.</td></tr>`; });
+        }
+        function loadSystemStatus() { const c = document.getElementById("systemStatusContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">System status loads here</p>"; }
+        function loadKnowledgeBase() { const c = document.getElementById("kbArticlesContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Knowledge base loads here</p>"; }
+        function loadBudgetOverview() { const c = document.getElementById("budgetOverviewContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Budget data loads here</p>"; }
+        function loadPipeline() { const c = document.getElementById("pipelineContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Pipeline loads here</p>"; }
+        function loadCampaigns() { const c = document.getElementById("campaignsContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Campaigns load here</p>"; }
+        function loadContentCalendar() { const c = document.getElementById("contentCalendarContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Calendar loads here</p>"; }
+        function loadMarketingAnalytics() { const c = document.getElementById("analyticsContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Analytics load here</p>"; }
+        function loadRecruitment() { const c = document.getElementById("recruitmentContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Recruitment loads here</p>"; }
+        function loadOnboarding() { const c = document.getElementById("onboardingContainer"); if (c) c.innerHTML = "<p style=\"text-align:center;padding:40px;\">Onboarding loads here</p>"; }
     function loadEmployeeSession() {
     console.log('=== LOADING EMPLOYEE SESSION ===');
     fetch('get_employee_session_info.php', { credentials: 'include' })
@@ -3099,6 +3163,7 @@
                 // FIX: REMOVED all direct DOM access - only use populateProfileData
                 // This function has proper null checks for all elements
                 populateProfileData(data);
+                if (data.department) applyDepartmentConfig(data.department);
                 
                 // Load dynamic data after session is established
                 if (data.employee_id) {
@@ -3136,6 +3201,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Load employee session data first
     loadEmployeeSession();
+    setupNotifications();
     
     // Employee ID will be loaded from session, not hardcoded
     initPayrollFilters();
@@ -4332,55 +4398,7 @@ setInterval(checkCheckoutStatus, 300000);
          const markAllReadBtn = document.getElementById('markAllRead');
  
          // State management - using global variables already declared
- 
-                 // Fetch notifications from server
-        async function fetchNotifications() {
-            try {
-                const response = await fetch('get_notifications.php?read=all', { 
-                    credentials: 'include' 
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Transform database notifications to frontend format
-                    notifications = data.notifications.map(notification => ({
-                        id: notification.id,
-                        message: notification.message,
-                        time: formatTimeAgo(notification.created_at),
-                        read: notification.is_read == 1,
-                        type: notification.type
-                    }));
-                    
-                    // Calculate unread count
-                    unreadCount = notifications.filter(n => !n.read).length;
-                    
-                    // Update UI
-                    updateNotificationUI();
-                    
-                    // Show dot if there are unread notifications
-                    if (dot) dot.style.display = unreadCount > 0 ? 'block' : 'none';
-                } else {
-                    console.error('Failed to fetch notifications:', data.message);
-                    // Fallback to empty notifications
-                    notifications = [];
-                    unreadCount = 0;
-                    updateNotificationUI();
-                    if (dot) dot.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error fetching notifications:', error);
-                // Fallback to empty notifications
-                notifications = [];
-                unreadCount = 0;
-                updateNotificationUI();
-                if (dot) dot.style.display = 'none';
-            }
-        }
+
         
         // Helper function to format time ago
         function formatTimeAgo(createdAt) {
@@ -5245,6 +5263,15 @@ function isSunday() {
                 case error.TIMEOUT:
                     errorMessage += 'Location request timed out.';
                     break;
+                case 'tasks-section':
+                    loadTasksSection();
+                    break;
+                case 'announcements-section':
+                    loadAnnouncements();
+                    break;
+                case 'documents-section':
+                    loadDocuments();
+                    break;
                 default:
                     errorMessage += 'An unknown error occurred.';
                     break;
@@ -5339,6 +5366,7 @@ function isSunday() {
                 // Load section-specific data
                 if (typeof loadSectionData === 'function') {
                     loadSectionData(sectionId);
+                loadDeptSectionData(sectionId);
                 }
             }
             
@@ -5762,7 +5790,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var active = sidebar.querySelector('[data-section="'+sectionId+'"]');
     if (active) active.classList.add('active');
     if (typeof loadSectionData === 'function') {
-      try { loadSectionData(sectionId); } catch(e) { console.error(e); }
+      try { loadSectionData(sectionId);
+                loadDeptSectionData(sectionId); } catch(e) { console.error(e); }
     }
   }
 
@@ -5778,6 +5807,125 @@ document.addEventListener('DOMContentLoaded', function() {
   setActive('home-section');
   window.showSection = setActive;
 });
+
+        // ===== TASKS, ANNOUNCEMENTS, DOCUMENTS LOADERS =====
+        function loadTasksSection() {
+            const c = document.getElementById("tasksContainer");
+            if (!c) return;
+            c.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading tasks...</div>';
+            fetch("get_employee_tasks.php", { credentials: "include" })
+                .then(r => r.json()).then(d => {
+                    if (d.success && d.tasks && d.tasks.length > 0) {
+                        c.innerHTML = d.tasks.map(t => '<div class="card" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;width:100%;"><strong>' + (t.title||t.task_name) + '</strong><span class="status-badge status-' + (t.status||"pending") + '">' + (t.status||"Pending") + '</span></div><div style="font-size:0.8rem;color:var(--text-muted);">' + (t.project||"") + ' | Due: ' + (t.due_date||"N/A") + '</div></div>').join("");
+                    } else { c.innerHTML = '<div style="text-align:center;padding:40px;">No tasks assigned.</div>'; }
+                }).catch(() => { c.innerHTML = '<div style="text-align:center;padding:40px;">Error loading tasks.</div>'; });
+        }
+        function filterTasks(filter, btn) {
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            if (btn) btn.classList.add("active");
+            const cards = document.querySelectorAll("#tasksContainer .card");
+            cards.forEach(card => {
+                const status = (card.querySelector(".status-badge")?.textContent || "").toLowerCase();
+                card.style.display = (filter === "all" || status === filter) ? "" : "none";
+            });
+        }
+        function loadAnnouncements() {
+            const c = document.getElementById("announcementsContainer");
+            if (!c) return;
+            c.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            fetch("get_announcements.php", { credentials: "include" })
+                .then(r => r.json()).then(d => {
+                    if (d.success && d.announcements && d.announcements.length > 0) {
+                        c.innerHTML = d.announcements.map(a => '<div class="card" style="margin-bottom:12px;" data-dept="' + (a.department||"All") + '"><div style="display:flex;justify-content:space-between;"><h4 style="color:var(--primary);">' + a.title + '</h4><span style="font-size:0.7rem;color:var(--text-muted);">' + (a.date||a.created_at||"") + '</span></div><p style="font-size:0.9rem;margin:8px 0;">' + (a.content||a.message||"") + '</p><div style="font-size:0.75rem;color:var(--text-muted);"><i class="fas fa-user"></i> ' + (a.author||"Admin") + ' | <i class="fas fa-building"></i> ' + (a.department||"All") + '</div></div>').join("");
+                    } else { c.innerHTML = '<div style="text-align:center;padding:40px;">No announcements.</div>'; }
+                }).catch(() => { c.innerHTML = '<div style="text-align:center;padding:40px;">Error loading.</div>'; });
+        }
+        function filterAnnouncements() {
+            const filter = (document.getElementById("announceFilter")?.value || "");
+            document.querySelectorAll("#announcementsContainer .card").forEach(card => {
+                card.style.display = (!filter || card.getAttribute("data-dept") === filter || card.getAttribute("data-dept") === "All") ? "" : "none";
+            });
+        }
+        function loadDocuments() {
+            const tbody = document.getElementById("documentsTableBody");
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+            fetch("get_employee_documents.php", { credentials: "include" })
+                .then(r => r.json()).then(d => {
+                    if (d.success && d.documents && d.documents.length > 0) {
+                        tbody.innerHTML = d.documents.map(doc => '<tr><td><i class="fas fa-file-alt"></i> <strong>' + (doc.title||"Untitled") + '</strong></td><td>' + (doc.category||"General") + '</td><td>' + (doc.uploaded_at||"N/A") + '</td><td>' + (doc.size||"N/A") + '</td><td><button class="btn btn-primary btn-sm" onclick="window.open(\'' + (doc.file_url||"#") + '\',\'_blank\')"><i class="fas fa-download"></i></button></td></tr>').join("");
+                    } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">No documents available.</td></tr>'; }
+                }).catch(() => { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Error loading documents.</td></tr>'; });
+        }
+        function filterDocuments() {
+            const s = (document.getElementById("docSearch")?.value || "").toLowerCase();
+            const cat = document.getElementById("docCategory")?.value || "";
+            document.querySelectorAll("#documentsTableBody tr").forEach(row => {
+                const t = row.textContent.toLowerCase();
+                row.style.display = (!s || t.includes(s)) && (!cat || t.includes(cat.toLowerCase())) ? "" : "none";
+            });
+        }
+
+
+        // ===== MODAL OPENERS & SAVE FUNCTIONS =====
+        function openInventoryModal() { document.getElementById("inventoryModal").style.display = "flex"; }
+        function openShipmentModal() { document.getElementById("shipmentModal").style.display = "flex"; }
+        function openVendorModal() { document.getElementById("vendorModal").style.display = "flex"; }
+        function openPOModal() { document.getElementById("poModal").style.display = "flex"; }
+        function openSupplierModal() { document.getElementById("supplierModal") ? document.getElementById("supplierModal").style.display = "flex" : alert("Supplier form ready"); }
+        function openTicketModal() { alert("Ticket form ready"); }
+        function openExpenseModal() { alert("Expense form ready"); }
+        function openLeadModal() { alert("Lead form ready"); }
+        function exportInventory() { alert("Exporting inventory..."); }
+        function requestDocument() { document.getElementById("requestDocumentModal").style.display = "flex"; }
+        
+        function filterInventory() {
+            const s = (document.getElementById("invSearch")?.value || "").toLowerCase();
+            const cat = document.getElementById("invCategory")?.value || "";
+            const st = document.getElementById("invStatus")?.value || "";
+            document.querySelectorAll("#inventoryTableBody tr").forEach(row => {
+                const t = row.textContent.toLowerCase();
+                row.style.display = (!s || t.includes(s)) && (!cat || t.includes(cat.toLowerCase())) && (!st || t.includes(st.toLowerCase())) ? "" : "none";
+            });
+        }
+        
+        function saveInventoryItem() {
+            const data = { name: document.getElementById("invItemName")?.value, category: document.getElementById("invItemCategory")?.value, quantity: document.getElementById("invItemQty")?.value, location: document.getElementById("invItemLocation")?.value };
+            if (!data.name) { alert("Please fill required fields"); return; }
+            fetch("save_inventory.php", { method: "POST", headers: {"Content-Type": "application/json"}, credentials: "include", body: JSON.stringify(data) })
+                .then(r => r.json()).then(d => { if(d.success) { closeModal("inventoryModal"); loadDeptTable("get_inventory.php", "inventoryTableBody"); showSuccessMessage("Item saved!"); } else alert(d.message); });
+        }
+        function saveShipment() {
+            const data = { origin: document.getElementById("shipOrigin")?.value, destination: document.getElementById("shipDestination")?.value, carrier: document.getElementById("shipCarrier")?.value };
+            if (!data.origin) { alert("Please fill required fields"); return; }
+            fetch("save_shipment.php", { method: "POST", headers: {"Content-Type": "application/json"}, credentials: "include", body: JSON.stringify(data) })
+                .then(r => r.json()).then(d => { if(d.success) { closeModal("shipmentModal"); loadDeptTable("get_logistics.php", "logisticsTableBody"); showSuccessMessage("Shipment saved!"); } else alert(d.message); });
+        }
+        function saveVendor() {
+            const data = { name: document.getElementById("venName")?.value, category: document.getElementById("venCategory")?.value, contact: document.getElementById("venContact")?.value, phone: document.getElementById("venPhone")?.value, email: document.getElementById("venEmail")?.value };
+            if (!data.name) { alert("Please fill required fields"); return; }
+            fetch("save_vendor.php", { method: "POST", headers: {"Content-Type": "application/json"}, credentials: "include", body: JSON.stringify(data) })
+                .then(r => r.json()).then(d => { if(d.success) { closeModal("vendorModal"); loadDeptTable("get_vendors.php", "vendorsTableBody"); showSuccessMessage("Vendor saved!"); } else alert(d.message); });
+        }
+        function savePO() {
+            const data = { supplier: document.getElementById("poSupplier")?.value, amount: document.getElementById("poAmount")?.value };
+            if (!data.supplier) { alert("Please fill required fields"); return; }
+            fetch("save_po.php", { method: "POST", headers: {"Content-Type": "application/json"}, credentials: "include", body: JSON.stringify(data) })
+                .then(r => r.json()).then(d => { if(d.success) { closeModal("poModal"); loadDeptTable("get_purchase_orders.php", "poTableBody"); showSuccessMessage("PO created!"); } else alert(d.message); });
+        }
+        function submitDocumentRequest() {
+            const type = document.getElementById("reqDocType").value;
+            const reason = document.getElementById("reqDocReason").value;
+            const urgency = document.getElementById("reqDocUrgency").value;
+            const notice = document.getElementById("reqDocNotice");
+            if (!type || !reason) { notice.textContent = "Please fill all required fields."; notice.className = "notice danger"; notice.style.display = "block"; return; }
+            fetch("request_document.php", { method: "POST", headers: {"Content-Type": "application/json"}, credentials: "include", body: JSON.stringify({ document_type: type, reason: reason, urgency: urgency }) })
+                .then(r => r.json()).then(d => {
+                    if (d.success) { notice.textContent = "Request submitted! HR will process it soon."; notice.className = "notice success"; notice.style.display = "block"; }
+                    else { notice.textContent = d.message || "Failed to submit."; notice.className = "notice danger"; notice.style.display = "block"; }
+                }).catch(() => { notice.textContent = "Network error."; notice.className = "notice danger"; notice.style.display = "block"; });
+        }
+
 </script>
 
     <div class="blur-bg" id="blurBg"></div>
@@ -5833,7 +5981,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Optional: call existing system loader if present
       if (typeof window.loadSectionData === 'function'){
-        try { window.loadSectionData(sectionId); } catch (e) { console.error('[ViewManager] loadSectionData error:', e); }
+        try { window.loadSectionData(sectionId);
+                loadDeptSectionData(sectionId); } catch (e) { console.error('[ViewManager] loadSectionData error:', e); }
       }
 
       // Optional: per-section hook
@@ -6343,5 +6492,6 @@ function showMessage(message, type) {
 
       
 </script>
-</body>
+   
+   </body>
 </html>

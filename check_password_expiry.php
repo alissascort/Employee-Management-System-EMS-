@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 session_start();
 
 // Check if user is logged in
-if (!isset($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
@@ -25,16 +25,16 @@ if (!$employeeCode) {
 }
 
 try {
-    $stmt = $db->prepare("SELECT password_expiry_date, last_password_change FROM staff_profiles WHERE employee_code = ?");
+    $stmt = $db->prepare("SELECT created_at, last_password_change FROM staff_profiles WHERE employee_code = ?");
     $stmt->execute([$employeeCode]);
     $employee = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if (!$employee || !$employee['password_expiry_date']) {
+    if (!$employee || !$employee['created_at']) {
         echo json_encode(['success' => true, 'expires_soon' => false, 'expired' => false]);
         exit;
     }
     
-    $expiryDate = new DateTime($employee['password_expiry_date']);
+    $expiryDate = new DateTime($employee['created_at']);
     $today = new DateTime();
     $interval = $today->diff($expiryDate);
     $daysRemaining = $interval->days;
@@ -47,7 +47,7 @@ try {
         'expires_soon' => $expiresSoon,
         'expired' => $expired,
         'days_remaining' => $daysRemaining,
-        'expiry_date' => $employee['password_expiry_date'],
+        'expiry_date' => $employee['created_at'],
         'last_change' => $employee['last_password_change']
     ]);
     

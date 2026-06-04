@@ -14,7 +14,7 @@ try {
     exit;
 }
 
-if (!isset($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false]);
     exit;
 }

@@ -10,7 +10,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 // Check if user is logged in
-if (!isset($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     exit('Unauthorized access');
 }
@@ -36,7 +36,7 @@ try {
     
     $stmt->execute([
         ':payroll_id' => $payrollId,
-        ':employee_id' => $_SESSION['employee_id']
+        ':employee_id' => $_SESSION['user_id']
     ]);
     
     $payslipData = $stmt->fetch(PDO::FETCH_ASSOC);

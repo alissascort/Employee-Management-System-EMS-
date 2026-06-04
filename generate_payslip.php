@@ -14,7 +14,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Verify authentication FIRST
-if (!isset($_SESSION['employee_id'])) {
+if (!isset($_SESSION['user_id'])) {
     header('HTTP/1.0 401 Unauthorized');
     die('Unauthorized access');
 }
@@ -37,7 +37,7 @@ $stmt = $pdo->prepare("
     WHERE p.payroll_id = ? AND p.employee_id = ?
     LIMIT 1
 ");
-$stmt->execute([$payrollId, $_SESSION['employee_id']]);
+$stmt->execute([$payrollId, $_SESSION['user_id']]);
 $payroll = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$payroll) {

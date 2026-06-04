@@ -16,7 +16,7 @@ try {
     echo json_encode([
         'success' => true,
         'data' => [],
-        'message' => 'Endpoint ready: get_recruitment.php'
+        'message' => 'Endpoint ready: get_kb_articles.php'
     ]);
 } catch(PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Database error']);
